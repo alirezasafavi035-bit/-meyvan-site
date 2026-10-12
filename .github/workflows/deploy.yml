@@ -34,7 +34,7 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Update Gold Prices (Graceful fallback)
         env:
