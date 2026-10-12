@@ -1,11 +1,123 @@
-<div align="center">
+# وبسایت فروشگاهی طلا و جواهر میوان (MEYVAN | GOLD & JEWELRY)
+**دامنه:** [meyvan.ir](https://meyvan.ir) | **میزبانی:** GitHub Pages (کاملاً استاتیک)
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+پلتفرم مدرن و لوکس فروش آنلاین طلا و جواهر ۱۸ عیار با تکیه بر اصالت زرگری شهر تاریخی یزد، محاسبه لحظه‌ای نرخ طلا با فرمول رسمی اتحادیه، کاتالوگ ۵۰۰ محصولی و تسویه حساب سریع بدون نیاز به ثبت‌نام.
 
-  <h1>Built with AI Studio</h2>
+---
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## ویژگی‌های کلیدی پروژه
+1. **عملکرد و سرعت فوق‌العاده:**
+   - توسعه یافته با **Vite + React 19 + TypeScript + Tailwind CSS**.
+   - جاوااسکریپت اولیه سبک با Code-splitting خودکار (`React.lazy`).
+   - مسیردهی کلاینت با `HashRouter` سازگار با GitHub Pages.
+   - سرویس ورکر سبک (`public/sw.js`) با استراتژی Cache-First برای فونت‌ها و تصاویر و Network-First برای نرخ طلا.
+2. **محاسبه هوشمند و شفاف نرخ طلا:**
+   - اتصال به API زنده یا فایل پشتیبان `public/data/prices.json`.
+   - Polling هر ۶۰ ثانیه فقط هنگام فعال بودن تب مرورگر (`visibilitychange`).
+   - تبدیل دقیق عیارها (۱۸، ۲۱ و ۲۴ عیار).
+   - تفکیک قانونی: قیمت پایه طلا + اجرت ساخت + ۷٪ سود اتحادیه + ۹٪ مالیات ارزش افزوده (فقط بر سود و اجرت) + بهای سنگ و نگین.
+   - قفل ۱۰ دقیقه‌ای قیمت در مرحله تسویه حساب.
+3. **کاتالوگ ۵۰۰ محصولی قابل تکرار (Deterministic):**
+   - اسکریپت `scripts/generate-catalog.mjs` با توزیع استاندارد:
+     - ۱۰۰ مینیمال | ۹۰ اقتصادی | ۱۰۰ روزمره | ۷۰ سنگین و یزدی | ۷۰ سرویس و نیم‌ست | ۷۰ جواهر نگین‌دار.
+   - اسکریپت اعتبارسنجی `scripts/validate-catalog.mjs` جهت تضمین یکتایی کد SKU، وزن و عیارها.
+4. **تسویه حساب مهمان و درگاه پرداخت:**
+   - فرانت‌اند فاقد هرگونه کلید درگاه است.
+   - ارسال مشخصات و اقلام به `VITE_PAYMENT_API/create-order` جهت محاسبه مجدد قیمت سمت سرور و هدایت به زرین‌پال.
+   - بازگشت به `#/payment-result` و تایید نهایی از طریق `VITE_PAYMENT_API/verify`.
+   - قابلیت سفارش مستقیم از طریق واتساپ رسمی با متن آماده و فرمت‌شده در صورت عدم تنظیم درگاه.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+---
 
-</div>
+## ساختار پوشه‌ها و فایل‌های پروژه
+```text
+├── .github/
+│   └── workflows/
+│       └── deploy.yml            # استقرار خودکار در GitHub Pages با کران ۳۰ دقیقه‌ای
+├── docs/
+│   └── payment-api-spec.md       # مشخصات فنی و قرارداد اتصال به زرین‌پال
+├── public/
+│   ├── CNAME                     # تنظیم دامنه اختصاصی meyvan.ir
+│   ├── favicon.svg               # لوگوی وکتور حرف M و ستاره چهارپر
+│   ├── manifest.json             # وب‌اپلیکیشن PWA
+│   ├── robots.txt                # دسترسی موتورهای جستجو
+│   ├── sitemap.xml               # نقشه سایت تولیدشده از کاتالوگ
+│   ├── sw.js                     # سرویس ورکر کش تصاویر و فونت
+│   └── data/
+│       ├── prices.json           # نرخ پشتیبان طلای ۱۸ عیار
+│       └── products.json         # کاتالوگ کامل ۵۰۰ محصول
+├── scripts/
+│   ├── generate-catalog.mjs      # تولید ۵۰۰ محصول با seed تکرارپذیر
+│   ├── validate-catalog.mjs      # اعتبارسنجی یکتایی و درستی داده‌ها
+│   └── update-prices.mjs         # به‌روزرسانی قیمت در CI/CD
+├── src/
+│   ├── assets/images/            # تصاویر استودیویی فاخر
+│   ├── components/
+│   │   ├── cart/                 # دراور سبد خرید و مدال تسویه حساب
+│   │   └── common/               # هدر، لوگو، فوتر، نوار قیمت، کارت محصول، جستجو
+│   ├── context/                  # وضعیت‌های عمومی (قیمت طلا، سبد، علاقه‌مندی)
+│   ├── pages/                    # صفحات اصلی، کاتالوگ، جزئیات، درباره ما، تماس
+│   ├── types/                    # تعاریف تایپ‌های داده TypeScript
+│   └── utils/                    # موتور محاسبه قیمت و توابع فارسی‌سازی
+└── vite.config.ts
+```
+
+---
+
+## نحوه اجرا به صورت محلی (Development)
+
+۱. **نصب وابستگی‌ها:**
+```bash
+npm install
+```
+
+۲. **تولید کاتالوگ محصولات و نقشه سایت:**
+```bash
+node scripts/generate-catalog.mjs
+node scripts/validate-catalog.mjs
+```
+
+۳. **اجرای سرور توسعه:**
+```bash
+npm run dev
+```
+سایت روی آدرس `http://localhost:3000` در دسترس خواهد بود.
+
+۴. **ساخت بیلد نهایی:**
+```bash
+npm run build
+```
+
+---
+
+## تنظیم GitHub Secrets و Variables
+جهت فعال‌سازی آپدیت خودکار قیمت طلا و درگاه پرداخت در GitHub Actions:
+
+### Settings > Secrets and variables > Actions > Secrets
+- `PRICE_API_URL`: آدرس API دریافت نرخ طلا (مانند تابان‌گوهر یا TGJU).
+- `PRICE_API_KEY`: کلید احراز هویت سرویس قیمت (در صورت نیاز).
+
+### Settings > Secrets and variables > Actions > Variables
+- `VITE_PRICE_API`: اندپوینت کلاینت برای دریافت نرخ زنده هر ۶۰ ثانیه.
+- `VITE_PAYMENT_API`: آدرس اندپوینت سرورلس شما برای ثبت سفارش زرین‌پال.
+
+---
+
+## نحوه جایگزینی تصاویر و محصولات واقعی
+- **تصاویر محصولات:** در مسیر `/public/images/products/{SKU}-1.webp` قرار می‌گیرند. چنانچه تصویری موجود نباشد، کامپوننت کارت محصول به صورت خودکار نشان وکتور برند میوان را روی زمینه دارک لوکس نمایش می‌دهد.
+- **تغییر اطلاعات کاتالوگ:** کافی است فایل `scripts/generate-catalog.mjs` یا داده‌های خروجی در `public/data/products.json` را با داده‌های ERP/حسابداری خود جایگزین کرده و دستور `node scripts/validate-catalog.mjs` را اجرا کنید.
+
+---
+
+## نحوه اتصال به دامنه meyvan.ir
+۱. فایل `public/CNAME` شامل `meyvan.ir` است که در زمان build به شاخه `dist` کپی می‌شود.
+۲. در پنل دامنه خود (ایرنیک یا ارائه‌دهنده DNS مانند کلودفلر/ابرآروان):
+   - رکورد `CNAME` برای `meyvan.ir` با مقدار `<username>.github.io`
+   - یا ۴ رکورد `A` با مقادیر زیر:
+     ```
+     185.199.108.153
+     185.199.109.153
+     185.199.110.153
+     185.199.111.153
+     ```
+۳. در تنظیمات مخزن گیت‌هاب (Settings > Pages)، تیک Enforce HTTPS را فعال نمایید.

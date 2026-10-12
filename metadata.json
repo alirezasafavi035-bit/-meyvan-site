@@ -1,0 +1,6 @@
+{
+  "name": "MEYVAN | میوان - فروشگاه آنلاین طلا و جواهر",
+  "description": "فروشگاه آنلاین طلا و جواهر میوان (MEYVAN) | اصالت و درخشش از دیار یزد تا تمام ایران با شفافیت کامل قیمت و ضمانت معتبر.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

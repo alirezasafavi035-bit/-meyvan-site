@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Rich Gold Outer Rim Gradient -->
+    <linearGradient id="goldRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C59B27" />
+      <stop offset="25%" stop-color="#FCEBA7" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="75%" stop-color="#9E741D" />
+      <stop offset="100%" stop-color="#FBE595" />
+    </linearGradient>
+
+    <!-- Star & M Surface Highlights -->
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF5C6" />
+      <stop offset="50%" stop-color="#F3DC7C" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+
+    <linearGradient id="goldMid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FCEBA7" />
+      <stop offset="40%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#A27A1C" />
+    </linearGradient>
+
+    <linearGradient id="goldShadow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B88B22" />
+      <stop offset="60%" stop-color="#7A580F" />
+      <stop offset="100%" stop-color="#4B3304" />
+    </linearGradient>
+
+    <linearGradient id="goldText" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E2B755" />
+      <stop offset="30%" stop-color="#FFF0B3" />
+      <stop offset="70%" stop-color="#E5BF5A" />
+      <stop offset="100%" stop-color="#BE8E22" />
+    </linearGradient>
+
+    <!-- Drop Shadow Filter for 3D depth -->
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <!-- Circular Outer Badge Background -->
+  <circle cx="250" cy="250" r="242" fill="#0B080F" />
+
+  <!-- Outer Fine Gold Ring -->
+  <circle cx="250" cy="250" r="236" fill="none" stroke="url(#goldRim)" stroke-width="4.5" />
+  <circle cx="250" cy="250" r="230" fill="none" stroke="url(#goldRim)" stroke-width="0.8" opacity="0.4" />
+
+  <!-- Top 4-Point Faceted Diamond Star -->
+  <g id="topStar" filter="url(#softGlow)">
+    <!-- Top-Left Facet -->
+    <path d="M 250 114 L 224 142 L 250 142 Z" fill="url(#goldLight)" />
+    <!-- Top-Right Facet -->
+    <path d="M 250 114 L 276 142 L 250 142 Z" fill="url(#goldMid)" />
+    <!-- Bottom-Left Facet -->
+    <path d="M 250 170 L 224 142 L 250 142 Z" fill="url(#goldShadow)" />
+    <!-- Bottom-Right Facet -->
+    <path d="M 250 170 L 276 142 L 250 142 Z" fill="url(#goldLight)" />
+  </g>
+
+  <!-- Main Luxury Monogram 'M' with Folded Ribbon Diagonals -->
+  <g id="monogramM" filter="url(#softGlow)">
+    <!-- Left Vertical Stem & Foot -->
+    <path d="
+      M 176 146
+      C 183 146, 187 151, 187 159
+      L 187 245
+      C 187 253, 181 257, 174 258
+      L 174 260
+      L 214 260
+      L 214 258
+      C 207 257, 201 253, 201 245
+      L 201 166
+      C 201 154, 206 148, 216 146
+      Z"
+      fill="url(#goldMid)"
+    />
+
+    <!-- Left Diagonal -->
+    <path d="
+      M 201 166
+      L 242 248
+      C 246 255, 252 255, 255 249
+      L 262 233
+      L 222 153
+      C 217 146, 211 146, 201 146
+      Z"
+      fill="url(#goldShadow)"
+    />
+
+    <!-- Right Diagonal Ribbon (Crossing & Folding Over) -->
+    <path d="
+      M 297 146
+      C 290 146, 284 150, 278 159
+      L 243 234
+      L 255 258
+      C 258 261, 263 260, 267 252
+      L 302 181
+      L 302 245
+      C 302 253, 296 257, 289 258
+      L 289 260
+      L 326 260
+      L 326 258
+      C 319 257, 313 253, 313 245
+      L 313 162
+      C 313 151, 318 146, 326 146
+      Z"
+      fill="url(#goldLight)"
+    />
+
+    <!-- Right Diagonal Inner Shading & Depth Fold -->
+    <path d="
+      M 297 146
+      L 250 248
+      L 256 258
+      L 278 214
+      Z"
+      fill="url(#goldMid)"
+      opacity="0.85"
+    />
+  </g>
+
+  <!-- MEYVAN Typography (High-contrast Serif) -->
+  <text
+    x="250"
+    y="324"
+    text-anchor="middle"
+    font-family="'Playfair Display', Didot, 'Cinzel', Georgia, serif"
+    font-size="43"
+    font-weight="600"
+    letter-spacing="0.22em"
+    fill="url(#goldText)"
+    filter="url(#softGlow)"
+  >
+    MEYVAN
+  </text>
+
+  <!-- Sub-label: GOLD & JEWELRY -->
+  <text
+    x="250"
+    y="355"
+    text-anchor="middle"
+    font-family="'Inter', -apple-system, sans-serif"
+    font-size="14.5"
+    font-weight="400"
+    letter-spacing="0.38em"
+    fill="#E8CA72"
+  >
+    GOLD &amp; JEWELRY
+  </text>
+
+  <!-- Bottom Divider Line with Centered Star -->
+  <g id="bottomAccent" opacity="0.9">
+    <!-- Left Hairline -->
+    <line x1="175" y1="384" x2="236" y2="384" stroke="url(#goldRim)" stroke-width="1.2" stroke-linecap="round" />
+    
+    <!-- Center 4-Point Star -->
+    <path d="M 250 376 L 252.5 382.5 L 259 384 L 252.5 385.5 L 250 392 L 247.5 385.5 L 241 384 L 247.5 382.5 Z" fill="url(#goldLight)" />
+    
+    <!-- Right Hairline -->
+    <line x1="264" y1="384" x2="325" y2="384" stroke="url(#goldRim)" stroke-width="1.2" stroke-linecap="round" />
+  </g>
+</svg>

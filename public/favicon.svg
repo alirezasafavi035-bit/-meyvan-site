@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <linearGradient id="favRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C59B27" />
+      <stop offset="30%" stop-color="#FCEBA7" />
+      <stop offset="70%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#9E741D" />
+    </linearGradient>
+    <linearGradient id="favGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF5C6" />
+      <stop offset="50%" stop-color="#F3DC7C" />
+      <stop offset="100%" stop-color="#A27A1C" />
+    </linearGradient>
+  </defs>
+
+  <!-- Circular Base -->
+  <circle cx="250" cy="250" r="240" fill="#0B080F" />
+  <circle cx="250" cy="250" r="234" fill="none" stroke="url(#favRim)" stroke-width="8" />
+
+  <!-- Top 4-point Star -->
+  <path d="M 250 80 L 226 114 L 250 114 Z" fill="#FFF5C6" />
+  <path d="M 250 80 L 274 114 L 250 114 Z" fill="#D4AF37" />
+  <path d="M 250 148 L 226 114 L 250 114 Z" fill="#7A580F" />
+  <path d="M 250 148 L 274 114 L 250 114 Z" fill="#FFF5C6" />
+
+  <!-- Monogram M -->
+  <path d="
+    M 160 146
+    C 170 146, 175 152, 175 162
+    L 175 258
+    C 175 268, 168 274, 158 275
+    L 205 275
+    C 195 274, 188 268, 188 258
+    L 188 170
+    L 242 260
+    C 246 268, 254 268, 258 260
+    L 312 170
+    L 312 258
+    C 312 268, 305 274, 295 275
+    L 342 275
+    C 332 274, 325 268, 325 258
+    L 325 162
+    C 325 152, 330 146, 340 146
+    L 295 146
+    C 287 146, 280 152, 273 164
+    L 250 215
+    L 227 164
+    C 220 152, 213 146, 205 146
+    Z"
+    fill="url(#favGold)"
+  />
+
+  <!-- MEYVAN Lettering -->
+  <text
+    x="250"
+    y="348"
+    text-anchor="middle"
+    font-family="'Playfair Display', Georgia, serif"
+    font-size="56"
+    font-weight="600"
+    letter-spacing="0.22em"
+    fill="url(#favRim)"
+  >
+    MEYVAN
+  </text>
+
+  <!-- GOLD & JEWELRY -->
+  <text
+    x="250"
+    y="386"
+    text-anchor="middle"
+    font-family="sans-serif"
+    font-size="19"
+    font-weight="500"
+    letter-spacing="0.35em"
+    fill="#E8CA72"
+  >
+    GOLD &amp; JEWELRY
+  </text>
+</svg>

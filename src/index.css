@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Typography: IRANSans / IRANSansX / IRANYekan (Digikala, Snapp, Divar Standard)
+   ========================================================================== */
+
+@font-face {
+  font-family: 'IRANSans';
+  src: url('/fonts/IRANSansUltraLight.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IRANSans';
+  src: url('/fonts/IRANSansLight.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IRANSans';
+  src: url('/fonts/IRANSans.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IRANSans';
+  src: url('/fonts/IRANSansMedium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IRANSans';
+  src: url('/fonts/IRANSansBold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* IRANSansX Aliases (Used by Divar, Snapp, and Modern Web) */
+@font-face {
+  font-family: 'IRANSansX';
+  src: url('/fonts/IRANSans.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IRANSansX';
+  src: url('/fonts/IRANSansMedium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IRANSansX';
+  src: url('/fonts/IRANSansBold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* IRANYekan Aliases (Used by Digikala) */
+@font-face {
+  font-family: 'IRANYekan';
+  src: url('/fonts/IRANSans.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IRANYekan';
+  src: url('/fonts/IRANSansMedium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IRANYekan';
+  src: url('/fonts/IRANSansBold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --color-midnight: #0B080F;
+  --color-midnight-card: #14101A;
+  --color-midnight-light: #1D1826;
+  --color-gold: #D4AF37;
+  --color-gold-light: #F5E6B3;
+  --color-gold-hover: #E5C358;
+  --color-gold-dark: #A38221;
+  --color-cream: #F7F5EE;
+  --color-cream-card: #FFFFFF;
+  --color-warm-gray: #A89B8A;
+  --color-charcoal: #2A2533;
+  
+  /* Primary Persian Font Family: Identical to Digikala, Divar, and Snapp */
+  --font-persian: 'IRANSansX', 'IRANSans', 'IRANYekanX', 'IRANYekan', 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-sans: 'Inter', 'IRANSansX', 'IRANSans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  font-family: var(--font-persian);
+  background-color: var(--color-cream);
+  color: var(--color-midnight);
+  direction: rtl;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+}
+
+.font-serif-luxury {
+  font-family: var(--font-serif);
+}
+
+.font-numeral {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Luxury gold gradient utilities */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #F5E6B3 0%, #D4AF37 50%, #AA8220 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border-gradient {
+  border-image: linear-gradient(to bottom, rgba(212, 175, 55, 0.4), rgba(212, 175, 55, 0.05)) 1;
+}
+
+/* Subtle glow effects */
+.gold-glow {
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.15);
+}
+
+.gold-glow-hover:hover {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.25);
+}
+
+/* Sleek custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B080F;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #F5E6B3;
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
