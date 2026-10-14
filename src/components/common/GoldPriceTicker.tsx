@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useGoldPrice } from '../../context/GoldPriceContext';
-import { formatToman, toPersianDigits } from '../../utils/persian';
+import { formatToman, toPersianDigits, formatPersianDateTime } from '../../utils/persian';
 import { RefreshCw, SlidersHorizontal, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { PricingSettingsModal } from './PricingSettingsModal';
 
 export const GoldPriceTicker: React.FC = () => {
-  const { gold18PerGram, status, isLoading, lastUpdated, refreshPrice, pricingConfig } = useGoldPrice();
+  const { gold18PerGram, status, isLoading, lastUpdated, priceData, refreshPrice, pricingConfig } = useGoldPrice();
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -15,31 +15,32 @@ export const GoldPriceTicker: React.FC = () => {
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
-  const getStatusBadge = () => {
-    return (
-      <span className="inline-flex items-center gap-1.5 text-xs text-[#D4AF37]">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-        <span>نرخ لحظه‌ای - به‌روزرسانی خودکار</span>
-      </span>
-    );
-  };
+  const formattedTimestamp = formatPersianDateTime(priceData?.updatedAt || lastUpdated);
 
   return (
     <>
       <div className="bg-[#0B0F14] border-b border-[#E5DED2]/20 text-white text-xs py-2 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-          {/* Right side: Gold reference rate & status */}
-          <div className="flex items-center gap-3 flex-wrap">
+          {/* Right side: Gold reference rate, TGJU verified badge & timestamp */}
+          <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
             <span className="text-white/60">نرخ مبنای هر گرم طلای ۱۸ عیار (۷۵۰):</span>
             <span className="font-semibold text-[#D4AF37] font-numeral text-sm">
               {formatToman(gold18PerGram)}
             </span>
-            <span className="text-white/30 hidden sm:inline">|</span>
-            <div className="hidden sm:inline-flex items-center gap-2">
-              {getStatusBadge()}
-            </div>
+
+            {/* TGJU Verified Badge */}
+            <span className="inline-flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium bg-emerald-500/15 px-2 py-0.5 rounded-md border border-emerald-500/30">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>نرخ معتبر از TGJU</span>
+            </span>
+
+            {/* Timestamp from Worker */}
+            <span className="text-white/70 font-numeral text-[11px]">
+              آخرین به‌روزرسانی: {formattedTimestamp}
+            </span>
+
             {pricingConfig.defaultVatPercent > 0 && (
-              <span className="text-[10px] text-white/50 hidden md:inline">
+              <span className="text-[10px] text-white/50 hidden lg:inline">
                 (مالیات ٪{toPersianDigits(Math.round(pricingConfig.defaultVatPercent * 100))} {pricingConfig.vatBase === 'total' ? 'بر کل کالا' : 'فقط بر اجرت و سود'})
               </span>
             )}

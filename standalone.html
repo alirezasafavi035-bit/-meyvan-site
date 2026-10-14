@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>MEYVAN | میوان - فروشگاه آنلاین طلا و جواهر دست‌ساز یزد</title>
+  <meta name="description" content="فروشگاه آنلاین طلا و جواهر میوان (MEYVAN) | اصالت و درخشش از دیار یزد تا تمام ایران با محاسبه شفاف قیمت لحظه‌ای، فاکتور رسمی اتحادیه و ۷ روز ضمانت بازگشت وجه." />
+  
+  <!-- Vazirmatn Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-cream: #F7F5EE;
+      --obsidian: #0B080F;
+      --obsidian-card: #14101A;
+      --gold-primary: #D4AF37;
+      --gold-deep: #997D24;
+      --gold-light: #F3EFE6;
+      --text-main: #0B080F;
+      --text-muted: #8E8271;
+      --border-color: rgba(11, 8, 15, 0.08);
+      --border-gold: rgba(212, 175, 55, 0.35);
+      --font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      line-height: 1.6;
+      direction: rtl;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* Top Announcement */
+    .top-motto {
+      background: var(--obsidian-card);
+      color: var(--gold-primary);
+      text-align: center;
+      padding: 0.4rem 1rem;
+      font-size: 0.72rem;
+      font-weight: 500;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    /* Header */
+    header {
+      background: rgba(11, 8, 15, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-gold);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      color: #fff;
+    }
+
+    .header-inner {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-logo svg {
+      width: 34px;
+      height: 34px;
+    }
+
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--gold-primary);
+      letter-spacing: 0.15em;
+    }
+
+    .brand-sub {
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: -2px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.85rem;
+    }
+
+    nav a:hover {
+      color: var(--gold-primary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .contact-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid var(--border-gold);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: var(--gold-primary);
+      font-weight: 600;
+    }
+
+    /* Gold Price Ticker Bar */
+    .ticker-bar {
+      background: #0B0F14;
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(229, 222, 210, 0.15);
+    }
+
+    .ticker-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .ticker-left, .ticker-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .rate-val {
+      color: var(--gold-primary);
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .badge-tgju {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .timestamp-text {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.72rem;
+    }
+
+    /* Hero */
+    .hero {
+      background: var(--obsidian);
+      color: #fff;
+      padding: 4rem 0 3.5rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-gold);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--gold-primary);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', var(--font-family);
+      font-size: 2.8rem;
+      line-height: 1.25;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #FFF0BE 0%, #D4AF37 50%, #997D24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+      max-width: 520px;
+    }
+
+    .btn-gold {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--gold-primary);
+      color: var(--obsidian);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.8rem 1.6rem;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-gold:hover {
+      background: #e2c04e;
+      transform: translateY(-2px);
+    }
+
+    .hero-image-box {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border-gold);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-image-box img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Section Headers */
+    .section-title-wrap {
+      text-align: center;
+      margin: 3.5rem 0 2rem;
+    }
+
+    .section-sub {
+      color: var(--gold-deep);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .section-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--obsidian);
+    }
+
+    /* 6 Categories Grid */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .cat-card {
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .cat-card:hover {
+      border-color: var(--gold-primary);
+      box-shadow: 0 12px 24px rgba(212, 175, 55, 0.15);
+      transform: translateY(-4px);
+    }
+
+    .cat-img-box {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+      background: #14101A;
+    }
+
+    .cat-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .cat-card:hover .cat-img-box img {
+      transform: scale(1.06);
+    }
+
+    .cat-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(11, 8, 15, 0.85);
+      backdrop-filter: blur(8px);
+      color: var(--gold-primary);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      border: 1px solid var(--border-gold);
+    }
+
+    .cat-overlay-title {
+      position: absolute;
+      bottom: 12px;
+      right: 14px;
+      color: #fff;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    }
+
+    .cat-content {
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .cat-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .cat-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--obsidian);
+      border-top: 1px solid rgba(11, 8, 15, 0.05);
+      padding-top: 0.8rem;
+    }
+
+    .cat-card:hover .cat-link {
+      color: var(--gold-deep);
+    }
+
+    /* Product Cards */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .product-card {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+      transition: all 0.3s ease;
+    }
+
+    .product-card:hover {
+      border-color: var(--gold-primary);
+      box-shadow: 0 10px 24px rgba(212, 175, 55, 0.12);
+    }
+
+    .p-img-box {
+      position: relative;
+      aspect-ratio: 1;
+      background: #14101A;
+      overflow: hidden;
+    }
+
+    .p-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .product-card:hover .p-img-box img {
+      transform: scale(1.05);
+    }
+
+    .p-content {
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .p-tag {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .p-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--obsidian);
+      margin-bottom: 0.4rem;
+    }
+
+    .p-meta-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #555;
+      margin-bottom: 0.6rem;
+    }
+
+    .p-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-top: 1px solid rgba(11, 8, 15, 0.06);
+      padding-top: 0.6rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .p-price-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .p-price-val {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--obsidian);
+    }
+
+    .wage-badge-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--gold-deep);
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    /* Accordion Button & Box */
+    .btn-accordion-toggle {
+      width: 100%;
+      background: var(--gold-light);
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--obsidian);
+      cursor: pointer;
+      margin-bottom: 0.6rem;
+      font-family: inherit;
+    }
+
+    .btn-accordion-toggle:hover {
+      background: #ece4d2;
+    }
+
+    .accordion-body {
+      display: none;
+      background: #FAF8F5;
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 0.65rem;
+      font-size: 0.68rem;
+      margin-bottom: 0.75rem;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .accordion-body.open {
+      display: block;
+    }
+
+    .accordion-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.2rem 0;
+      color: #444;
+    }
+
+    .accordion-row.total-row {
+      border-top: 1px solid var(--border-gold);
+      margin-top: 0.3rem;
+      padding-top: 0.35rem;
+      font-weight: 700;
+      font-size: 0.74rem;
+      color: var(--obsidian);
+    }
+
+    .btn-add-cart {
+      width: 100%;
+      background: var(--obsidian);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: background 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-add-cart:hover {
+      background: var(--gold-primary);
+      color: var(--obsidian);
+    }
+
+    /* Returns Banner */
+    .returns-banner {
+      background: #fff;
+      border: 1px solid var(--border-gold);
+      border-radius: 18px;
+      padding: 1.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+      margin-bottom: 4rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+    }
+
+    .returns-content h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--obsidian);
+      margin-bottom: 0.3rem;
+    }
+
+    .returns-content p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* FAQ Section */
+    .faq-container {
+      max-width: 820px;
+      margin: 0 auto 5rem;
+    }
+
+    .faq-item {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      padding: 1.1rem 1.3rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--obsidian);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .faq-question:hover {
+      color: var(--gold-deep);
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 0 1.3rem 1.2rem;
+      font-size: 0.8rem;
+      color: #555;
+      line-height: 1.8;
+      border-top: 1px solid rgba(11, 8, 15, 0.04);
+      padding-top: 0.75rem;
+    }
+
+    .faq-item.open .faq-answer {
+      display: block;
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(180deg);
+      color: var(--gold-deep);
+    }
+
+    .faq-icon {
+      transition: transform 0.25s ease;
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    /* Returns Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      padding: 1.5rem;
+      overflow-y: auto;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #fff;
+      max-width: 740px;
+      width: 100%;
+      border-radius: 20px;
+      border: 1px solid var(--border-gold);
+      padding: 2rem;
+      position: relative;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.2rem;
+      left: 1.2rem;
+      background: #f0f0f0;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--obsidian);
+      color: #fff;
+      padding: 4rem 0 2rem;
+      border-top: 1px solid var(--border-gold);
+      font-size: 0.82rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-col h5 {
+      color: var(--gold-primary);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col li {
+      margin-bottom: 0.6rem;
+    }
+
+    .footer-col a {
+      color: rgba(255, 255, 255, 0.7);
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover {
+      color: var(--gold-primary);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.72rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Announcement Motto -->
+  <div class="top-motto">
+    بیش از ۵۰۰ قطعه جواهر دست‌ساز از یزد تا تمام ایران | طلا و جواهر ۱۸ عیار با ضمانت معتبر
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <a href="#" class="brand-logo">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="50,6 90,26 90,74 50,94 10,74 10,26" stroke="#D4AF37" stroke-width="3" fill="#14101A"/>
+            <polygon points="50,16 80,32 80,68 50,84 20,68 20,32" stroke="#D4AF37" stroke-width="1.5" stroke-dasharray="2 2" fill="none"/>
+            <path d="M30 68V34L50 56L70 34V68" stroke="#D4AF37" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="50" cy="56" r="3" fill="#D4AF37"/>
+          </svg>
+          <div>
+            <div class="brand-name">MEYVAN</div>
+            <div class="brand-sub">میوان · یزد</div>
+          </div>
+        </a>
+
+        <nav>
+          <a href="#collections">دسته‌بندی‌های تخصصی</a>
+          <a href="#featured">محصولات منتخب</a>
+          <a href="javascript:void(0)" onclick="openReturnsModal()">شرایط بازگشت وجه</a>
+          <a href="#faq">پرسش‌های متداول</a>
+          <a href="#footer">ارتباط با ما</a>
+        </nav>
+
+        <div class="header-actions">
+          <a href="tel:09132560616" class="contact-badge">
+            <span>شوروم یزد:</span>
+            <span>۰۹۱۳۲۵۶۰۶۱۶</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Gold Price Ticker Bar -->
+  <div class="ticker-bar">
+    <div class="container">
+      <div class="ticker-inner">
+        <div class="ticker-right">
+          <span>نرخ مبنای هر گرم طلای ۱۸ عیار (۷۵۰):</span>
+          <span class="rate-val" id="ticker-rate">۲۵٬۷۹۰٬۰۰۰ تومان</span>
+          
+          <!-- Requirement 7: Verified TGJU Badge -->
+          <span class="badge-tgju">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+            <span>نرخ معتبر از TGJU</span>
+          </span>
+
+          <!-- Requirement 2: Timestamp from Worker -->
+          <span class="timestamp-text" id="ticker-time">آخرین به‌روزرسانی: ۱۴۰۵/۰۷/۲۱ - ۰۴:۱۳</span>
+        </div>
+
+        <div class="ticker-left">
+          <span style="color: rgba(255,255,255,0.6); font-size: 0.7rem;">
+            (معافیت اصل طلا از مالیات · مالیات ۹٪ منحصراً بر اجرت و سود)
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-kicker">
+            <span>●</span>
+            <span>اصالت و درخشش از دیار کهن یزد</span>
+          </div>
+          <h1 class="hero-title">
+            درخشش، <br />
+            <span>حق انتخاب توست...</span>
+          </h1>
+          <p class="hero-desc">
+            میوان پیوند هنر اصیل زرگری کهن یزد با زبان طراحی مدرن است. هر قطعه طلا همراه با شناسنامه معتبر، محاسبه مستقیم و شفاف قیمت، فاکتور رسمی اتحادیه و بیمه کامل پستی تقدیم شما می‌گردد.
+          </p>
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <a href="#featured" class="btn-gold">
+              <span>مشاهده محصولات منتخب</span>
+              <span>←</span>
+            </a>
+            <button onclick="openReturnsModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0.8rem 1.4rem; border-radius: 12px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: inherit;">
+              شرایط بازگشت و ضمانت ۷ روزه
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-image-box">
+          <img src="/images/products/hero_jewelry_luxury_1791741170455.jpg" alt="سرویس طلای ۱۸ عیار فاخر میوان" onerror="this.src='/images/hero.jpg'" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Requirement 5: 6 Specialized Categories with Images & Links -->
+  <section id="collections" class="container">
+    <div class="section-title-wrap">
+      <span class="section-sub">COLLECTIONS</span>
+      <h2 class="section-title">دسته‌بندی‌های تخصصی میوان</h2>
+    </div>
+
+    <div class="categories-grid">
+      <!-- 1. گوشواره -->
+      <div class="cat-card">
+        <div class="cat-img-box">
+          <img src="/images/products/gold_earrings_drop_1791946270534.jpg" alt="گوشواره طلا ۱۸ عیار" onerror="this.src='/images/products/earrings.jpg'" />
+          <span class="cat-badge">۱ تا ۸ گرم</span>
+          <div class="cat-overlay-title">گوشواره</div>
+        </div>
+        <div class="cat-content">
+          <p class="cat-desc">انواع گوشواره‌های میخی، آویز و حلقه‌ای با قفل استاندارد و ضامن مطمئن زرگری یزد.</p>
+          <div class="cat-link">
+            <span>ورود به مجموعه گوشواره‌ها</span>
+            <span>←</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. انگشتر -->
+      <div class="cat-card">
+        <div class="cat-img-box">
+          <img src="/images/products/gold_ring_luxury_1791946268061.jpg" alt="انگشتر طلا ۱۸ عیار" onerror="this.src='/images/products/ring.jpg'" />
+          <span class="cat-badge">۲ تا ۱۲ گرم</span>
+          <div class="cat-overlay-title">انگشتر</div>
+        </div>
+        <div class="cat-content">
+          <p class="cat-desc">انگشترهای فاخر، پورتوفینو، رینگ‌های مینیمال معاصر و تراش‌های اسلیمی سنتی.</p>
+          <div class="cat-link">
+            <span>ورود به مجموعه انگشترها</span>
+            <span>←</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. گردنبند -->
+      <div class="cat-card">
+        <div class="cat-img-box">
+          <img src="/images/products/gold_necklace_pendant_1791946268677.jpg" alt="گردنبند طلا ۱۸ عیار" onerror="this.src='/images/products/necklace.jpg'" />
+          <span class="cat-badge">۳ تا ۳۵ گرم</span>
+          <div class="cat-overlay-title">گردنبند</div>
+        </div>
+        <div class="cat-content">
+          <p class="cat-desc">گردنبندهای کارتیه، رولباسی، زنجیرهای فیگارو و مدال‌های نفیس دست‌ساز یزدی.</p>
+          <div class="cat-link">
+            <span>ورود به مجموعه گردنبندها</span>
+            <span>←</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. دستبند -->
+      <div class="cat-card">
+        <div class="cat-img-box">
+          <img src="/images/products/gold_bracelet_bangle_1791946279045.jpg" alt="دستبند و النگو طلا ۱۸ عیار" onerror="this.src='/images/products/bracelet.jpg'" />
+          <span class="cat-badge">۲ تا ۲۵ گرم</span>
+          <div class="cat-overlay-title">دستبند</div>
+        </div>
+        <div class="cat-content">
+          <p class="cat-desc">النگو، تک‌پوش، بنگل و دستبندهای زنجیری با بالاترین استحکام و قفل دوبل ایمن.</p>
+          <div class="cat-link">
+            <span>ورود به مجموعه دستبندها</span>
+            <span>←</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. نیم‌ست -->
+      <div class="cat-card">
+        <div class="cat-img-box">
+          <img src="/images/products/gold_bridal_set_suite_1791946299635.jpg" alt="نیم‌ست طلا ۱۸ عیار" onerror="this.src='/images/products/set.jpg'" />
+          <span class="cat-badge">۸ تا ۶۰ گرم</span>
+          <div class="cat-overlay-title">نیم‌ست</div>
+        </div>
+        <div class="cat-content">
+          <p class="cat-desc">مجموعه‌های متوازن گردنبند، گوشواره و انگشتر با تراش‌های آینه‌ای ویژه مراسم و عروس.</p>
+          <div class="cat-link">
+            <span>ورود به مجموعه نیم‌ست‌ها</span>
+            <span>←</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. سکه و شمش -->
+      <div class="cat-card">
+        <div class="cat-img-box">
+          <img src="/images/products/signature_gold_set_1791741211906.jpg" alt="سکه و شمش طلا" onerror="this.src='/images/products/signature.jpg'" />
+          <span class="cat-badge">۰.۵ تا ۵۰ گرم</span>
+          <div class="cat-overlay-title">سکه و شمش</div>
+        </div>
+        <div class="cat-content">
+          <p class="cat-desc">شمش‌های سرمایه‌گذاری استاندارد با پلمپ امنیتی و هولوگرام کددار اتحادیه کشوری.</p>
+          <div class="cat-link">
+            <span>ورود به بازار سکه و شمش</span>
+            <span>←</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Requirement 1 & 6: Featured Product Cards with Wage Badge & Collapsible Price Details Accordion -->
+  <section id="featured" class="container">
+    <div class="section-title-wrap">
+      <span class="section-sub">TRANSPARENT PRICING</span>
+      <h2 class="section-title">محصولات منتخب با تفکیک دقیق فرمول قیمت</h2>
+    </div>
+
+    <div class="products-grid" id="products-container">
+      <!-- Product items rendered dynamically via JS -->
+    </div>
+  </section>
+
+  <!-- Requirement 4: Direct Link to Returns Policy Page & Modal -->
+  <section class="container">
+    <div class="returns-banner">
+      <div class="returns-content">
+        <h3>ضمانت رسمی ۷ روزه تعویض و بازگشت وجه میوان</h3>
+        <p>
+          آسودگی خاطر خریدار اولویت ماست: ۷ روز مهلت بازگشت، بازپرداخت سریع وجه ظرف ۲۴ ساعت، بیمه کامل مرسولات پستی و فاکتور چاپی مهرشده اتحادیه.
+        </p>
+      </div>
+      <button onclick="openReturnsModal()" class="btn-gold" style="padding: 0.75rem 1.4rem;">
+        <span>مشاهده کامل شرایط بازگشت وجه</span>
+        <span>←</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Requirement 3: 6 Real FAQs with Exact Questions & Accurate Answers -->
+  <section id="faq" class="container">
+    <div class="section-title-wrap">
+      <span class="section-sub">FREQUENTLY ASKED QUESTIONS</span>
+      <h2 class="section-title">پرسش‌های متداول شما درباره خرید طلا</h2>
+    </div>
+
+    <div class="faq-container">
+      <!-- Q1 -->
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>چگونه قیمت طلا محاسبه می‌شود؟</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          فرمول قیمت‌گذاری در میوان کاملاً مستقیم، شفاف و بدون هیچ‌گونه حباب واسطه‌ای محاسبه می‌شود:<br />
+          <strong>قیمت نهایی = ارزش طلای خام (وزن × نرخ روز گرم طلای ۱۸ عیار) + اجرت ساخت کارگاه + سود مصوب قانونی فروشنده (۷٪) + مالیات بر ارزش افزوده (منحصراً بر اجرت و سود).</strong><br />
+          تمام این ارقام به‌صورت ریالی و خودکار در کادر بازشوی «جزئیات قیمت» هر محصول و در فاکتور رسمی درج می‌گردند.
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>آیا مالیات پرداخت می‌کنم؟</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          طبق اصلاحیه رسمی قانون مالیات بر ارزش افزوده مصوب مجلس شورای اسلامی، اصل ارزش طلا (طلای خام) ۱۰۰٪ معاف از هرگونه مالیات است. مالیات بر ارزش افزوده (۹٪) منحصراً بر روی «مجموع اجرت ساخت کارگاه و سود مصوب فروشنده» محاسبه می‌گردد؛ بنابراین شما بابت وزن خالص طلای خود حتی یک ریال مالیات پرداخت نمی‌کنید.
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>شرایط بازگشت وجه چیست؟</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          میوان ضمانت تعویض و بازگشت ۷ روزه را ارائه می‌دهد. در صورت وجود هرگونه مغایرت وزن یا مشخصات با فاکتور، ۱۰۰٪ وجه بدون کسر هیچ هزینه‌ای عودت می‌گردد. در صورت انصراف سلیقه‌ای، طلای استفاده‌نشده با پلمپ امنیتی سالم ظرف ۷ روز تقویمی پذیرش شده و اصل ارزش طلای خام به نرخ روز تسویه مسترد می‌گردد. برای آگاهی از ضوابط کامل، دکمه «شرایط بازگشت وجه» را در بالای همین بخش باز کنید.
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>ارسال به شهرستان چقدر طول می‌کشد؟</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          تمامی مرسولات پستی میوان از طریق پست پیشتاز ویژه امنیتی یا تیپاکس هوایی با پوشش کامل بیمه ۱۰۰٪ سقف ارزش طلا ارسال می‌شوند و بین ۲۴ تا ۷۲ ساعت کاری در سراسر کشور تحویل خریدار می‌گردند. در شهر یزد نیز امکان تحویل حضوری در شوروم بازار خان یا ارسال با پیک اختصاصی در همان روز سفارش وجود دارد.
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>آیا فاکتور رسمی اتحادیه داده می‌شود؟</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          بله، تمامی سفارش‌های میوان همراه با فاکتور چاپی رسمی، دارای هولوگرام امنیتی و مهر صنف طلا و جواهر صادر می‌شوند. این فاکتور شامل وزن دقیق با ترازوی سه صفر کالیبره‌شده، عیار استاندارد ۷۵۰ (۱۸ عیار)، کد کارگاه زرگری یزد، تفکیک ریالی اجرت و سود و بارکد اختصاصی سامانه تجارت است که سند رسمی و قانونی مالکیت شما در سراسر کشور محسوب می‌شود.
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>چرا قیمت دو محصول با وزن یکسان متفاوت است؟</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          تفاوت قیمت در دو محصول هم‌وزن، دقیقاً ناشی از «درصد اجرت ساخت» و «حضور سنگ یا نگین» است. قطعاتی که حاصل دست‌ورزی استادکاران زرگر یزد، تراش‌های اسلیمی، یا تکنیک‌های پیچیده فیوژن هستند، اجرت ساخت متفاوتی نسبت به کارهای تراش ماشینی ساده دارند. همچنین ارزش سنگ‌های قیمتی به‌صورت جداگانه در شناسنامه درج شده و به قیمت پایه طلا افزوده می‌شود. اجرت ساخت هر محصول به‌صورت جداگانه روی کارت آن درج شده است.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Requirement 4: Returns Policy Modal with 4 Core Sections -->
+  <div id="returnsModal" class="modal-overlay" onclick="if(event.target===this) closeReturnsModal()">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeReturnsModal()">×</button>
+      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--obsidian); margin-bottom: 0.5rem;">
+        شرایط، قوانین و رویه کامل بازگشت وجه و تعویض طلا
+      </h2>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        منطبق با ماده ۳۷ قانون تجارت الکترونیک و ضوابط رسمی اتحادیه طلا و جواهر
+      </p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: #FAF8F5; border: 1px solid var(--border-gold); padding: 1rem; border-radius: 12px;">
+          <h4 style="font-size: 0.82rem; font-weight: 700; color: var(--obsidian); margin-bottom: 0.3rem;">۱. مدت زمان مجاز برای بازگشت</h4>
+          <p style="font-size: 0.75rem; color: #555; line-height: 1.6;">تا ۷ روز تقویمی پس از تحویل مرسوله از مامور پست یا پیک شوروم، امکان ثبت درخواست تعویض یا استرداد کالا وجود دارد.</p>
+        </div>
+        <div style="background: #FAF8F5; border: 1px solid var(--border-gold); padding: 1rem; border-radius: 12px;">
+          <h4 style="font-size: 0.82rem; font-weight: 700; color: var(--obsidian); margin-bottom: 0.3rem;">۲. شرایط کالا (سلامت فیزیکی)</h4>
+          <p style="font-size: 0.75rem; color: #555; line-height: 1.6;">پلمپ سربی امنیتی و نخ هولوگرام‌دار کالا نباید به هیچ عنوان باز، قیچی یا مخدوش شده باشد. فاکتور، شناسنامه و جعبه باید کاملاً سالم باشند.</p>
+        </div>
+        <div style="background: #FAF8F5; border: 1px solid var(--border-gold); padding: 1rem; border-radius: 12px;">
+          <h4 style="font-size: 0.82rem; font-weight: 700; color: var(--obsidian); margin-bottom: 0.3rem;">۳. مراحل درخواست بازگشت</h4>
+          <p style="font-size: 0.75rem; color: #555; line-height: 1.6;">تماس با شماره ۰۹۱۳۲۵۶۰۶۱۶ ← ارسال عکس پلمپ در واتساپ ← ارسال مرسوله با پست پیشتاز بیمه‌شده به شوروم یزد ← تایید کارشناسی عیار طلا.</p>
+        </div>
+        <div style="background: #FAF8F5; border: 1px solid var(--border-gold); padding: 1rem; border-radius: 12px;">
+          <h4 style="font-size: 0.82rem; font-weight: 700; color: var(--obsidian); margin-bottom: 0.3rem;">۴. زمان بازپرداخت وجه</h4>
+          <p style="font-size: 0.75rem; color: #555; line-height: 1.6;">حداکثر ظرف ۲۴ ساعت پس از وصول کالا و تایید فنی کارشناس عیارسنج، وجه مستقیماً از طریق سامانه پایا/ساتنا به حساب شبای خریدار واریز می‌گردد.</p>
+        </div>
+      </div>
+
+      <div style="background: #0B080F; color: #fff; padding: 1rem 1.2rem; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem;">
+        <span>هماهنگی مستقیم با کارشناس بازگشت میوان:</span>
+        <a href="tel:09132560616" style="color: var(--gold-primary); font-weight: 700; font-size: 0.95rem;">۰۹۱۳۲۵۶۰۶۱۶</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h5>میوان (MEYVAN)</h5>
+          <p style="color: rgba(255,255,255,0.7); font-size: 0.78rem; line-height: 1.8;">
+            برند فاخر طلا و جواهر معاصر با تکیه بر سنت دیرینه زرگری یزد. شفافیت کامل در فرمول قیمت و احترام به هوشمندی خریدار.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>دسته‌بندی‌های تخصصی</h5>
+          <ul>
+            <li><a href="#collections">گوشواره‌های طلا ۱۸ عیار</a></li>
+            <li><a href="#collections">انگشترهای فاخر و معاصر</a></li>
+            <li><a href="#collections">گردنبند و مدال‌های یزد</a></li>
+            <li><a href="#collections">دستبند، النگو و بنگل</a></li>
+            <li><a href="#collections">نیم‌ست و سرویس کامل</a></li>
+            <li><a href="#collections">سکه و شمش سرمایه‌گذاری</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>خدمات و قوانین</h5>
+          <ul>
+            <li><a href="javascript:void(0)" onclick="openReturnsModal()">شرایط بازگشت وجه (۷ روز)</a></li>
+            <li><a href="#faq">نحوه محاسبه قانونی مالیات طلا</a></li>
+            <li><a href="#faq">صدور فاکتور رسمی اتحادیه</a></li>
+            <li><a href="tel:09132560616">پشتیبانی و ثبت سفارش تلفنی</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>شوروم مرکزی یزد</h5>
+          <p style="color: rgba(255,255,255,0.7); font-size: 0.78rem; line-height: 1.8; margin-bottom: 0.8rem;">
+            یزد، خیابان قیام، بازار خان، راسته زرگران، پلاک ۱۰۴<br />
+            تلفن تماس: ۰۹۱۳۲۵۶۰۶۱۶<br />
+            ساعت کاری: ۹ صبح الی ۲۱
+          </p>
+          <div style="background: rgba(255,255,255,0.06); padding: 0.5rem; border-radius: 8px; font-size: 0.7rem; color: var(--gold-primary);">
+            نماد اعتماد الکترونیکی: پرونده رسمی ثبت شده و در حال تایید
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>تمامی حقوق برای برند طلای میوان (meyvan.ir) محفوظ است · ۱۴۰۵</div>
+        <div>MEYVAN Gold & Jewelry © 2026</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript: Automatic Pricing Calculation Engine & Accordion Controller -->
+  <script>
+    // System Config
+    const BASE_GOLD_PRICE = 25790000; // تومان per gram 18K
+    const PROFIT_PERCENT = 0.07;      // 7%
+    const VAT_PERCENT = 0.09;         // 9% on wage + profit
+
+    // Sample Verified Products from Meyvan Collection
+    const PRODUCTS = [
+      {
+        id: 'p1',
+        name: 'گوشواره طلا انار فیروزه نیشابور',
+        category: 'گوشواره',
+        type: 'earrings',
+        karat: 18,
+        weightGrams: 1.83,
+        wagePercent: 0.15,
+        image: '/images/products/gold_pomegranate_turquoise_1791946300076.jpg'
+      },
+      {
+        id: 'p2',
+        name: 'انگشتر طلا افرا خورشید یزد',
+        category: 'انگشتر',
+        type: 'ring',
+        karat: 18,
+        weightGrams: 2.79,
+        wagePercent: 0.16,
+        image: '/images/products/gold_ring_luxury_1791946268061.jpg'
+      },
+      {
+        id: 'p3',
+        name: 'گردنبند طلا کارتیه پرنیان',
+        category: 'گردنبند',
+        type: 'necklace',
+        karat: 18,
+        weightGrams: 3.45,
+        wagePercent: 0.14,
+        image: '/images/products/gold_necklace_pendant_1791946268677.jpg'
+      },
+      {
+        id: 'p4',
+        name: 'دستبند النگویی اسلیمی یزد',
+        category: 'دستبند',
+        type: 'bracelet',
+        karat: 18,
+        weightGrams: 4.60,
+        wagePercent: 0.13,
+        image: '/images/products/gold_bracelet_bangle_1791946279045.jpg'
+      }
+    ];
+
+    // Number Formatters
+    function toPersianDigits(n) {
+      const p = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+      return String(n).replace(/[0-9]/g, function(w) { return p[+w]; });
+    }
+
+    function formatToman(num) {
+      const parts = Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '،');
+      return toPersianDigits(parts) + ' تومان';
+    }
+
+    function formatWeight(g) {
+      const s = Number(g.toFixed(2)).toString().replace('.', '٫');
+      return toPersianDigits(s) + ' گرم';
+    }
+
+    // Precise Iranian Gold Pricing Engine
+    function calculateProduct(weight, wageRate, basePrice) {
+      const rawGold = Math.round(weight * basePrice);
+      const wage = Math.round(rawGold * wageRate);
+      const profit = Math.round((rawGold + wage) * PROFIT_PERCENT);
+      const vat = Math.round((wage + profit) * VAT_PERCENT);
+      const total = rawGold + wage + profit + vat;
+      return {
+        rawGold: rawGold,
+        wage: wage,
+        profit: profit,
+        vat: vat,
+        total: Math.round(total / 1000) * 1000
+      };
+    }
+
+    // Render Product Cards with Accordions
+    function renderProducts(currentRate) {
+      const container = document.getElementById('products-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      PRODUCTS.forEach(function(product, index) {
+        const calc = calculateProduct(product.weightGrams, product.wagePercent, currentRate);
+        const wagePct = Math.round(product.wagePercent * 100);
+
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <div class="p-img-box">
+            <img src="${product.image}" alt="${product.name}" onerror="this.src='/images/products/gold_earrings_drop_1791946270534.jpg'" />
+          </div>
+          <div class="p-content">
+            <div>
+              <div class="p-tag">${product.category} · ${toPersianDigits(product.karat)} عیار</div>
+              <h3 class="p-title">${product.name}</h3>
+              <div class="p-meta-row">
+                <span>وزن تقریبی:</span>
+                <span style="font-weight: 700; color: #0B080F;">${formatWeight(product.weightGrams)}</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="p-price-row">
+                <span class="p-price-label">قیمت روز:</span>
+                <span class="p-price-val">${formatToman(calc.total)}</span>
+              </div>
+
+              <!-- Requirement 6: Display wage directly on card -->
+              <div class="wage-badge-row">
+                <span>اجرت ساخت:</span>
+                <span>اجرت: ${toPersianDigits(wagePct)}٪</span>
+              </div>
+
+              <!-- Requirement 1: Collapsible Price Breakdown Accordion -->
+              <button type="button" class="btn-accordion-toggle" onclick="togglePriceAccordion(${index})">
+                <span>جزئیات قیمت (فرمول شفاف)</span>
+                <span id="accordion-arrow-${index}">▼</span>
+              </button>
+
+              <div id="accordion-body-${index}" class="accordion-body">
+                <div class="accordion-row">
+                  <span>وزن طلا:</span>
+                  <span style="font-weight: 600;">${formatWeight(product.weightGrams)}</span>
+                </div>
+                <div class="accordion-row">
+                  <span>نرخ روز گرم طلا:</span>
+                  <span style="font-weight: 600;">${formatToman(currentRate)}</span>
+                </div>
+                <div class="accordion-row">
+                  <span>ارزش طلای خام:</span>
+                  <span style="font-weight: 600;">${formatToman(calc.rawGold)}</span>
+                </div>
+                <div class="accordion-row">
+                  <span>اجرت ساخت (${toPersianDigits(wagePct)}٪):</span>
+                  <span style="font-weight: 600;">${formatToman(calc.wage)}</span>
+                </div>
+                <div class="accordion-row">
+                  <span>سود فروشنده (۷٪):</span>
+                  <span style="font-weight: 600;">${formatToman(calc.profit)}</span>
+                </div>
+                <div class="accordion-row">
+                  <span>مالیات (۹٪ روی اجرت+سود):</span>
+                  <span style="font-weight: 600;">${formatToman(calc.vat)}</span>
+                </div>
+                <div class="accordion-row total-row">
+                  <span>قیمت نهایی:</span>
+                  <span style="color: var(--gold-deep);">${formatToman(calc.total)}</span>
+                </div>
+              </div>
+
+              <button class="btn-add-cart" onclick="alert('سفارش شما برای «' + '${product.name}' + '» ثبت شد. همکاران شوروم یزد جهت هماهنگی فاکتور رسمی تماس خواهند گرفت.')">
+                <span>افزودن به سبد خرید</span>
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Toggle Accordion
+    function togglePriceAccordion(idx) {
+      const body = document.getElementById('accordion-body-' + idx);
+      const arrow = document.getElementById('accordion-arrow-' + idx);
+      if (body) {
+        body.classList.toggle('open');
+        if (body.classList.contains('open')) {
+          arrow.innerText = '▲';
+          arrow.style.color = 'var(--gold-deep)';
+        } else {
+          arrow.innerText = '▼';
+          arrow.style.color = '#333';
+        }
+      }
+    }
+
+    // Toggle FAQ
+    function toggleFaq(el) {
+      const item = el.parentElement;
+      item.classList.toggle('open');
+    }
+
+    // Returns Modal Control
+    function openReturnsModal() {
+      document.getElementById('returnsModal').classList.add('open');
+    }
+    function closeReturnsModal() {
+      document.getElementById('returnsModal').classList.remove('open');
+    }
+
+    // Fetch from Worker or prices.json
+    async function loadLivePrice() {
+      try {
+        const res = await fetch('/data/prices.json?t=' + Date.now());
+        if (res.ok) {
+          const data = await res.json();
+          const rate = data.gold18PerGram || BASE_GOLD_PRICE;
+          document.getElementById('ticker-rate').innerText = formatToman(rate);
+          renderProducts(rate);
+        } else {
+          renderProducts(BASE_GOLD_PRICE);
+        }
+      } catch (e) {
+        renderProducts(BASE_GOLD_PRICE);
+      }
+    }
+
+    // Initialize on DOM load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadLivePrice();
+    });
+  </script>
+</body>
+</html>

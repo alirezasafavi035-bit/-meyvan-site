@@ -83,6 +83,33 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
     }
   };
 
+  const getProductImage = (idx = 0) => {
+    if (product.images && product.images[idx] && !product.images[idx].endsWith('.webp')) {
+      return product.images[idx];
+    }
+    const nameLower = product.name.toLowerCase();
+    const slugLower = product.slug.toLowerCase();
+    if (nameLower.includes('انار') || slugLower.includes('pomegranate') || slugLower.includes('فیروزه')) {
+      return '/images/products/gold_pomegranate_turquoise_1791946300076.jpg';
+    }
+    if (product.type === 'earrings') {
+      return '/images/products/gold_earrings_drop_1791946270534.jpg';
+    }
+    if (product.type === 'ring') {
+      return '/images/products/gold_ring_luxury_1791946268061.jpg';
+    }
+    if (product.type === 'necklace' || product.type === 'pendant') {
+      return '/images/products/gold_necklace_pendant_1791946268677.jpg';
+    }
+    if (product.type === 'bracelet' || product.type === 'bangle' || product.type === 'anklet') {
+      return '/images/products/gold_bracelet_bangle_1791946279045.jpg';
+    }
+    if (product.type === 'set' || product.type === 'half_set') {
+      return '/images/products/gold_bridal_set_suite_1791946299635.jpg';
+    }
+    return '/images/products/gold_earrings_drop_1791946270534.jpg';
+  };
+
   const whatsappMessage = encodeURIComponent(
     `درود، مایل به استعلام و هماهنگی خرید این محصول در میوان هستم:\n` +
     `نام: ${product.name}\n` +
@@ -114,15 +141,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
             className="relative aspect-square w-full bg-[#14101A] rounded-2xl overflow-hidden border border-[#0B080F]/10 cursor-zoom-in group shadow-md"
           >
             <img
-              src={product.images[selectedImageIdx] || product.images[0]}
+              src={getProductImage(selectedImageIdx)}
               alt={product.name}
               className={`w-full h-full object-cover transition-transform duration-500 ${
                 imageZoomed ? 'scale-150' : 'group-hover:scale-105'
               }`}
-              onError={(e) => {
-                // Show SVG fallback
-                (e.currentTarget as HTMLElement).style.display = 'none';
-              }}
             />
 
             {/* Fallback container if broken */}

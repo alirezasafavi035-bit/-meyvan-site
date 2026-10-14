@@ -102,14 +102,19 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
       });
     }
 
-    // Category
+    // Category or Specialized Collection Filter
     if (selectedCategory !== 'all') {
-      result = result.filter((p) => p.category === selectedCategory);
+      const isTypeKey = ['earrings', 'ring', 'necklace', 'pendant', 'bracelet', 'bangle', 'anklet', 'set', 'half_set', 'coin'].includes(selectedCategory);
+      if (isTypeKey) {
+        result = result.filter((p) => p.type === selectedCategory || (selectedCategory === 'set' && (p.type === 'half_set' || p.category === 'set')) || (selectedCategory === 'necklace' && p.type === 'pendant') || (selectedCategory === 'bracelet' && (p.type === 'bangle' || p.type === 'anklet')));
+      } else {
+        result = result.filter((p) => p.category === selectedCategory);
+      }
     }
 
-    // Type
+    // Type Filter
     if (selectedType !== 'all') {
-      result = result.filter((p) => p.type === selectedType);
+      result = result.filter((p) => p.type === selectedType || (selectedType === 'set' && (p.type === 'half_set' || p.category === 'set')) || (selectedType === 'necklace' && p.type === 'pendant') || (selectedType === 'bracelet' && (p.type === 'bangle' || p.type === 'anklet')));
     }
 
     // Karat

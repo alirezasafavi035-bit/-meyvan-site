@@ -50,6 +50,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch }) => {
               اصالت و داستان میوان
             </Link>
             <Link
+              to="/returns"
+              className="hover:text-[#D4AF37] transition-colors whitespace-nowrap shrink-0 py-1"
+            >
+              شرایط بازگشت وجه
+            </Link>
+            <Link
               to="/contact"
               className="hover:text-[#D4AF37] transition-colors whitespace-nowrap shrink-0 py-1"
             >
@@ -133,6 +139,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch }) => {
               className="block py-2.5 px-3 text-base text-white/90 hover:text-[#D4AF37] hover:bg-white/5 rounded-md"
             >
               اصالت و داستان میوان
+            </Link>
+            <Link
+              to="/returns"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2.5 px-3 text-base text-white/90 hover:text-[#D4AF37] hover:bg-white/5 rounded-md"
+            >
+              شرایط بازگشت وجه و ضمانت ۷ روزه
             </Link>
             <Link
               to="/contact"

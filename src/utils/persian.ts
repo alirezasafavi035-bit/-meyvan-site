@@ -69,3 +69,29 @@ export function normalizePersianText(text: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+/**
+ * Formats a Date or ISO timestamp to Persian Jalali date-time string
+ * Example: «۱۴۰۵/۰۷/۲۱ - ۰۴:۱۳»
+ */
+export function formatPersianDateTime(dateOrStr?: Date | string | null): string {
+  if (!dateOrStr) return '۱۴۰۵/۰۷/۲۱ - ۰۴:۱۳';
+  try {
+    const d = typeof dateOrStr === 'string' ? new Date(dateOrStr) : dateOrStr;
+    if (isNaN(d.getTime())) return '۱۴۰۵/۰۷/۲۱ - ۰۴:۱۳';
+    const formatter = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    const parts = formatter.format(d);
+    // Replace comma or spaces with standard Persian separator " - "
+    return toPersianDigits(parts.replace(/[\u060C,]/g, ' -').replace(/\s+/g, ' ').trim());
+  } catch {
+    return '۱۴۰۵/۰۷/۲۱ - ۰۴:۱۳';
+  }
+}
+

@@ -112,19 +112,17 @@ for (const cat of CATEGORIES) {
     const name = `${typeObj.fa} طلا ${noun} ${noun !== noun2 ? noun2 : 'لوکس'}`;
     const slug = `${typeObj.key}-${cat.key}-${noun.toLowerCase()}-${skuCounter}`;
 
-    // Karat distribution
+    // Karat distribution (18k standard, 21k for heavy traditional Yazdi gold)
     const karatRoll = random();
     let karat = 18;
-    if (cat.key === 'heavy' && karatRoll > 0.8) {
+    if (cat.key === 'heavy' && karatRoll > 0.75) {
       karat = 21;
-    } else if (karatRoll > 0.95) {
-      karat = 24;
     }
 
     const weightGrams = randRange(cat.minW, cat.maxW, 2);
     const wagePercent = randRange(cat.minWage, cat.maxWage, 2);
     const profitPercent = 0.07; // standard 7%
-    const vatPercent = 0.09; // 9% on wage + profit
+    const vatPercent = 0.10; // 10% on wage + profit
 
     // Stone price
     const hasStone = random() < cat.stoneRate;
@@ -140,6 +138,30 @@ for (const cat of CATEGORIES) {
     if (hasStone) tags.push('نگین‌دار');
     else tags.push('بدون نگین');
     if (featured) tags.push('پیشنهاد ویژه');
+
+    // High resolution product images matching category and item
+    let primaryImage = '/images/products/ring.jpg';
+    let secondaryImage = '/images/products/signature.jpg';
+
+    if (name.includes('انار') || name.includes('فیروزه')) {
+      primaryImage = '/images/products/pomegranate_turquoise.jpg';
+      secondaryImage = '/images/products/earrings.jpg';
+    } else if (typeObj.key === 'ring') {
+      primaryImage = '/images/products/ring.jpg';
+      secondaryImage = '/images/products/signature.jpg';
+    } else if (typeObj.key === 'necklace' || typeObj.key === 'pendant') {
+      primaryImage = '/images/products/necklace.jpg';
+      secondaryImage = '/images/products/signature.jpg';
+    } else if (typeObj.key === 'earrings') {
+      primaryImage = '/images/products/earrings.jpg';
+      secondaryImage = '/images/products/pomegranate_turquoise.jpg';
+    } else if (typeObj.key === 'bracelet' || typeObj.key === 'bangle' || typeObj.key === 'anklet') {
+      primaryImage = '/images/products/bracelet.jpg';
+      secondaryImage = '/images/products/signature.jpg';
+    } else if (typeObj.key === 'set' || typeObj.key === 'half_set') {
+      primaryImage = '/images/products/set.jpg';
+      secondaryImage = '/images/products/signature.jpg';
+    }
 
     products.push({
       id: `p-${skuCounter}`,
@@ -159,8 +181,8 @@ for (const cat of CATEGORIES) {
       hasStone,
       stock,
       images: [
-        `/images/products/${sku}-1.webp`,
-        `/images/products/${sku}-2.webp`
+        primaryImage,
+        secondaryImage
       ],
       tags,
       description: pick(DESCRIPTIONS),

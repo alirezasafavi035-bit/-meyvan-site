@@ -26,71 +26,83 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
 
   const featuredProducts = products.filter((p) => p.featured).slice(0, 4);
 
+  // Requirement 5: 6 Specialized Categories with high-res images and direct links
   const categories = [
     {
-      key: 'minimal',
-      name: 'طلای مینیمال',
-      desc: 'ظرافت مدرن برای استایل روزمره و معاصر',
-      weight: '۱ تا ۳ گرم',
-      icon: Sparkles
+      key: 'earrings',
+      type: 'earrings',
+      name: 'گوشواره',
+      desc: 'انواع گوشواره‌های میخی، آویز و حلقه‌ای ۱۸ عیار با قفل استاندارد و محکم',
+      weight: '۱ تا ۸ گرم',
+      image: '/images/products/gold_earrings_drop_1791946270534.jpg'
     },
     {
-      key: 'economic',
-      name: 'کالکشن اقتصادی',
-      desc: 'انتخابی هوشمندانه و ارزشمند برای هدیه',
-      weight: '۱ تا ۴ گرم',
-      icon: Gift
+      key: 'ring',
+      type: 'ring',
+      name: 'انگشتر',
+      desc: 'انگشترهای فاخر، پورتوفینو، رینگ‌های مینیمال و تراش‌های اصیل سنتی',
+      weight: '۲ تا ۱۲ گرم',
+      image: '/images/products/gold_ring_luxury_1791946268061.jpg'
     },
     {
-      key: 'everyday',
-      name: 'طلای روزمره',
-      desc: 'استحکام بالا و زیبایی چشم‌نواز در هر لحظه',
-      weight: '۲ تا ۸ گرم',
-      icon: Layers
+      key: 'necklace',
+      type: 'necklace',
+      name: 'گردنبند',
+      desc: 'گردنبندهای کارتیه، رولباسی، زنجیرهای ونزی و مدال‌های اسلیمی یزد',
+      weight: '۳ تا ۳۵ گرم',
+      image: '/images/products/gold_necklace_pendant_1791946268677.jpg'
     },
     {
-      key: 'heavy',
-      name: 'کارهای سنگین یزد',
-      desc: 'النگو و تراش‌های اصیل سنتی یزد',
-      weight: '۱۰ تا ۶۰ گرم',
-      icon: Crown
+      key: 'bracelet',
+      type: 'bracelet',
+      name: 'دستبند',
+      desc: 'النگو، تک‌پوش، بنگل و دستبندهای تراش‌خورده با بالاترین دوام فیزیکی',
+      weight: '۲ تا ۲۵ گرم',
+      image: '/images/products/gold_bracelet_bangle_1791946279045.jpg'
     },
     {
       key: 'set',
-      name: 'سرویس و نیم‌ست',
-      desc: 'مجموعه‌های فاخر برای مراسم و عروس',
-      weight: '۱۵ تا ۸۰ گرم',
-      icon: Heart
+      type: 'set',
+      name: 'نیم‌ست',
+      desc: 'مجموعه‌های هماهنگ گردنبند و گوشواره و انگشتر برای مجالس و هدایا',
+      weight: '۸ تا ۶۰ گرم',
+      image: '/images/products/gold_bridal_set_suite_1791946299635.jpg'
     },
     {
-      key: 'jewelry',
-      name: 'جواهرات نگین‌دار',
-      desc: 'ترکیب برلیان، سنگ‌های قیمتی و طلای ۱۸ عیار',
-      weight: '۲ تا ۱۵ گرم',
-      icon: Gem
+      key: 'coin',
+      type: 'coin',
+      name: 'سکه و شمش',
+      desc: 'شمش‌های سرمایه‌گذاری استاندارد و سکه‌های بانکی با فاکتور و شناسه یکتا',
+      weight: '۰.۵ تا ۵۰ گرم',
+      image: '/images/products/signature_gold_set_1791741211906.jpg'
     }
   ];
 
+  // Requirement 3: 6 Comprehensive FAQs with factual transparency
   const faqs = [
     {
       q: 'چگونه قیمت طلا محاسبه می‌شود؟',
-      a: 'فرمول قیمت‌گذاری در میوان کاملاً مستقیم و بدون واسطه است: ابتدا نرخ پایه هر گرم طلای ۱۸ عیار از حاصل‌ضرب قیمت اونس جهانی طلا (XAU) در نرخ دلار/تتر نوبیتکس ضربدر ضریب عیار ۱۸ (۰٫۷۵) بر وزن اونس تروی (۳۱٫۱۰۳۵) محاسبه می‌گردد. سپس در ارزش کل طلای محصول: ارزش طلای خام + درصد اجرت ساخت کارگاهی یزد + ۷٪ سود مصوب اتحادیه + ۹٪ مالیات ارزش افزوده (منحصراً بر اجرت و سود) لحاظ می‌شود.'
+      a: 'فرمول قیمت‌گذاری در میوان کاملاً مستقیم، شفاف و بدون هیچ‌گونه حباب واسطه‌ای محاسبه می‌شود:\nقیمت نهایی = ارزش طلای خام (وزن × نرخ روز گرم طلای ۱۸ عیار) + اجرت ساخت کارگاه + سود مصوب قانونی فروشنده (۷٪) + مالیات بر ارزش افزوده (منحصراً بر اجرت و سود).\nتمام این مقادیر در کادر بازشوی «جزئیات قیمت» در هر محصول و در پیش‌فاکتور رسمی به‌صورت ریالی و تفکیک‌شده نمایش داده می‌شوند.'
     },
     {
       q: 'آیا مالیات پرداخت می‌کنم؟',
-      a: 'طبق اصلاحیه قانون مالیات بر ارزش افزوده طلا و جواهر، اصل طلا (طلای خام) ۱۰۰٪ معاف از مالیات است. مالیات بر ارزش افزوده (۹٪) تنها و منحصراً بر مجموع «اجرت ساخت کارگاه» و «سود قانونی فروشنده» محاسبه می‌گردد و هیچ مالیاتی از اصل وزن طلا کسر یا دریافت نمی‌شود.'
+      a: 'طبق اصلاحیه رسمی قانون مالیات بر ارزش افزوده مصوب مجلس شورای اسلامی، اصل ارزش طلا (طلای خام) ۱۰۰٪ معاف از هرگونه مالیات است. مالیات بر ارزش افزوده (۹٪) منحصراً بر روی «مجموع اجرت ساخت کارگاه و سود مصوب فروشنده» محاسبه می‌گردد؛ بنابراین شما بابت وزن خالص طلای خود حتی یک ریال مالیات پرداخت نمی‌کنید.'
     },
     {
       q: 'شرایط بازگشت وجه چیست؟',
-      a: 'میوان ضمانت تعویض و بازگشت ۷ روزه را ارائه می‌دهد. در صورت هرگونه مغایرت با مشخصات فاکتور، وجه پرداختی به صورت ۱۰۰٪ و بدون هیچ کسری عودت می‌گردد. در صورت انصراف سلیقه‌ای، به دلیل ماهیت نوسانی بازار طلا، اصل ارزش طلای خام به نرخ روز محاسبه و طبق موازین قانونی اتحادیه مسترد می‌شود (پلمپ امنیتی و فاکتور باید سالم باشد).'
+      a: 'میوان ضمانت تعویض و بازگشت ۷ روزه را ارائه می‌دهد. در صورت وجود هرگونه مغایرت وزن یا مشخصات با فاکتور، ۱۰۰٪ وجه بدون کسر هیچ هزینه‌ای عودت می‌گردد. در صورت انصراف سلیقه‌ای، طلای استفاده‌نشده با پلمپ امنیتی سالم ظرف ۷ روز تقویمی پذیرش شده و اصل ارزش طلای خام به نرخ روز تسویه مسترد می‌گردد. برای آگاهی از ضوابط کامل و مراحل عودت، صفحه «شرایط بازگشت وجه» را مطالعه فرمایید.'
     },
     {
       q: 'ارسال به شهرستان چقدر طول می‌کشد؟',
-      a: 'سفارش‌های شهرستان از طریق پست پیشتاز ویژه بیمه‌شده یا تیپاکس هوایی ارسال می‌شوند و معمولاً بین ۲۴ تا ۷۲ ساعت کاری تحویل می‌گردند. در شهر یزد نیز امکان تحویل حضوری در شوروم بازار خان یا ارسال با پیک اختصاصی در همان روز میسر است. تمامی مرسولات دارای پوشش بیمه کامل سقف ارزش طلا هستند.'
+      a: 'تمامی مرسولات پستی میوان از طریق پست پیشتاز ویژه امنیتی یا تیپاکس هوایی با پوشش کامل بیمه ۱۰۰٪ سقف ارزش طلا ارسال می‌شوند و بین ۲۴ تا ۷۲ ساعت کاری در سراسر کشور تحویل خریدار می‌گردند. در شهر یزد نیز امکان تحویل حضوری در شوروم بازار خان یا ارسال با پیک اختصاصی در همان روز سفارش وجود دارد.'
     },
     {
       q: 'آیا فاکتور رسمی اتحادیه داده می‌شود؟',
-      a: 'بله، تمامی سفارش‌های میوان به همراه فاکتور رسمی و معتبر صنفی صادر می‌شوند که شامل وزن دقیق با ترازوی دیجیتال سه صفر استاندارد، عیار ۱۸ (۷۵۰)، کد کارگاه زرگری یزد، تفکیک ریالی اجرت و سود، بارکد اصالت و مهر رسمی گالری است که سند قانونی مالکیت شما در سراسر کشور می‌باشد.'
+      a: 'بله، تمامی سفارش‌های میوان همراه با فاکتور چاپی رسمی، دارای هولوگرام امنیتی و مهر صنف طلا و جواهر صادر می‌شوند. این فاکتور شامل وزن دقیق با ترازوی سه صفر کالیبره‌شده، عیار استاندارد ۷۵۰ (۱۸ عیار)، کد کارگاه زرگری یزد، تفکیک ریالی اجرت و سود و بارکد اختصاصی سامانه تجارت است که سند رسمی و قانونی مالکیت شما در سراسر کشور محسوب می‌شود.'
+    },
+    {
+      q: 'چرا قیمت دو محصول با وزن یکسان متفاوت است؟',
+      a: 'تفاوت قیمت در دو محصول هم‌وزن، دقیقاً ناشی از «درصد اجرت ساخت» و «حضور سنگ یا نگین» است. قطعاتی که حاصل دست‌ورزی استادکاران زرگر یزد، تراش‌های اسلیمی، یا تکنیک‌های پیچیده فیوژن هستند، اجرت ساخت متفاوتی نسبت به کارهای تراش ماشینی ساده دارند. همچنین ارزش سنگ‌های قیمتی به‌صورت جداگانه در شناسنامه درج شده و به قیمت پایه طلا افزوده می‌شود. اجرت ساخت هر محصول به‌صورت جداگانه روی کارت آن درج شده است.'
     }
   ];
 
@@ -254,39 +266,46 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <Link
-                key={cat.key}
-                to={`/catalog?category=${cat.key}`}
-                className="group relative bg-white p-6 rounded-2xl border border-[#0B080F]/5 hover:border-[#D4AF37]/60 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] text-[#D4AF37] flex items-center justify-center group-hover:bg-[#D4AF37] group-hover:text-[#0B080F] transition-colors border border-[#0B080F]/5">
-                      <Icon className="w-5 h-5" strokeWidth={1.75} />
-                    </div>
-                    <span className="text-[11px] text-[#A89B8A] font-numeral">
-                      {cat.weight}
-                    </span>
-                  </div>
-
-                  <h3 className="text-lg font-bold text-[#0B080F] group-hover:text-[#997D24] transition-colors mb-2">
+          {categories.map((cat) => (
+            <Link
+              key={cat.key}
+              to={`/catalog?category=${cat.key}&type=${cat.type}`}
+              className="group relative bg-white rounded-2xl border border-[#0B080F]/5 hover:border-[#D4AF37]/60 hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden"
+            >
+              {/* Category Image with dark subtle gradient overlay */}
+              <div className="relative aspect-[16/10] w-full bg-[#14101A] overflow-hidden">
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  loading="lazy"
+                  width={500}
+                  height={312}
+                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                <span className="absolute top-3 left-3 bg-[#0B080F]/80 backdrop-blur-md text-[#D4AF37] text-[11px] font-numeral px-2.5 py-1 rounded-full border border-[#D4AF37]/30">
+                  {cat.weight}
+                </span>
+                <div className="absolute bottom-3 right-3 text-right">
+                  <h3 className="text-xl font-bold text-white drop-shadow-md">
                     {cat.name}
                   </h3>
-                  <p className="text-xs text-[#A89B8A] leading-relaxed">
-                    {cat.desc}
-                  </p>
                 </div>
+              </div>
 
-                <div className="pt-6 mt-4 border-t border-[#0B080F]/5 flex items-center justify-between text-xs font-medium text-[#0B080F]">
-                  <span className="group-hover:text-[#D4AF37] transition-colors">ورود به مجموعه</span>
+              {/* Description & Action */}
+              <div className="p-5 flex flex-col flex-1 justify-between bg-white">
+                <p className="text-xs text-[#A89B8A] leading-relaxed mb-4">
+                  {cat.desc}
+                </p>
+
+                <div className="pt-3 border-t border-[#0B080F]/5 flex items-center justify-between text-xs font-semibold text-[#0B080F]">
+                  <span className="group-hover:text-[#D4AF37] transition-colors">مشاهده کالکشن {cat.name}</span>
                   <ArrowLeft className="w-4 h-4 text-[#A89B8A] group-hover:text-[#D4AF37] group-hover:-translate-x-1 transition-all" />
                 </div>
-              </Link>
-            );
-          })}
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -469,6 +488,25 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
               </div>
             );
           })}
+        </div>
+
+        {/* Requirement 4: Direct Link to Returns Policy Page */}
+        <div className="mt-8 p-6 bg-white rounded-2xl border border-[#D4AF37]/30 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-right">
+          <div className="space-y-1">
+            <h3 className="font-bold text-sm text-[#0B080F]">
+              نیاز به راهنمایی بیشتر درباره قوانین و رویه مرجوعی دارید؟
+            </h3>
+            <p className="text-xs text-[#A89B8A] leading-relaxed">
+              مشاهده جزئیات کامل ضمانت ۷ روزه، الزامات سلامت پلمپ سربی، مراحل هماهنگی و شیوه بازپرداخت وجه.
+            </p>
+          </div>
+          <Link
+            to="/returns"
+            className="shrink-0 px-5 py-2.5 bg-[#0B080F] hover:bg-[#D4AF37] text-white hover:text-[#0B080F] text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-2 group"
+          >
+            <span>مطالعه شرایط بازگشت وجه</span>
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+          </Link>
         </div>
       </section>
     </div>

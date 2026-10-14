@@ -95,14 +95,14 @@ export const Footer: React.FC = () => {
 
           {/* Col 2: Categories */}
           <div>
-            <h5 className="font-serif-luxury text-sm font-semibold text-[#D4AF37] mb-4">دسته‌بندی‌های طلا</h5>
+            <h5 className="font-serif-luxury text-sm font-semibold text-[#D4AF37] mb-4">دسته‌بندی‌های تخصصی</h5>
             <ul className="space-y-2 text-xs text-white/70">
-              <li><Link to="/catalog?category=minimal" className="hover:text-[#D4AF37] transition-colors">طلای مینیمال</Link></li>
-              <li><Link to="/catalog?category=economic" className="hover:text-[#D4AF37] transition-colors">کالکشن اقتصادی و هدیه</Link></li>
-              <li><Link to="/catalog?category=everyday" className="hover:text-[#D4AF37] transition-colors">طلای روزمره و استایل</Link></li>
-              <li><Link to="/catalog?category=heavy" className="hover:text-[#D4AF37] transition-colors">النگو و کارهای سنگین یزدی</Link></li>
-              <li><Link to="/catalog?category=set" className="hover:text-[#D4AF37] transition-colors">سرویس کامل و نیم‌ست عروس</Link></li>
-              <li><Link to="/catalog?category=jewelry" className="hover:text-[#D4AF37] transition-colors">جواهرات نگین‌دار و برلیان</Link></li>
+              <li><Link to="/catalog?category=earrings&type=earrings" className="hover:text-[#D4AF37] transition-colors">گوشواره‌های طلا ۱۸ عیار</Link></li>
+              <li><Link to="/catalog?category=ring&type=ring" className="hover:text-[#D4AF37] transition-colors">انگشترهای فاخر و مینیمال</Link></li>
+              <li><Link to="/catalog?category=necklace&type=necklace" className="hover:text-[#D4AF37] transition-colors">گردنبند و مدال‌های اسلیمی</Link></li>
+              <li><Link to="/catalog?category=bracelet&type=bracelet" className="hover:text-[#D4AF37] transition-colors">دستبند، بنگل و النگو</Link></li>
+              <li><Link to="/catalog?category=set&type=set" className="hover:text-[#D4AF37] transition-colors">نیم‌ست و سرویس کامل</Link></li>
+              <li><Link to="/catalog?category=coin&type=coin" className="hover:text-[#D4AF37] transition-colors">سکه و شمش استاندارد</Link></li>
             </ul>
           </div>
 

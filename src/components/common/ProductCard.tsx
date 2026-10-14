@@ -5,7 +5,7 @@ import { useGoldPrice } from '../../context/GoldPriceContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { formatToman, formatWeight, toPersianDigits } from '../../utils/persian';
-import { Heart, ShoppingBag, Eye } from 'lucide-react';
+import { Heart, ShoppingBag, Eye, ChevronDown } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -17,9 +17,42 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
   const breakdown = calculatePrice(product);
   const isWish = isInWishlist(product.id);
+
+  // High-Res Image selection with fallbacks
+  const getProductImage = () => {
+    if (!imageError && product.images && product.images[0]) {
+      return product.images[0];
+    }
+    const nameLower = product.name.toLowerCase();
+    const slugLower = product.slug.toLowerCase();
+    if (nameLower.includes('انار') || slugLower.includes('pomegranate') || slugLower.includes('فیروزه')) {
+      return '/images/products/gold_pomegranate_turquoise_1791946300076.jpg';
+    }
+    if (product.type === 'earrings') {
+      return '/images/products/gold_earrings_drop_1791946270534.jpg';
+    }
+    if (product.type === 'ring') {
+      return '/images/products/gold_ring_luxury_1791946268061.jpg';
+    }
+    if (product.type === 'necklace' || product.type === 'pendant') {
+      return '/images/products/gold_necklace_pendant_1791946268677.jpg';
+    }
+    if (product.type === 'bracelet' || product.type === 'bangle' || product.type === 'anklet') {
+      return '/images/products/gold_bracelet_bangle_1791946279045.jpg';
+    }
+    if (product.type === 'set' || product.type === 'half_set') {
+      return '/images/products/gold_bridal_set_suite_1791946299635.jpg';
+    }
+    return '/images/products/gold_earrings_drop_1791946270534.jpg';
+  };
+
+  const wagePercentageText = toPersianDigits(Math.round((product.wagePercent || breakdown.wageRate || 0.15) * 100));
+  const profitPercentageText = toPersianDigits(Math.round((breakdown.profitPercent || 0.07) * 100));
+  const vatPercentageText = toPersianDigits(Math.round((breakdown.vatPercent || 0.09) * 100));
 
   return (
     <article
@@ -29,28 +62,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     >
       {/* Product Image Area */}
       <div className="relative aspect-square w-full bg-[#14101A] overflow-hidden flex items-center justify-center">
-        {!imageError ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            loading="lazy"
-            width={380}
-            height={380}
-            onError={() => setImageError(true)}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          /* High-fidelity Brand Official Emblem Fallback */
-          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#14101A] to-[#0B080F] text-center p-6 select-none">
-            <img
-              src="/logo.svg"
-              alt="MEYVAN"
-              className="w-24 h-24 object-contain mb-2 opacity-90 filter drop-shadow-lg"
-            />
-            <span className="text-[10px] text-white/40 font-numeral">{product.sku}</span>
-          </div>
-        )}
+        <img
+          src={getProductImage()}
+          alt={product.name}
+          loading="lazy"
+          width={400}
+          height={400}
+          onError={() => setImageError(true)}
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          referrerPolicy="no-referrer"
+        />
 
         {/* Wishlist Button */}
         <button
@@ -87,7 +108,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Product Content Details */}
       <div className="p-4 flex flex-col flex-1 justify-between bg-white">
         <div>
-          {/* Metadata: Zero-Pill unboxed clean text with separators */}
+          {/* Metadata */}
           <div className="flex items-center gap-1.5 text-xs text-[#A89B8A] mb-1.5">
             <span>{product.categoryFa}</span>
             <span aria-hidden="true">·</span>
@@ -104,7 +125,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </h3>
 
           {/* Weight */}
-          <div className="text-xs text-[#0B080F]/70 mb-3 flex items-center justify-between">
+          <div className="text-xs text-[#0B080F]/70 mb-2 flex items-center justify-between">
             <span>وزن تقریبی:</span>
             <span className="font-medium text-[#0B080F] font-numeral">
               {formatWeight(product.weightGrams)}
@@ -113,14 +134,92 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
         {/* Price & Action Row */}
-        <div className="pt-3 border-t border-[#0B080F]/5">
-          <div className="flex items-baseline justify-between mb-3">
+        <div className="pt-2 border-t border-[#0B080F]/5">
+          {/* Price Header */}
+          <div className="flex items-baseline justify-between">
             <span className="text-[11px] text-[#A89B8A]">قیمت روز:</span>
             <span className="text-sm font-bold text-[#0B080F] font-numeral">
               {formatToman(breakdown.totalPrice)}
             </span>
           </div>
 
+          {/* Requirement 6: Display wage directly on card without opening accordion */}
+          <div className="flex items-center justify-between text-[11px] text-[#997D24] font-medium mt-1 mb-2">
+            <span>اجرت ساخت:</span>
+            <span className="font-numeral">اجرت: {wagePercentageText}٪</span>
+          </div>
+
+          {/* Requirement 1: Accordion Toggle Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsAccordionOpen(!isAccordionOpen);
+            }}
+            className="w-full flex items-center justify-between text-[11px] py-1.5 px-2.5 rounded-lg bg-[#FAF8F5] hover:bg-[#F3EFE6] text-[#0B080F] transition-colors border border-[#D4AF37]/20 mb-2.5 font-medium"
+            aria-expanded={isAccordionOpen}
+          >
+            <span className="flex items-center gap-1">
+              <span>جزئیات قیمت</span>
+              <span className="text-[9px] text-[#997D24]">(فرمول شفاف)</span>
+            </span>
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-[#D4AF37] transition-transform duration-200 ${
+                isAccordionOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+
+          {/* Requirement 1: Collapsible Accordion Content */}
+          {isAccordionOpen && (
+            <div className="bg-[#FAF8F5] border border-[#D4AF37]/30 rounded-lg p-2.5 mb-3 text-[10px] space-y-1.5 animate-fadeIn">
+              <div className="flex justify-between items-center text-neutral-600">
+                <span>وزن طلا:</span>
+                <span className="font-numeral font-medium text-neutral-800">
+                  {formatWeight(product.weightGrams)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-neutral-600">
+                <span>نرخ روز گرم طلا:</span>
+                <span className="font-numeral font-medium text-neutral-800">
+                  {formatToman(breakdown.goldPricePerGram)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-neutral-600">
+                <span>ارزش طلای خام:</span>
+                <span className="font-numeral font-medium text-neutral-800">
+                  {formatToman(breakdown.rawGoldPrice)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-neutral-600">
+                <span>اجرت ساخت ({wagePercentageText}٪):</span>
+                <span className="font-numeral font-medium text-neutral-800">
+                  {formatToman(breakdown.wageAmount)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-neutral-600">
+                <span>سود فروشنده ({profitPercentageText}٪):</span>
+                <span className="font-numeral font-medium text-neutral-800">
+                  {formatToman(breakdown.profitAmount)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-neutral-600">
+                <span>مالیات ({vatPercentageText}٪ روی اجرت+سود):</span>
+                <span className="font-numeral font-medium text-neutral-800">
+                  {formatToman(breakdown.vatAmount)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center pt-1.5 border-t border-[#D4AF37]/20 font-bold text-[#0B080F]">
+                <span>قیمت نهایی:</span>
+                <span className="font-numeral text-[#997D24]">
+                  {formatToman(breakdown.totalPrice)}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Add to Cart Button */}
           <button
             onClick={() => addToCart(product, 1)}
             disabled={product.stock <= 0 || isExpired}
@@ -144,3 +243,4 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     </article>
   );
 };
+
