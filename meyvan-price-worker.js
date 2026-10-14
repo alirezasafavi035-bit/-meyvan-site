@@ -389,29 +389,72 @@ async function handleRequest(request, env, ctx) {
       const payload = await runMultiSourcePipeline(env);
       cacheStatus = payload.usedFallback ? 'FALLBACK' : 'DYNAMIC';
 
-      // Use ctx.waitUntil() for asynchronous KV caching so response latency is near-instant
-      if (env?.MEYVAN_KV && ctx?.waitUntil) {
+      // Inject requested headers: 'در هدر بنویس قیمت از کدام منبع آمده'
+      const responseHeaders = {
+        ...CORS_HEADERS,
+        'Cf-Cache-Status': cacheStatus,
+        'X-Price-Source': encodeURIComponent(payload.source || 'TGJU'),
+        'X-Price-Health': payload.health || 'healthy'
+      };
+
+      // Asynchronous Alert and Logging to Discord/Telegram (Axis 3)
+      if (ctx?.waitUntil) {
         ctx.waitUntil(
           (async () => {
             try {
-              await env.MEYVAN_KV.put('CACHED_PRICE_PAYLOAD', JSON.stringify(payload), {
-                expirationTtl: CONFIG.KV_CACHE_TTL_SECONDS
-              });
-              if (!payload.usedFallback) {
-                await env.MEYVAN_KV.put('LAST_GOOD_PRICE', JSON.stringify(payload));
+              if (env?.MEYVAN_KV) {
+                await env.MEYVAN_KV.put('CACHED_PRICE_PAYLOAD', JSON.stringify(payload), {
+                  expirationTtl: CONFIG.KV_CACHE_TTL_SECONDS
+                });
+                if (!payload.usedFallback) {
+                  await env.MEYVAN_KV.put('LAST_GOOD_PRICE', JSON.stringify(payload));
+                }
               }
-            } catch (e) {
-              console.warn('[Async KV Put Error]:', e.message);
+
+              // Send Alert to Discord/Telegram webhook
+              const webhookUrl = env?.ALERT_WEBHOOK_URL || CONFIG.ALERT_WEBHOOK_URL;
+              const tgBotToken = env?.TELEGRAM_BOT_TOKEN;
+              const tgChatId = env?.TELEGRAM_CHAT_ID;
+
+              const logMessage = `📊 [MEYVAN Price Engine Report]
+• وضعیت سلامت: ${payload.health}
+• نرخ مصوب هر گرم: ${payload.price.toLocaleString('fa-IR')} تومان
+• منبع نهایی: ${payload.source}
+• منابع استعلام‌شده: ${payload.consensus?.totalSourcesQueried || 0}
+• عبور از فیلتر کهنگی (۱۰ دقیقه): ${payload.consensus?.passedFilter1Staleness || 0}
+• عبور از فیلتر انحراف میانه (۳٪): ${payload.consensus?.passedFilter2MedianOutlier || 0}
+• زمان پاسخ: ${payload.durationMs}ms`;
+
+              if (webhookUrl) {
+                await fetch(webhookUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    username: 'Meyvan Gold Price Bot',
+                    content: logMessage
+                  })
+                });
+              }
+
+              if (tgBotToken && tgChatId) {
+                await fetch(`https://api.telegram.org/bot${tgBotToken}/sendMessage`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    chat_id: tgChatId,
+                    text: logMessage
+                  })
+                });
+              }
+            } catch (err) {
+              console.warn('[Async Alert/KV Log Error]:', err.message);
             }
           })()
         );
       }
 
       return new Response(JSON.stringify(payload, null, 2), {
-        headers: {
-          ...CORS_HEADERS,
-          'Cf-Cache-Status': cacheStatus
-        }
+        headers: responseHeaders
       });
     } catch (err) {
       console.error('[Pipeline Execution Error]:', err);
@@ -421,7 +464,7 @@ async function handleRequest(request, env, ctx) {
         currency: CONFIG.CURRENCY,
         unit: CONFIG.UNIT,
         timestamp: new Date().toISOString(),
-        source: 'پشتیبان امنیتی ثابت سیستم',
+        source: 'پشتیبان امنیتی ثابت سیستم (فیلتر ۴)',
         health: 'critical',
         error: err.message
       };
@@ -430,7 +473,9 @@ async function handleRequest(request, env, ctx) {
         status: 200,
         headers: {
           ...CORS_HEADERS,
-          'Cf-Cache-Status': 'FALLBACK'
+          'Cf-Cache-Status': 'FALLBACK',
+          'X-Price-Source': encodeURIComponent('پشتیبان امنیتی ثابت سیستم'),
+          'X-Price-Health': 'critical'
         }
       });
     }
