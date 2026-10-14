@@ -42,7 +42,7 @@ export const GoldPriceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [priceData, setPriceData] = useState<GoldPriceData | null>(null);
   const [pricingConfig, setPricingConfig] = useState<PricingConfig>(() => {
     try {
-      const saved = localStorage.getItem('meyvan_pricing_config_v2');
+      const saved = localStorage.getItem('meyvan_pricing_config_v4');
       if (saved) {
         return { ...DEFAULT_PRICING_CONFIG, ...JSON.parse(saved) };
       }
@@ -60,7 +60,7 @@ export const GoldPriceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setPricingConfig((prev) => {
       const next = { ...prev, ...updates };
       try {
-        localStorage.setItem('meyvan_pricing_config_v2', JSON.stringify(next));
+        localStorage.setItem('meyvan_pricing_config_v4', JSON.stringify(next));
       } catch (e) {
         console.warn('Could not save pricing config to localStorage', e);
       }

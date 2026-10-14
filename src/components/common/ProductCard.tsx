@@ -149,7 +149,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <span className="font-numeral">اجرت: {wagePercentageText}٪</span>
           </div>
 
-          {/* Requirement 1: Accordion Toggle Button */}
+          {/* Requirement: Accordion Toggle Button */}
           <button
             type="button"
             onClick={(e) => {
@@ -160,9 +160,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             className="w-full flex items-center justify-between text-[11px] py-1.5 px-2.5 rounded-lg bg-[#FAF8F5] hover:bg-[#F3EFE6] text-[#0B080F] transition-colors border border-[#D4AF37]/20 mb-2.5 font-medium"
             aria-expanded={isAccordionOpen}
           >
-            <span className="flex items-center gap-1">
-              <span>جزئیات قیمت</span>
-              <span className="text-[9px] text-[#997D24]">(فرمول شفاف)</span>
+            <span className="flex items-center gap-1.5 font-semibold text-[#0B080F]">
+              <span>مشاهده جزئیات قیمت</span>
+              <span className="text-[9px] text-[#997D24] bg-[#D4AF37]/15 px-1.5 py-0.5 rounded">فرمول شفاف</span>
             </span>
             <ChevronDown
               className={`w-3.5 h-3.5 text-[#D4AF37] transition-transform duration-200 ${
@@ -171,11 +171,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             />
           </button>
 
-          {/* Requirement 1: Collapsible Accordion Content */}
+          {/* Requirement: Collapsible Accordion Table */}
           {isAccordionOpen && (
-            <div className="bg-[#FAF8F5] border border-[#D4AF37]/30 rounded-lg p-2.5 mb-3 text-[10px] space-y-1.5 animate-fadeIn">
+            <div className="bg-[#FAF8F5] border border-[#D4AF37]/35 rounded-xl p-3 mb-3 text-[11px] space-y-1.5 animate-fadeIn shadow-sm">
               <div className="flex justify-between items-center text-neutral-600">
-                <span>وزن طلا:</span>
+                <span>وزن:</span>
                 <span className="font-numeral font-medium text-neutral-800">
                   {formatWeight(product.weightGrams)}
                 </span>
@@ -199,23 +199,26 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 </span>
               </div>
               <div className="flex justify-between items-center text-neutral-600">
-                <span>سود فروشنده ({profitPercentageText}٪):</span>
+                <span>سود فروشنده (۷٪):</span>
                 <span className="font-numeral font-medium text-neutral-800">
                   {formatToman(breakdown.profitAmount)}
                 </span>
               </div>
               <div className="flex justify-between items-center text-neutral-600">
-                <span>مالیات ({vatPercentageText}٪ روی اجرت+سود):</span>
+                <span>مالیات (۱۰٪):</span>
                 <span className="font-numeral font-medium text-neutral-800">
                   {formatToman(breakdown.vatAmount)}
                 </span>
               </div>
-              <div className="flex justify-between items-center pt-1.5 border-t border-[#D4AF37]/20 font-bold text-[#0B080F]">
+              <div className="flex justify-between items-center pt-2 border-t border-[#D4AF37]/30 font-bold text-[#0B080F]">
                 <span>قیمت نهایی:</span>
-                <span className="font-numeral text-[#997D24]">
+                <span className="font-numeral text-[#997D24] text-xs">
                   {formatToman(breakdown.totalPrice)}
                 </span>
               </div>
+              <p className="text-[9px] text-[#A89B8A] leading-tight pt-1 border-t border-neutral-200/60 mt-1">
+                اصل طلا معاف از مالیات است؛ مالیات (۱۰٪) فقط روی اجرت و سود محاسبه می‌شود.
+              </p>
             </div>
           )}
 

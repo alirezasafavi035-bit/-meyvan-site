@@ -14,15 +14,15 @@ export const DEFAULT_PRICING_CONFIG: PricingConfig = {
   referenceKarat: 18,
   defaultProfitPercent: 0.07, // 7% standard legal profit
   profitBase: 'gold_plus_wage',
-  defaultVatPercent: 0.09, // 9% Iranian gold VAT law
+  defaultVatPercent: 0.10, // 10% Iranian gold VAT law
   vatBase: 'wage_and_profit',
   currency: 'TOMAN',
-  roundingUnit: 1000, // Round to nearest 1,000 Tomans
-  priceSource: 'استعلام سیستمی نرخ بازار طلا',
+  roundingUnit: 1, // Exact Tomans (e.g. 59,162,170)
+  priceSource: 'استعلام سیستمی نرخ بازار طلا (TGJU)',
   updatedAt: new Date().toISOString(),
   pricingStatus: 'live',
   legalBasisNote:
-    'طبق اصلاحیه قانون مالیات بر ارزش افزوده طلا، اصل ارزش طلا معاف از مالیات بوده و مالیات (۹٪) منحصراً بر مجموع اجرت ساخت و سود متعلقه محاسبه می‌شود.'
+    'طبق اصلاحیه قانون مالیات بر ارزش افزوده طلا، اصل ارزش طلا معاف از مالیات بوده و مالیات (۱۰٪) منحصراً بر مجموع اجرت ساخت و سود متعلقه محاسبه می‌شود.'
 };
 
 /**

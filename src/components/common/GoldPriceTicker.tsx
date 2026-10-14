@@ -28,11 +28,18 @@ export const GoldPriceTicker: React.FC = () => {
               {formatToman(gold18PerGram)}
             </span>
 
-            {/* TGJU Verified Badge */}
-            <span className="inline-flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium bg-emerald-500/15 px-2 py-0.5 rounded-md border border-emerald-500/30">
+            {/* TGJU Verified Link Badge */}
+            <a
+              href="https://www.tgju.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium bg-emerald-500/15 hover:bg-emerald-500/25 px-2.5 py-0.5 rounded-md border border-emerald-500/30 transition-colors"
+              title="مشاهده نرخ زنده در شبکه اطلاع‌رسانی طلا و ارز (TGJU)"
+            >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span>نرخ معتبر از TGJU</span>
-            </span>
+              <span className="text-[10px] opacity-75">↗</span>
+            </a>
 
             {/* Timestamp from Worker */}
             <span className="text-white/70 font-numeral text-[11px]">

@@ -298,10 +298,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
                   <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.profitAmount)}</span>
                 </div>
 
-                {/* 5. VAT Tax (9% on Wage and Profit) */}
+                {/* 5. VAT Tax (10% on Wage and Profit) */}
                 <div className="flex justify-between items-center text-neutral-600">
-                  <span>مالیات بر ارزش افزوده (۹٪ منحصراً روی اجرت و سود):</span>
+                  <span>مالیات بر ارزش افزوده (٪{toPersianDigits(Math.round(breakdown.vatPercent * 100))} منحصراً روی اجرت و سود):</span>
                   <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.vatAmount)}</span>
+                </div>
+                <div className="text-[10px] text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-200/60 leading-relaxed">
+                  ✓ اصل طلا معاف از مالیات است؛ مالیات ۱۰٪ فقط روی (اجرت ساخت + سود فروشنده) اعمال می‌شود.
                 </div>
 
                 {breakdown.stonePrice > 0 && (
