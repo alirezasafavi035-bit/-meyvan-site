@@ -18,6 +18,7 @@ import {
   Share2,
   Check,
   ChevronLeft,
+  ChevronDown,
   Award,
   Sparkles,
   SlidersHorizontal,
@@ -40,6 +41,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
   const [imageZoomed, setImageZoomed] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [isPriceAccordionOpen, setIsPriceAccordionOpen] = useState(true);
 
   const breakdown = product ? calculatePrice(product) : null;
   const isWish = product ? isInWishlist(product.id) : false;
@@ -207,83 +209,109 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
             </div>
           </div>
 
-          {/* Transparent Price Breakdown Table */}
+          {/* Accordion: جزئیات قیمت */}
           <div className="bg-white rounded-2xl border border-[#D4AF37]/30 overflow-hidden shadow-sm">
-            <div className="bg-[#0B080F] text-white p-3.5 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setIsPriceAccordionOpen(!isPriceAccordionOpen)}
+              className="w-full bg-[#0B080F] text-white p-3.5 flex items-center justify-between hover:bg-[#14101A] transition-colors"
+            >
               <div className="flex items-center gap-2">
                 <Award className="w-4 h-4 text-[#D4AF37]" />
-                <span className="text-xs font-semibold">تفکیک شفاف و قانونی قیمت (فاکتور اتحادیه)</span>
-              </div>
-              <button
-                onClick={() => setShowSettingsModal(true)}
-                className="text-[11px] text-[#D4AF37] hover:underline flex items-center gap-1 focus-visible:outline-none"
-                title="تغییر یا بررسی نرخ روز و موازین مالیات"
-              >
-                <SlidersHorizontal className="w-3 h-3" />
-                <span>تنظیم نرخ و موازین</span>
-              </button>
-            </div>
-
-            <div className="p-4 space-y-2.5 text-xs">
-              <div className="flex justify-between items-center text-neutral-600">
-                <span>قیمت طلای خام (وزن × نرخ روز هر گرم):</span>
-                <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.rawGoldPrice)}</span>
-              </div>
-              <div className="flex justify-between items-center text-neutral-600">
-                <span>اجرت ساخت کارگاهی (٪{toPersianDigits(Math.round(breakdown.wageRate * 100))}):</span>
-                <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.wageAmount)}</span>
-              </div>
-              <div className="flex justify-between items-center text-neutral-600">
-                <span>
-                  سود قانونی طلافروشی (٪{toPersianDigits(Math.round(breakdown.profitPercent * 100))}
-                  {breakdown.profitBase === 'gold_only' ? ' · مبنا: طلای خام' : ' · مبنا: طلا + اجرت'}):
-                </span>
-                <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.profitAmount)}</span>
-              </div>
-              <div className="flex justify-between items-center text-neutral-600">
-                <span>
-                  مالیات ارزش افزوده (
-                  {breakdown.vatPercent === 0
-                    ? 'معاف'
-                    : `٪${toPersianDigits(Math.round(breakdown.vatPercent * 100))} · ${
-                        breakdown.vatBase === 'total'
-                          ? 'مبنا: کل کالا'
-                          : 'مبنا: فقط سود و اجرت'
-                      }`}
-                  ):
-                </span>
-                <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.vatAmount)}</span>
-              </div>
-              {breakdown.stonePrice > 0 && (
-                <div className="flex justify-between items-center text-neutral-600">
-                  <span>بهای نگین‌های مرغوب مخراجی‌شده:</span>
-                  <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.stonePrice)}</span>
-                </div>
-              )}
-
-              {/* Total Final Price */}
-              <div className="pt-3 border-t border-neutral-200 flex items-baseline justify-between">
-                <div>
-                  <span className="text-sm font-bold text-[#0B080F] block">قیمت نهایی قابل پرداخت:</span>
-                  <span className="text-[10px] text-[#A89B8A]">مطابق دقیق با پیش‌فاکتور رسمی و ارسال رایگان</span>
-                </div>
-                <span className="text-xl sm:text-2xl font-bold text-[#997D24] font-numeral">
-                  {formatToman(breakdown.totalPrice)}
+                <span className="text-xs font-semibold">جزئیات و شفافیت فرمول قیمت</span>
+                <span className="text-[10px] text-[#D4AF37]/80 bg-[#D4AF37]/10 px-2 py-0.5 rounded">
+                  (محاسبه مستقیم)
                 </span>
               </div>
-
-              {/* View Item Pre-Invoice CTA */}
-              <div className="pt-2 border-t border-dashed border-neutral-200">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowInvoiceModal(true)}
-                  className="w-full py-2 px-3 rounded-lg bg-[#FAF8F5] hover:bg-[#F0ECE1] text-[#0B080F] text-xs font-semibold flex items-center justify-center gap-1.5 border border-[#E5DED2] transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowSettingsModal(true);
+                  }}
+                  className="text-[11px] text-[#D4AF37] hover:underline flex items-center gap-1 focus-visible:outline-none"
+                  title="تغییر یا بررسی نرخ روز و موازین مالیات"
                 >
-                  <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>مشاهده و چاپ پیش‌فاکتور رسمی این قطعه طلا</span>
+                  <SlidersHorizontal className="w-3 h-3" />
+                  <span className="hidden sm:inline">تنظیم موازین</span>
                 </button>
+                <ChevronDown className={`w-4 h-4 text-[#D4AF37] transition-transform duration-300 ${isPriceAccordionOpen ? 'rotate-180' : ''}`} />
               </div>
-            </div>
+            </button>
+
+            {/* Accordion Body */}
+            {isPriceAccordionOpen && (
+              <div className="p-4 space-y-2.5 text-xs animate-in fade-in duration-200">
+                {/* 1. Gold Weight */}
+                <div className="flex justify-between items-center text-neutral-600">
+                  <span>وزن طلا:</span>
+                  <span className="font-semibold text-[#0B080F] font-numeral">{formatWeight(product.weightGrams)}</span>
+                </div>
+
+                {/* 2. Gold Reference Rate from /price */}
+                <div className="flex justify-between items-center text-neutral-600">
+                  <span>نرخ روز هر گرم طلا ۱۸ عیار (از /price):</span>
+                  <span className="font-semibold text-[#997D24] font-numeral">{formatToman(breakdown.goldPricePerGram)}</span>
+                </div>
+
+                {/* Raw Gold Value */}
+                <div className="flex justify-between items-center text-neutral-600">
+                  <span>ارزش طلای خام (وزن × نرخ روز):</span>
+                  <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.rawGoldPrice)}</span>
+                </div>
+
+                {/* 3. Making Charge / Wage (Percentage + Amount) */}
+                <div className="flex justify-between items-center text-neutral-600">
+                  <span>اجرت ساخت کارگاهی (درصد + مبلغ):</span>
+                  <span className="font-semibold text-[#0B080F] font-numeral">
+                    ٪{toPersianDigits(Math.round(breakdown.wageRate * 100))} ({formatToman(breakdown.wageAmount)})
+                  </span>
+                </div>
+
+                {/* 4. Seller Profit (7%) */}
+                <div className="flex justify-between items-center text-neutral-600">
+                  <span>سود فروشنده (۷٪ مصوب اتحادیه):</span>
+                  <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.profitAmount)}</span>
+                </div>
+
+                {/* 5. VAT Tax (9% on Wage and Profit) */}
+                <div className="flex justify-between items-center text-neutral-600">
+                  <span>مالیات بر ارزش افزوده (۹٪ منحصراً روی اجرت و سود):</span>
+                  <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.vatAmount)}</span>
+                </div>
+
+                {breakdown.stonePrice > 0 && (
+                  <div className="flex justify-between items-center text-neutral-600">
+                    <span>بهای سنگ و نگین‌های مخراجی‌شده:</span>
+                    <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.stonePrice)}</span>
+                  </div>
+                )}
+
+                {/* 6. Final Payable Price */}
+                <div className="pt-3 border-t border-neutral-200 flex items-baseline justify-between bg-[#FAF8F5] -mx-4 -mb-4 p-4 rounded-b-2xl">
+                  <div>
+                    <span className="text-sm font-bold text-[#0B080F] block">قیمت نهایی قابل پرداخت:</span>
+                    <span className="text-[10px] text-[#A89B8A]">مطابق دقیق با پیش‌فاکتور رسمی و ارسال رایگان</span>
+                  </div>
+                  <span className="text-xl sm:text-2xl font-bold text-[#997D24] font-numeral">
+                    {formatToman(breakdown.totalPrice)}
+                  </span>
+                </div>
+
+                {/* View Item Pre-Invoice CTA */}
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowInvoiceModal(true)}
+                    className="w-full py-2 px-3 rounded-lg bg-white hover:bg-neutral-50 text-[#0B080F] text-xs font-semibold flex items-center justify-center gap-1.5 border border-[#E5DED2] transition-colors"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <span>مشاهده و چاپ پیش‌فاکتور رسمی این قطعه طلا</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Action CTAs */}

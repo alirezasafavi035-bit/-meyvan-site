@@ -18,6 +18,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch }) => {
 
   return (
     <>
+      {/* Top Banner Motto */}
+      <div className="bg-[#14101A] border-b border-[#D4AF37]/20 py-1.5 px-4 text-center text-[11px] text-[#D4AF37] font-medium tracking-wide">
+        بیش از ۵۰۰ قطعه جواهر دست‌ساز از یزد تا تمام ایران
+      </div>
       <header className="sticky top-0 z-40 bg-[#0B080F]/95 backdrop-blur-md border-b border-[#D4AF37]/20 text-white transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-8">
           {/* Zone 1: Brand Wordmark (Single element) */}

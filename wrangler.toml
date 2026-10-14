@@ -1,0 +1,43 @@
+# ============================================================================
+# Cloudflare Worker Configuration for MEYVAN Gold Pricing Engine
+# File: wrangler.toml
+# Domain: meyvan.ir
+# ============================================================================
+
+name = "meyvan-price-worker"
+main = "meyvan-price-worker.js"
+compatibility_date = "2026-10-14"
+compatibility_flags = ["nodejs_compat"]
+
+# ----------------------------------------------------------------------------
+# CRON TRIGGER: Recomputes gold price and updates dynamic premium every 5 min
+# ----------------------------------------------------------------------------
+[triggers]
+crons = ["*/5 * * * *"]
+
+# ----------------------------------------------------------------------------
+# KV NAMESPACE BINDING: High-speed caching, alerts, and daily calibration logs
+# Run: `wrangler kv:namespace create MEYVAN_KV` to create the production KV
+# Run: `wrangler kv:namespace create MEYVAN_KV --preview` for local dev
+# ----------------------------------------------------------------------------
+[[kv_namespaces]]
+binding = "MEYVAN_KV"
+id = "meyvan_kv_prod_id_placeholder"
+preview_id = "meyvan_kv_preview_id_placeholder"
+
+# ----------------------------------------------------------------------------
+# ENVIRONMENT VARIABLES & SECRETS
+# ----------------------------------------------------------------------------
+[vars]
+ENVIRONMENT = "production"
+ADMIN_SECRET = "meyvan-admin-secure-token-2026"
+ALERT_WEBHOOK_URL = ""
+
+# ----------------------------------------------------------------------------
+# OPTIONAL ROUTE / CUSTOM DOMAIN BINDING
+# Example: api.meyvan.ir/price -> meyvan-price-worker
+# ----------------------------------------------------------------------------
+# routes = [
+#   { pattern = "api.meyvan.ir/price*", zone_name = "meyvan.ir" },
+#   { pattern = "api.meyvan.ir/health*", zone_name = "meyvan.ir" }
+# ]

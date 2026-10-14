@@ -27,7 +27,7 @@ export function toLatinDigits(input: string): string {
  */
 export function formatNumberPersian(num: number): string {
   if (typeof num !== 'number' || isNaN(num)) return '۰';
-  const parts = Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '٬');
+  const parts = Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '،');
   return toPersianDigits(parts);
 }
 

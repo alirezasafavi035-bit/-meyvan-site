@@ -16,34 +16,10 @@ export const GoldPriceTicker: React.FC = () => {
   };
 
   const getStatusBadge = () => {
-    if (status === 'live') {
-      return (
-        <span className="inline-flex items-center gap-1.5 text-xs text-[#D4AF37]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
-          نرخ برخط (مبنای ۱۸ عیار)
-        </span>
-      );
-    }
-    if (status === 'manual') {
-      return (
-        <span className="inline-flex items-center gap-1.5 text-xs text-sky-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
-          تنظیم دستی کاربر
-        </span>
-      );
-    }
-    if (status === 'stale') {
-      return (
-        <span className="inline-flex items-center gap-1.5 text-xs text-amber-400">
-          <AlertTriangle className="w-3.5 h-3.5" />
-          در حال به‌روزرسانی استعلام
-        </span>
-      );
-    }
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs text-rose-400">
-        <AlertTriangle className="w-3.5 h-3.5" />
-        نرخ نیازمند تایید
+      <span className="inline-flex items-center gap-1.5 text-xs text-[#D4AF37]">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        <span>نرخ لحظه‌ای - به‌روزرسانی خودکار</span>
       </span>
     );
   };

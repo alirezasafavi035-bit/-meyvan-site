@@ -1,9 +1,11 @@
 {
-  "gold18PerGram": 4850000,
-  "currency": "TOMAN",
-  "source": "Meyvan Gold Market Watch",
-  "updatedAt": "2026-10-11T10:45:00.000Z",
-  "change24hPercent": 0.42,
-  "high24h": 4890000,
-  "low24h": 4810000
+  "gold18PerGram": 25790000,
+  "currency": "تومان",
+  "unit": "گرم ۱۸ عیار",
+  "source": "Meyvan Price Worker (XAU + Nobitex)",
+  "updatedAt": "2026-10-14T04:13:43.000Z",
+  "change24hPercent": 0.35,
+  "high24h": 25950000,
+  "low24h": 25620000,
+  "health": "healthy"
 }

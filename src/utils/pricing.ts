@@ -10,7 +10,7 @@ import {
 } from '../types';
 
 export const DEFAULT_PRICING_CONFIG: PricingConfig = {
-  gold18PerGram: 4850000,
+  gold18PerGram: 25790000,
   referenceKarat: 18,
   defaultProfitPercent: 0.07, // 7% standard legal profit
   profitBase: 'gold_plus_wage',
@@ -185,7 +185,9 @@ export function parsePriceResponse(data: unknown): GoldPriceData | null {
     price18 = (obj.data as Record<string, unknown>).gold18PerGram as number;
   }
 
-  if (typeof obj.updatedAt === 'string') {
+  if (typeof obj.timestamp === 'string') {
+    updatedAt = obj.timestamp;
+  } else if (typeof obj.updatedAt === 'string') {
     updatedAt = obj.updatedAt;
   }
 
@@ -193,10 +195,18 @@ export function parsePriceResponse(data: unknown): GoldPriceData | null {
     return null;
   }
 
+  let sourceStr = 'استعلام برخط بازار طلا';
+  if (typeof obj.source === 'string') {
+    sourceStr = obj.source;
+  } else if (obj.source && typeof obj.source === 'object') {
+    const s = obj.source as Record<string, unknown>;
+    sourceStr = `محاسبه مستقیم اونس (${s.ounce || '—'}$)+نوبیتکس (حباب ٪${s.premium_pct || '۱'})`;
+  }
+
   return {
     gold18PerGram: price18,
-    currency: (obj.currency as string) || 'TOMAN',
-    source: (obj.source as string) || 'استعلام برخط بازار طلا',
+    currency: (obj.currency as string) || 'تومان',
+    source: sourceStr,
     updatedAt,
     change24hPercent: typeof obj.change24hPercent === 'number' ? obj.change24hPercent : 0,
     high24h: typeof obj.high24h === 'number' ? obj.high24h : price18 * 1.01,
