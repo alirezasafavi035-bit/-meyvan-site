@@ -22,7 +22,8 @@ import {
   Award,
   Sparkles,
   SlidersHorizontal,
-  FileText
+  FileText,
+  Scale
 } from 'lucide-react';
 
 interface ProductDetailPageProps {
@@ -43,7 +44,21 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [isPriceAccordionOpen, setIsPriceAccordionOpen] = useState(true);
 
-  const breakdown = product ? calculatePrice(product) : null;
+  // Dynamic weight selection state (Axis 2)
+  const [selectedWeight, setSelectedWeight] = useState<number>(() => product ? product.weightGrams : 2.5);
+
+  React.useEffect(() => {
+    if (product) {
+      setSelectedWeight(product.weightGrams);
+    }
+  }, [product?.id]);
+
+  const minWeight = product ? (product.minCustomWeight || 1.0) : 1.0;
+  const maxWeight = product ? (product.maxCustomWeight || Math.max(10.0, Math.round(product.weightGrams * 2.5 * 10) / 10)) : 10.0;
+  const weightStep = product ? (product.weightStep || 0.1) : 0.1;
+  const isCustomWeight = product ? selectedWeight !== product.weightGrams : false;
+
+  const breakdown = product ? calculatePrice(product, undefined, selectedWeight) : null;
   const isWish = product ? isInWishlist(product.id) : false;
 
   // Similar products from same category
@@ -114,7 +129,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
     `درود، مایل به استعلام و هماهنگی خرید این محصول در میوان هستم:\n` +
     `نام: ${product.name}\n` +
     `کد کالا: ${product.sku}\n` +
-    `وزن: ${product.weightGrams} گرم (${product.karat} عیار)\n` +
+    `وزن: ${formatWeight(selectedWeight)} (${product.karat} عیار)${isCustomWeight ? ' [گرماژ سفارشی]' : ''}\n` +
     `مبلغ روز: ${breakdown.totalPrice.toLocaleString('fa-IR')} تومان\n` +
     `لینک: https://meyvan.ir/#/product/${product.slug}`
   );
@@ -232,6 +247,130 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
             </div>
           </div>
 
+          {/* Axis 2: انتخاب گرماژ موردنظر (وزن دلخواه طلا) با محاسبه آنی */}
+          <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#D4AF37]/35 shadow-sm space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <Scale className="w-4 h-4 text-[#997D24]" />
+                <h3 className="font-bold text-xs sm:text-sm text-[#0B080F]">
+                  انتخاب گرماژ موردنظر (سفارش در وزن دلخواه)
+                </h3>
+              </div>
+              {isCustomWeight ? (
+                <span className="text-[10px] bg-amber-500/15 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full font-medium">
+                  گرماژ سفارشی (قیمت تخمینی)
+                </span>
+              ) : (
+                <span className="text-[10px] bg-emerald-500/15 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-medium">
+                  وزن استاندارد کاتالوگ (قطعی)
+                </span>
+              )}
+            </div>
+
+            <p className="text-[11px] text-[#A89B8A] leading-relaxed">
+              این مدل قابلیت ساخت در گرماژهای مختلف را دارد. با تغییر اسلایدر یا وارد کردن عدد، ارزش طلای خام، اجرت، سود و مالیات ۱۰٪ فوراً تجدید محاسبه می‌شوند.
+            </p>
+
+            {/* Slider & Number Input Row */}
+            <div className="space-y-3 pt-1">
+              <div>
+                <input
+                  type="range"
+                  min={minWeight}
+                  max={maxWeight}
+                  step={weightStep}
+                  value={selectedWeight}
+                  onChange={(e) => setSelectedWeight(Number(parseFloat(e.target.value).toFixed(2)))}
+                  className="w-full accent-[#D4AF37] cursor-pointer h-2 bg-neutral-200 rounded-lg"
+                  aria-label="اسلایدر انتخاب وزن طلا"
+                />
+              </div>
+
+              {/* Range Bounds & Numeric Stepper Input */}
+              <div className="flex items-center justify-between gap-3 text-xs">
+                <span className="text-[11px] text-neutral-500 font-numeral">
+                  حداقل: {toPersianDigits(minWeight)} گرم
+                </span>
+
+                {/* Stepper with number input */}
+                <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-neutral-300 shadow-inner">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedWeight((prev) => Math.max(minWeight, Number((prev - 0.1).toFixed(2))))}
+                    disabled={selectedWeight <= minWeight}
+                    className="w-6 h-6 rounded flex items-center justify-center bg-neutral-100 hover:bg-neutral-200 text-neutral-800 disabled:opacity-30 text-xs font-bold transition-colors"
+                    title="کاهش ۰.۱ گرم"
+                  >
+                    -
+                  </button>
+                  <div className="flex items-center gap-1 font-numeral font-bold text-sm text-[#0B080F]">
+                    <input
+                      type="number"
+                      step="0.1"
+                      min={minWeight}
+                      max={maxWeight}
+                      value={selectedWeight}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        if (!isNaN(val) && val > 0) {
+                          setSelectedWeight(Number(val.toFixed(2)));
+                        }
+                      }}
+                      className="w-16 text-center font-bold text-sm bg-transparent focus:outline-none"
+                    />
+                    <span className="text-xs text-neutral-500 font-normal">گرم</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedWeight((prev) => Math.min(maxWeight, Number((prev + 0.1).toFixed(2))))}
+                    disabled={selectedWeight >= maxWeight}
+                    className="w-6 h-6 rounded flex items-center justify-center bg-neutral-100 hover:bg-neutral-200 text-neutral-800 disabled:opacity-30 text-xs font-bold transition-colors"
+                    title="افزایش ۰.۱ گرم"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <span className="text-[11px] text-neutral-500 font-numeral">
+                  حداکثر: {toPersianDigits(maxWeight)} گرم
+                </span>
+              </div>
+
+              {/* Quick-Preset Weight Pills */}
+              <div className="flex items-center gap-1.5 flex-wrap pt-1 text-[11px]">
+                <span className="text-neutral-500 text-[10px]">وزن‌های پیشنهادی:</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedWeight(product.weightGrams)}
+                  className={`px-2.5 py-1 rounded-lg border font-numeral transition-colors ${
+                    selectedWeight === product.weightGrams
+                      ? 'bg-[#0B080F] text-white border-[#0B080F]'
+                      : 'bg-white hover:bg-neutral-100 border-neutral-200 text-neutral-700'
+                  }`}
+                >
+                  وزن کاتالوگ ({toPersianDigits(product.weightGrams)} گرم)
+                </button>
+
+                {[1.5, 2.0, 3.0, 4.5, 6.0]
+                  .filter((w) => w >= minWeight && w <= maxWeight && w !== product.weightGrams)
+                  .map((w) => (
+                    <button
+                      key={w}
+                      type="button"
+                      onClick={() => setSelectedWeight(w)}
+                      className={`px-2.5 py-1 rounded-lg border font-numeral transition-colors ${
+                        selectedWeight === w
+                          ? 'bg-[#0B080F] text-white border-[#0B080F]'
+                          : 'bg-white hover:bg-neutral-100 border-neutral-200 text-neutral-700'
+                      }`}
+                    >
+                      {toPersianDigits(w)} گرم
+                    </button>
+                  ))}
+              </div>
+            </div>
+          </div>
+
           {/* Accordion: جزئیات قیمت */}
           <div className="bg-white rounded-2xl border border-[#D4AF37]/30 overflow-hidden shadow-sm">
             <button
@@ -243,7 +382,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
                 <Award className="w-4 h-4 text-[#D4AF37]" />
                 <span className="text-xs font-semibold">جزئیات و شفافیت فرمول قیمت</span>
                 <span className="text-[10px] text-[#D4AF37]/80 bg-[#D4AF37]/10 px-2 py-0.5 rounded">
-                  (محاسبه مستقیم)
+                  {isCustomWeight ? `محاسبه بر اساس ${formatWeight(selectedWeight)}` : '(محاسبه مستقیم)'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -268,8 +407,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
               <div className="p-4 space-y-2.5 text-xs animate-in fade-in duration-200">
                 {/* 1. Gold Weight */}
                 <div className="flex justify-between items-center text-neutral-600">
-                  <span>وزن طلا:</span>
-                  <span className="font-semibold text-[#0B080F] font-numeral">{formatWeight(product.weightGrams)}</span>
+                  <span>وزن طلای محاسبه‌شده:</span>
+                  <span className="font-semibold text-[#0B080F] font-numeral">
+                    {formatWeight(breakdown.weightGrams)} {isCustomWeight ? '(انتخابی)' : ''}
+                  </span>
                 </div>
 
                 {/* 2. Gold Reference Rate from /price */}
@@ -344,12 +485,18 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
           <div className="space-y-3 pt-2">
             <div className="flex gap-3">
               <button
-                onClick={() => addToCart(product, 1)}
+                onClick={() => addToCart(product, 1, selectedWeight)}
                 disabled={isExpired || product.stock <= 0}
                 className="flex-1 py-3.5 px-6 bg-[#0B080F] hover:bg-[#D4AF37] text-white hover:text-[#0B080F] font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-98 disabled:opacity-50"
               >
                 <ShoppingBag className="w-4 h-4" />
-                <span>{isExpired ? 'قیمت در دسترس نیست' : 'افزودن به سبد خرید'}</span>
+                <span>
+                  {isExpired
+                    ? 'قیمت در دسترس نیست'
+                    : isCustomWeight
+                    ? `افزودن با وزن ${formatWeight(selectedWeight)}`
+                    : 'افزودن به سبد خرید'}
+                </span>
               </button>
 
               <button
@@ -428,11 +575,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
         </section>
       )}
 
-      {/* Invoice Modal for Single Product Item */}
+      {/* Invoice Modal for Single Product Item with selectedWeight */}
       <InvoiceModal
         isOpen={showInvoiceModal}
         onClose={() => setShowInvoiceModal(false)}
-        items={[{ product, quantity: 1, addedAt: Date.now() }]}
+        items={[{ product, quantity: 1, selectedWeight, isCustomWeight, addedAt: Date.now() }]}
         customer={{ fullName: 'مشتری گرامی (استعلام طلا)', province: 'یزد', city: 'یزد' }}
         isDraft={true}
       />

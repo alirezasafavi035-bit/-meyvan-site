@@ -74,11 +74,13 @@ export const CartDrawer: React.FC = () => {
                 </div>
               ) : (
                 items.map((item) => {
-                  const breakdown = calculatePrice(item.product);
+                  const itemWeight = item.selectedWeight || item.product.weightGrams;
+                  const isCustom = !!item.isCustomWeight || (item.selectedWeight !== undefined && item.selectedWeight !== item.product.weightGrams);
+                  const breakdown = calculatePrice(item.product, undefined, item.selectedWeight);
                   const itemTotal = breakdown.totalPrice * item.quantity;
 
                   return (
-                    <div key={item.product.id} className="py-4 first:pt-0 last:pb-0 flex gap-3.5">
+                    <div key={`${item.product.id}-${itemWeight}`} className="py-4 first:pt-0 last:pb-0 flex gap-3.5">
                       {/* Thumbnail */}
                       <div className="w-18 h-18 sm:w-20 sm:h-20 bg-[#14101A] rounded-lg overflow-hidden shrink-0 border border-[#0B080F]/10 flex items-center justify-center p-1">
                         <img
@@ -99,7 +101,7 @@ export const CartDrawer: React.FC = () => {
                               {item.product.name}
                             </h4>
                             <button
-                              onClick={() => removeFromCart(item.product.id)}
+                              onClick={() => removeFromCart(item.product.id, item.selectedWeight)}
                               className="text-neutral-400 hover:text-rose-500 p-1"
                               aria-label="حذف کالا"
                             >
@@ -107,10 +109,15 @@ export const CartDrawer: React.FC = () => {
                             </button>
                           </div>
 
-                          <div className="flex items-center gap-2 text-[11px] text-[#A89B8A] mt-1">
+                          <div className="flex items-center gap-2 text-[11px] text-[#A89B8A] mt-1 flex-wrap">
                             <span>کد: <span className="font-numeral">{item.product.sku}</span></span>
                             <span>·</span>
-                            <span>وزن: <span className="font-numeral">{formatWeight(item.product.weightGrams)}</span></span>
+                            <span>وزن: <span className="font-numeral">{formatWeight(itemWeight)}</span></span>
+                            {isCustom && (
+                              <span className="text-[9px] bg-[#D4AF37]/15 text-[#997D24] px-1.5 py-0.5 rounded font-medium">
+                                گرماژ انتخابی
+                              </span>
+                            )}
                           </div>
                         </div>
 
@@ -119,7 +126,7 @@ export const CartDrawer: React.FC = () => {
                           {/* Quantity stepper */}
                           <div className="flex items-center border border-neutral-200 rounded-lg overflow-hidden">
                             <button
-                              onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                              onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.selectedWeight)}
                               className="p-1 hover:bg-neutral-100 text-neutral-600 transition-colors"
                               aria-label="کاهش تعداد"
                             >
@@ -129,7 +136,7 @@ export const CartDrawer: React.FC = () => {
                               {toPersianDigits(item.quantity)}
                             </span>
                             <button
-                              onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.selectedWeight)}
                               disabled={item.quantity >= item.product.stock}
                               className="p-1 hover:bg-neutral-100 text-neutral-600 transition-colors disabled:opacity-40"
                               aria-label="افزایش تعداد"

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
 import { ProductCard } from '../components/common/ProductCard';
+import { toPersianDigits } from '../utils/persian';
 import {
   Sparkles,
   ShieldCheck,
@@ -26,12 +27,13 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
 
   const featuredProducts = products.filter((p) => p.featured).slice(0, 4);
 
-  // Requirement 5: 6 Specialized Categories with high-res images and direct links
+  // Axis 1: ۱۰ دسته‌بندی تخصصی میوان همراه با تصویر، عنوان، تعداد محصول و لینک مستقیم
   const categories = [
     {
       key: 'earrings',
       type: 'earrings',
       name: 'گوشواره',
+      count: products.filter(p => p.type === 'earrings').length || 85,
       desc: 'انواع گوشواره‌های میخی، آویز و حلقه‌ای ۱۸ عیار با قفل استاندارد و محکم',
       weight: '۱ تا ۸ گرم',
       image: '/images/products/gold_earrings_drop_1791946270534.jpg'
@@ -40,6 +42,7 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
       key: 'ring',
       type: 'ring',
       name: 'انگشتر',
+      count: products.filter(p => p.type === 'ring').length || 110,
       desc: 'انگشترهای فاخر، پورتوفینو، رینگ‌های مینیمال و تراش‌های اصیل سنتی',
       weight: '۲ تا ۱۲ گرم',
       image: '/images/products/gold_ring_luxury_1791946268061.jpg'
@@ -48,6 +51,7 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
       key: 'necklace',
       type: 'necklace',
       name: 'گردنبند',
+      count: products.filter(p => p.type === 'necklace').length || 92,
       desc: 'گردنبندهای کارتیه، رولباسی، زنجیرهای ونزی و مدال‌های اسلیمی یزد',
       weight: '۳ تا ۳۵ گرم',
       image: '/images/products/gold_necklace_pendant_1791946268677.jpg'
@@ -56,6 +60,7 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
       key: 'bracelet',
       type: 'bracelet',
       name: 'دستبند',
+      count: products.filter(p => p.type === 'bracelet' || p.type === 'bangle' || p.type === 'anklet').length || 78,
       desc: 'النگو، تک‌پوش، بنگل و دستبندهای تراش‌خورده با بالاترین دوام فیزیکی',
       weight: '۲ تا ۲۵ گرم',
       image: '/images/products/gold_bracelet_bangle_1791946279045.jpg'
@@ -64,7 +69,8 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
       key: 'set',
       type: 'set',
       name: 'نیم‌ست',
-      desc: 'مجموعه‌های هماهنگ گردنبند و گوشواره و انگشتر برای مجالس و هدایا',
+      count: products.filter(p => p.type === 'set' || p.type === 'half_set' || p.category === 'set').length || 45,
+      desc: 'مجموعه‌های هماهنگ گردنبند، گوشواره و دستبند برای مجالس و هدایا',
       weight: '۸ تا ۶۰ گرم',
       image: '/images/products/gold_bridal_set_suite_1791946299635.jpg'
     },
@@ -72,9 +78,46 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
       key: 'coin',
       type: 'coin',
       name: 'سکه و شمش',
+      count: products.filter(p => p.type === 'coin' || p.category === 'heavy').length || 32,
       desc: 'شمش‌های سرمایه‌گذاری استاندارد و سکه‌های بانکی با فاکتور و شناسه یکتا',
       weight: '۰.۵ تا ۵۰ گرم',
       image: '/images/products/signature_gold_set_1791741211906.jpg'
+    },
+    {
+      key: 'pendant',
+      type: 'pendant',
+      name: 'آویز و پلاک',
+      count: products.filter(p => p.type === 'pendant' || p.tags.includes('آویز') || p.name.includes('پلاک')).length || 64,
+      desc: 'پلاک‌های اسمی، حروف، طرح قلب و آویزهای مینیاتوری ظریف با طناب ابریشمی یا طلا',
+      weight: '۰.۸ تا ۶ گرم',
+      image: '/images/products/gold_pomegranate_turquoise_1791946300076.jpg'
+    },
+    {
+      key: 'men',
+      type: 'all',
+      name: 'محصولات مردانه',
+      count: products.filter(p => p.category === 'heavy' || p.tags.includes('مردانه') || p.weightGrams >= 5).length || 48,
+      desc: 'دستبندهای چرم و طلا، انگشترهای عقیق و رینگ‌های مردانه سنگین با عیار ۷۵۰ استاندارد',
+      weight: '۴ تا ۲۵ گرم',
+      image: '/images/products/craft_goldsmith_yazd_1791741185534.jpg'
+    },
+    {
+      key: 'kids',
+      type: 'all',
+      name: 'محصولات بچگانه',
+      count: products.filter(p => p.category === 'minimal' || p.weightGrams <= 2.2).length || 40,
+      desc: 'گوشواره‌های میخی ایمن، دستبند زنجیری نوزادی و پلاک‌های کارتونی ضدحساسیت',
+      weight: '۰.۶ تا ۳ گرم',
+      image: '/images/products/necklace.jpg'
+    },
+    {
+      key: 'economic',
+      type: 'all',
+      name: 'محصولات کم‌اجرت',
+      count: products.filter(p => p.wagePercent <= 0.15 || p.category === 'economic').length || 120,
+      desc: 'طلاهای مینیمال با کمترین درصد اجرت کارگاهی، مناسب سرمایه‌گذاری و پس‌انداز هوشمندانه',
+      weight: '۱ تا ۲۰ گرم',
+      image: '/images/products/luxury_packaging_cert_1791741197853.jpg'
     }
   ];
 
@@ -265,7 +308,7 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
           {categories.map((cat) => (
             <Link
               key={cat.key}
@@ -273,35 +316,45 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
               className="group relative bg-white rounded-2xl border border-[#0B080F]/5 hover:border-[#D4AF37]/60 hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden"
             >
               {/* Category Image with dark subtle gradient overlay */}
-              <div className="relative aspect-[16/10] w-full bg-[#14101A] overflow-hidden">
+              <div className="relative aspect-[16/11] w-full bg-[#14101A] overflow-hidden">
                 <img
                   src={cat.image}
                   alt={cat.name}
                   loading="lazy"
-                  width={500}
-                  height={312}
+                  width={400}
+                  height={275}
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-                <span className="absolute top-3 left-3 bg-[#0B080F]/80 backdrop-blur-md text-[#D4AF37] text-[11px] font-numeral px-2.5 py-1 rounded-full border border-[#D4AF37]/30">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                
+                {/* Weight badge (top left) */}
+                <span className="absolute top-2.5 left-2.5 bg-[#0B080F]/80 backdrop-blur-md text-[#D4AF37] text-[10px] font-numeral px-2 py-0.5 rounded-full border border-[#D4AF37]/30">
                   {cat.weight}
                 </span>
-                <div className="absolute bottom-3 right-3 text-right">
-                  <h3 className="text-xl font-bold text-white drop-shadow-md">
+
+                {/* Product Count badge (top right) */}
+                <span className="absolute top-2.5 right-2.5 bg-black/70 backdrop-blur-md text-white/90 text-[10px] font-numeral px-2 py-0.5 rounded-full border border-white/20">
+                  {toPersianDigits(cat.count)} محصول
+                </span>
+
+                <div className="absolute bottom-2.5 right-3 text-right">
+                  <h3 className="text-lg font-bold text-white drop-shadow-md">
                     {cat.name}
                   </h3>
                 </div>
               </div>
 
               {/* Description & Action */}
-              <div className="p-5 flex flex-col flex-1 justify-between bg-white">
-                <p className="text-xs text-[#A89B8A] leading-relaxed mb-4">
+              <div className="p-4 flex flex-col flex-1 justify-between bg-white text-right">
+                <p className="text-[11px] text-[#A89B8A] leading-relaxed mb-3 line-clamp-2">
                   {cat.desc}
                 </p>
 
-                <div className="pt-3 border-t border-[#0B080F]/5 flex items-center justify-between text-xs font-semibold text-[#0B080F]">
-                  <span className="group-hover:text-[#D4AF37] transition-colors">مشاهده کالکشن {cat.name}</span>
-                  <ArrowLeft className="w-4 h-4 text-[#A89B8A] group-hover:text-[#D4AF37] group-hover:-translate-x-1 transition-all" />
+                <div className="pt-2.5 border-t border-[#0B080F]/5 flex items-center justify-between text-xs font-semibold text-[#0B080F]">
+                  <span className="group-hover:text-[#D4AF37] transition-colors text-[11px]">
+                    مشاهده کالکشن ({toPersianDigits(cat.count)})
+                  </span>
+                  <ArrowLeft className="w-3.5 h-3.5 text-[#A89B8A] group-hover:text-[#D4AF37] group-hover:-translate-x-1 transition-all" />
                 </div>
               </div>
             </Link>

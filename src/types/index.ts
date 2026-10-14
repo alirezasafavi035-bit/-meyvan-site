@@ -9,7 +9,8 @@ export type ProductTypeKey =
   | 'bangle'
   | 'anklet'
   | 'set'
-  | 'half_set';
+  | 'half_set'
+  | 'coin';
 
 export type WageMethod = 'percentage' | 'fixed_per_gram' | 'fixed_per_item';
 export type ProfitBase = 'gold_plus_wage' | 'gold_only';
@@ -39,6 +40,12 @@ export interface Product {
   description: string;
   createdAt: string;
   featured?: boolean;
+  // Weight customization capabilities (Axis 2)
+  weightMode?: 'fixed' | 'preset' | 'custom_range';
+  minCustomWeight?: number;
+  maxCustomWeight?: number;
+  weightStep?: number;
+  weightOptions?: number[];
 }
 
 export interface PricingConfig {
@@ -46,10 +53,10 @@ export interface PricingConfig {
   referenceKarat: 18 | 24;
   defaultProfitPercent: number; // default 0.07 (7%)
   profitBase: ProfitBase; // default 'gold_plus_wage'
-  defaultVatPercent: number; // default 0.09 (9%)
+  defaultVatPercent: number; // default 0.10 (10% Iranian gold tax law)
   vatBase: VatBase; // default 'wage_and_profit' (Iranian gold tax law)
   currency: 'TOMAN' | 'RIAL';
-  roundingUnit: number; // default 1000 Tomans
+  roundingUnit: number; // default 1 Toman (Exact)
   priceSource: string;
   updatedAt: string;
   pricingStatus: PriceStatus;
@@ -77,6 +84,7 @@ export interface PriceBreakdown {
   currency: 'TOMAN';
   calculatedAt: string;
   isReconciled: boolean;
+  isEstimated?: boolean; // True when custom weight is entered before final hallmarking
 }
 
 export interface GoldPriceData {
@@ -94,6 +102,8 @@ export type PriceStatus = 'live' | 'stale' | 'expired' | 'manual';
 export interface CartItem {
   product: Product;
   quantity: number;
+  selectedWeight?: number; // Custom chosen gram weight
+  isCustomWeight?: boolean; // Flag indicating customer chose custom gram
   lockedPrice?: number;
   addedAt: number;
 }
@@ -138,6 +148,8 @@ export interface InvoiceItem {
   stonePrice: number;
   unitTotalPrice: number;
   lineTotalPrice: number;
+  isCustomWeight?: boolean;
+  originalWeightGrams?: number;
 }
 
 export interface InvoiceData {

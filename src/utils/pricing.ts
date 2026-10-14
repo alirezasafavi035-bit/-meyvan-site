@@ -45,12 +45,36 @@ export function getGoldPriceForKarat(
 }
 
 /**
+ * Direct reference gold pricing formula as specified by Union guidelines & prompt:
+ *   goldValue = weight * rate;
+ *   ajrat = goldValue * (ajratPercent / 100);
+ *   profit = (goldValue + ajrat) * 0.07;
+ *   tax = (ajrat + profit) * 0.10;
+ *   finalPrice = goldValue + ajrat + profit + tax;
+ */
+export function calculateGoldPriceFormula(weight: number, rate: number, ajratPercent: number) {
+  const goldValue = Math.round(weight * rate);
+  const ajrat = Math.round(goldValue * (ajratPercent / 100));
+  const profit = Math.round((goldValue + ajrat) * 0.07);
+  const tax = Math.round((ajrat + profit) * 0.10);
+  return {
+    goldValue,
+    ajrat,
+    profit,
+    tax,
+    finalPrice: goldValue + ajrat + profit + tax
+  };
+}
+
+/**
  * Main Centralized Calculation Engine for MEYVAN:
  * Computes transparent, itemized price breakdown for any product using configurable rules.
+ * Supports customWeight parameter for user dynamic gram selection (Axis 2).
  */
 export function calculateProductPrice(
   product: Product,
-  customConfig?: Partial<PricingConfig>
+  customConfig?: Partial<PricingConfig>,
+  customWeight?: number
 ): PriceBreakdown {
   const config: PricingConfig = {
     ...DEFAULT_PRICING_CONFIG,
@@ -64,7 +88,9 @@ export function calculateProductPrice(
   );
 
   // 1. Raw Gold Value (وزن طلا × نرخ روز هر گرم)
-  const weight = Math.max(0, product.weightGrams || 0);
+  // If customWeight is passed and valid, calculate based on selected gram weight
+  const isCustom = customWeight !== undefined && customWeight > 0;
+  const weight = isCustom ? Number(customWeight.toFixed(2)) : Math.max(0, product.weightGrams || 0);
   const rawGoldPrice = Math.round(weight * karatPricePerGram);
 
   // 2. Making Charge / Wage (اجرت ساخت)
@@ -161,7 +187,8 @@ export function calculateProductPrice(
     totalPrice,
     currency: 'TOMAN',
     calculatedAt: new Date().toISOString(),
-    isReconciled: true
+    isReconciled: true,
+    isEstimated: isCustom
   };
 }
 
@@ -241,7 +268,8 @@ export function createInvoiceRecord(params: {
   let totalPayable = 0;
 
   const invoiceItems: InvoiceItem[] = params.items.map((cartItem) => {
-    const breakdown = calculateProductPrice(cartItem.product, config);
+    const isCustom = !!cartItem.isCustomWeight || (cartItem.selectedWeight !== undefined && cartItem.selectedWeight > 0 && cartItem.selectedWeight !== cartItem.product.weightGrams);
+    const breakdown = calculateProductPrice(cartItem.product, config, cartItem.selectedWeight);
     const qty = Math.max(1, cartItem.quantity || 1);
 
     const lineRawGold = breakdown.rawGoldPrice * qty;
@@ -273,7 +301,9 @@ export function createInvoiceRecord(params: {
       vatAmount: lineVat,
       stonePrice: lineStone,
       unitTotalPrice: breakdown.totalPrice,
-      lineTotalPrice: lineTotal
+      lineTotalPrice: lineTotal,
+      isCustomWeight: isCustom,
+      originalWeightGrams: cartItem.product.weightGrams
     };
   });
 

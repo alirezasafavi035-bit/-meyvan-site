@@ -25,7 +25,7 @@ interface GoldPriceContextValue {
   isExpired: boolean;
   isLoading: boolean;
   lastUpdated: Date | null;
-  calculatePrice: (product: Product, overrides?: Partial<PricingConfig>) => PriceBreakdown;
+  calculatePrice: (product: Product, overrides?: Partial<PricingConfig>, customWeight?: number) => PriceBreakdown;
   generateInvoice: (
     items: CartItem[],
     customer?: Partial<OrderCustomerInfo>,
@@ -237,11 +237,15 @@ export const GoldPriceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [fetchPrice]);
 
   const calculatePrice = useCallback(
-    (product: Product, overrides?: Partial<PricingConfig>): PriceBreakdown => {
-      return calculateProductPrice(product, {
-        ...pricingConfig,
-        ...(overrides || {})
-      });
+    (product: Product, overrides?: Partial<PricingConfig>, customWeight?: number): PriceBreakdown => {
+      return calculateProductPrice(
+        product,
+        {
+          ...pricingConfig,
+          ...(overrides || {})
+        },
+        customWeight
+      );
     },
     [pricingConfig]
   );

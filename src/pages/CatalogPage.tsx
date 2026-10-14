@@ -104,11 +104,28 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
 
     // Category or Specialized Collection Filter
     if (selectedCategory !== 'all') {
-      const isTypeKey = ['earrings', 'ring', 'necklace', 'pendant', 'bracelet', 'bangle', 'anklet', 'set', 'half_set', 'coin'].includes(selectedCategory);
-      if (isTypeKey) {
-        result = result.filter((p) => p.type === selectedCategory || (selectedCategory === 'set' && (p.type === 'half_set' || p.category === 'set')) || (selectedCategory === 'necklace' && p.type === 'pendant') || (selectedCategory === 'bracelet' && (p.type === 'bangle' || p.type === 'anklet')));
+      if (selectedCategory === 'earrings') {
+        result = result.filter((p) => p.type === 'earrings');
+      } else if (selectedCategory === 'ring') {
+        result = result.filter((p) => p.type === 'ring');
+      } else if (selectedCategory === 'necklace') {
+        result = result.filter((p) => p.type === 'necklace' || p.type === 'pendant');
+      } else if (selectedCategory === 'bracelet') {
+        result = result.filter((p) => p.type === 'bracelet' || p.type === 'bangle' || p.type === 'anklet');
+      } else if (selectedCategory === 'set') {
+        result = result.filter((p) => p.type === 'set' || p.type === 'half_set' || p.category === 'set');
+      } else if (selectedCategory === 'coin') {
+        result = result.filter((p) => p.type === 'coin' || p.category === 'heavy' || p.name.includes('سکه') || p.name.includes('شمش'));
+      } else if (selectedCategory === 'pendant') {
+        result = result.filter((p) => p.type === 'pendant' || p.tags.includes('آویز') || p.name.includes('پلاک') || p.name.includes('آویز'));
+      } else if (selectedCategory === 'men') {
+        result = result.filter((p) => p.category === 'heavy' || p.tags.includes('مردانه') || p.name.includes('مردانه') || (p.type === 'ring' && p.weightGrams >= 4));
+      } else if (selectedCategory === 'kids') {
+        result = result.filter((p) => p.tags.includes('کودک') || p.tags.includes('بچگانه') || p.name.includes('کودک') || p.weightGrams <= 2.2);
+      } else if (selectedCategory === 'economic') {
+        result = result.filter((p) => p.wagePercent <= 0.15 || p.category === 'economic');
       } else {
-        result = result.filter((p) => p.category === selectedCategory);
+        result = result.filter((p) => p.category === selectedCategory || p.type === selectedCategory);
       }
     }
 
@@ -179,13 +196,17 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
   const hasMore = visibleCount < filteredProducts.length;
 
   const categories = [
-    { key: 'all', label: 'همه دسته‌ها' },
-    { key: 'minimal', label: 'مینیمال' },
-    { key: 'economic', label: 'اقتصادی' },
-    { key: 'everyday', label: 'روزمره' },
-    { key: 'heavy', label: 'سنگین و یزدی' },
-    { key: 'set', label: 'سرویس و نیم‌ست' },
-    { key: 'jewelry', label: 'جواهر و نگین‌دار' }
+    { key: 'all', label: 'همه کالکشن‌ها' },
+    { key: 'earrings', label: 'گوشواره' },
+    { key: 'ring', label: 'انگشتر' },
+    { key: 'necklace', label: 'گردنبند' },
+    { key: 'bracelet', label: 'دستبند و النگو' },
+    { key: 'set', label: 'نیم‌ست و سرویس' },
+    { key: 'coin', label: 'سکه و شمش' },
+    { key: 'pendant', label: 'آویز و پلاک' },
+    { key: 'men', label: 'محصولات مردانه' },
+    { key: 'kids', label: 'محصولات بچگانه' },
+    { key: 'economic', label: 'محصولات کم‌اجرت' }
   ];
 
   const types = [
