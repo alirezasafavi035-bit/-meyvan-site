@@ -212,25 +212,40 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
               </div>
             </div>
 
-            {/* Right Col: High-Res Hero Jewelry Image */}
+            {/* Right Col: Macro Gold Jewelry Hero Image */}
             <div className="lg:col-span-5 relative">
-              <div className="relative rounded-2xl overflow-hidden border border-[#D4AF37]/30 shadow-2xl bg-[#14101A]">
-                <img
-                  src="/src/assets/images/hero_jewelry_luxury_1791741170455.jpg"
-                  alt="مجموعه طلای ۱۸ عیار فاخر میوان"
-                  width={640}
-                  height={360}
-                  fetchPriority="high"
-                  className="w-full h-auto object-cover aspect-[16/9] lg:aspect-auto"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B080F]/80 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute bottom-4 right-4 left-4 p-3 bg-[#0B080F]/90 backdrop-blur-md rounded-xl border border-[#D4AF37]/20 flex items-center justify-between">
+              <div className="relative rounded-2xl overflow-hidden border border-[#D4AF37]/35 shadow-2xl bg-[#14101A] group">
+                <picture>
+                  <source srcSet="/images/hero_macro_gold.webp" type="image/webp" />
+                  <source srcSet="/images/hero.webp" type="image/webp" />
+                  <img
+                    src="/images/hero_macro_gold.webp"
+                    alt="مجموعه شاهکار طلای ۱۸ عیار دست‌ساز میوان بر بستر سنگ تیره"
+                    width={640}
+                    height={360}
+                    loading="lazy"
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.src.includes('hero.jpg')) {
+                        target.src = '/images/hero.jpg';
+                      } else {
+                        target.onerror = null;
+                        target.src = '/images/products/signature_gold_set_1791741211906.jpg';
+                      }
+                    }}
+                    className="w-full h-auto object-cover aspect-[16/9] lg:aspect-auto transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                </picture>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0B080F]/85 via-[#0B080F]/20 to-transparent pointer-events-none" />
+                <div className="absolute bottom-4 right-4 left-4 p-3.5 bg-[#0B080F]/90 backdrop-blur-md rounded-xl border border-[#D4AF37]/25 flex items-center justify-between">
                   <div className="text-right">
                     <span className="text-[10px] text-[#D4AF37] block font-serif-luxury tracking-wider">MEYVAN SIGNATURE</span>
-                    <span className="text-xs text-white font-medium">گردنبند و گوشواره طلای ۱۸ عیار پرنیان</span>
+                    <span className="text-xs text-white font-medium">دستبند شاهکار طلای ۱۸ عیار با مروارید باروک</span>
                   </div>
                   <Link
-                    to="/catalog?category=jewelry"
+                    to="/catalog"
                     className="text-xs text-[#D4AF37] hover:underline flex items-center gap-1"
                   >
                     <span>مشاهده</span>

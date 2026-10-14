@@ -1,77 +1,87 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   Typography: IRANSans / IRANSansX / IRANYekan (Digikala, Snapp, Divar Standard)
+   Typography: Estedad / Dana (Luxury Persian Headings) & Vazirmatn (Body & Numerals)
    ========================================================================== */
 
+/* Estedad Headings (Weights: 400, 500, 700, 900) */
 @font-face {
-  font-family: 'IRANSans';
-  src: url('/fonts/IRANSansUltraLight.woff2') format('woff2');
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'IRANSans';
-  src: url('/fonts/IRANSansLight.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'IRANSans';
-  src: url('/fonts/IRANSans.woff2') format('woff2');
+  font-family: 'Estedad';
+  src: url('/fonts/Estedad-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'IRANSans';
-  src: url('/fonts/IRANSansMedium.woff2') format('woff2');
+  font-family: 'Estedad';
+  src: url('/fonts/Estedad-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'IRANSans';
-  src: url('/fonts/IRANSansBold.woff2') format('woff2');
+  font-family: 'Estedad';
+  src: url('/fonts/Estedad-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
-/* IRANSansX Aliases (Used by Divar, Snapp, and Modern Web) */
 @font-face {
-  font-family: 'IRANSansX';
-  src: url('/fonts/IRANSans.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Estedad';
+  src: url('/fonts/Estedad-Black.woff2') format('woff2');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
 
+/* Dana Aliases */
 @font-face {
-  font-family: 'IRANSansX';
-  src: url('/fonts/IRANSansMedium.woff2') format('woff2');
+  font-family: 'Dana';
+  src: url('/fonts/Estedad-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'IRANSansX';
-  src: url('/fonts/IRANSansBold.woff2') format('woff2');
+  font-family: 'Dana';
+  src: url('/fonts/Estedad-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
-/* IRANYekan Aliases (Used by Digikala) */
+/* Vazirmatn Body & Numerals (Weights: 400, 500, 700) */
 @font-face {
-  font-family: 'IRANYekan';
+  font-family: 'Vazirmatn';
+  src: url('/fonts/Vazirmatn-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonts/Vazirmatn-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonts/Vazirmatn-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* IRANSans Fallback Definitions */
+@font-face {
+  font-family: 'IRANSans';
   src: url('/fonts/IRANSans.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
@@ -79,7 +89,7 @@
 }
 
 @font-face {
-  font-family: 'IRANYekan';
+  font-family: 'IRANSans';
   src: url('/fonts/IRANSansMedium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
@@ -87,7 +97,7 @@
 }
 
 @font-face {
-  font-family: 'IRANYekan';
+  font-family: 'IRANSans';
   src: url('/fonts/IRANSansBold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
@@ -107,14 +117,17 @@
   --color-warm-gray: #A89B8A;
   --color-charcoal: #2A2533;
   
-  /* Primary Persian Font Family: Vazirmatn prioritized for clean luxury clarity */
-  --font-persian: 'Vazirmatn', 'IRANSansX', 'IRANSans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
-  --font-sans: 'Inter', 'Vazirmatn', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Luxury Persian Font Families */
+  --font-heading: 'Estedad', 'Dana', 'Playfair Display', system-ui, -apple-system, sans-serif;
+  --font-persian: 'Vazirmatn', 'IRANSans', system-ui, -apple-system, sans-serif;
+  --font-numeral: 'Vazirmatn', 'Inter', system-ui, sans-serif;
+  --font-serif: 'Estedad', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Vazirmatn', 'Inter', system-ui, sans-serif;
 }
 
 body {
   font-family: var(--font-persian);
+  line-height: 1.8;
   background-color: var(--color-cream);
   color: var(--color-midnight);
   direction: rtl;
@@ -124,12 +137,24 @@ body {
   letter-spacing: -0.01em;
 }
 
+/* Headings (h1, h2, h3, h4, h5, h6) strictly use Estedad / Dana */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+}
+
+/* Standard line-height: 1.8 for text readability */
+p, li, dd {
+  line-height: 1.8;
+}
+
 .font-serif-luxury {
-  font-family: var(--font-serif);
+  font-family: var(--font-heading);
 }
 
 .font-numeral {
-  font-family: var(--font-sans);
+  font-family: var(--font-numeral);
   font-variant-numeric: tabular-nums;
 }
 
