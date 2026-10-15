@@ -31,7 +31,22 @@ if (products.length !== 500) {
 const skus = new Set();
 const slugs = new Set();
 const validKarats = new Set([18, 21, 24]);
-const validCategories = new Set(['minimal', 'economic', 'everyday', 'heavy', 'set', 'jewelry']);
+const validCategories = new Set([
+  'earrings',
+  'ring',
+  'necklace',
+  'bracelet',
+  'set',
+  'coin',
+  'pendant',
+  'men',
+  'kids',
+  'economic',
+  'minimal',
+  'everyday',
+  'heavy',
+  'jewelry'
+]);
 
 let errors = 0;
 

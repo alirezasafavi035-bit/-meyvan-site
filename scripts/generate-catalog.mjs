@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * MEYVAN Jewelry Catalog Generator
- * Generates 500 realistic gold and jewelry products with deterministic seeded PRNG.
+ * Generates 500 realistic gold and jewelry products across 10 specialized categories
+ * with deterministic seeded PRNG, strictly matched imagery, and Union pricing metadata.
  */
 
 import fs from 'node:fs';
@@ -12,8 +13,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
-// Linear congruential generator for reproducible deterministic catalog
-let seed = 1337420;
+// Deterministic linear congruential generator
+let seed = 42891337;
 function random() {
   seed = (seed * 1664525 + 1013904223) % 4294967296;
   return seed / 4294967296;
@@ -32,72 +33,35 @@ function pick(arr) {
   return arr[Math.floor(random() * arr.length)];
 }
 
+// 10 Specialized Categories
 const CATEGORIES = [
-  { key: 'minimal', fa: 'مینیمال', count: 100, minW: 1.0, maxW: 3.0, minWage: 0.14, maxWage: 0.20, stoneRate: 0.1 },
-  { key: 'economic', fa: 'اقتصادی', count: 90, minW: 1.0, maxW: 4.0, minWage: 0.11, maxWage: 0.16, stoneRate: 0.05 },
-  { key: 'everyday', fa: 'روزمره', count: 100, minW: 2.0, maxW: 8.0, minWage: 0.13, maxWage: 0.19, stoneRate: 0.15 },
-  { key: 'heavy', fa: 'سنگین', count: 70, minW: 10.0, maxW: 60.0, minWage: 0.08, maxWage: 0.14, stoneRate: 0.05 },
-  { key: 'set', fa: 'سرویس', count: 70, minW: 15.0, maxW: 80.0, minWage: 0.18, maxWage: 0.25, stoneRate: 0.35 },
-  { key: 'jewelry', fa: 'جواهر', count: 70, minW: 2.0, maxW: 15.0, minWage: 0.20, maxWage: 0.28, stoneRate: 0.95 },
-];
-
-const TYPES_BY_CAT = {
-  minimal: [
-    { key: 'ring', fa: 'انگشتر' },
-    { key: 'necklace', fa: 'گردنبند' },
-    { key: 'pendant', fa: 'آویز' },
-    { key: 'earrings', fa: 'گوشواره' },
-    { key: 'bracelet', fa: 'دستبند' },
-    { key: 'anklet', fa: 'پابند' },
-  ],
-  economic: [
-    { key: 'pendant', fa: 'آویز' },
-    { key: 'earrings', fa: 'گوشواره' },
-    { key: 'ring', fa: 'انگشتر' },
-    { key: 'bracelet', fa: 'دستبند' },
-    { key: 'necklace', fa: 'گردنبند' },
-  ],
-  everyday: [
-    { key: 'bracelet', fa: 'دستبند' },
-    { key: 'necklace', fa: 'گردنبند' },
-    { key: 'ring', fa: 'انگشتر' },
-    { key: 'earrings', fa: 'گوشواره' },
-    { key: 'bangle', fa: 'النگو' },
-  ],
-  heavy: [
-    { key: 'bangle', fa: 'النگو' },
-    { key: 'bracelet', fa: 'دستبند' },
-    { key: 'necklace', fa: 'گردنبند' },
-    { key: 'ring', fa: 'انگشتر' },
-  ],
-  set: [
-    { key: 'set', fa: 'سرویس کامل' },
-    { key: 'half_set', fa: 'نیم‌ست' },
-  ],
-  jewelry: [
-    { key: 'ring', fa: 'انگشتر' },
-    { key: 'necklace', fa: 'گردنبند' },
-    { key: 'earrings', fa: 'گوشواره' },
-    { key: 'half_set', fa: 'نیم‌ست' },
-    { key: 'bracelet', fa: 'دستبند' },
-  ]
-};
-
-const NOUNS = [
-  'پرنیان', 'نگین‌رخ', 'خورشید', 'مهتاب', 'آوا', 'باروک', 'سولاریس', 'شهبانو',
-  'ونکلیف', 'کارتیه', 'تیفانی', 'ترینیتی', 'میوان', 'گندم', 'انار', 'اسلیمی',
-  'ترنج', 'شباهنگ', 'یاقوت', 'زمرد', 'الماس', 'فیروزه', 'گلنار', 'فلورا',
-  'سولیتیر', 'آناهیتا', 'ترمه', 'رویا', 'سپهر', 'آمیتیست', 'پوپک', 'مهرگان',
-  'آتشین', 'برلیان', 'افرا', 'نیلوفر', 'آترین', 'ماهک', 'چوگان', 'شمس'
+  { key: 'earrings', fa: 'گوشواره', count: 65, minW: 1.0, maxW: 14.5, minWage: 0.13, maxWage: 0.22, defaultType: 'earrings', defaultTypeFa: 'گوشواره' },
+  { key: 'ring', fa: 'انگشتر', count: 70, minW: 1.5, maxW: 12.0, minWage: 0.13, maxWage: 0.20, defaultType: 'ring', defaultTypeFa: 'انگشتر' },
+  { key: 'necklace', fa: 'گردنبند', count: 65, minW: 2.8, maxW: 32.0, minWage: 0.12, maxWage: 0.21, defaultType: 'necklace', defaultTypeFa: 'گردنبند' },
+  { key: 'bracelet', fa: 'دستبند', count: 60, minW: 2.2, maxW: 24.0, minWage: 0.12, maxWage: 0.19, defaultType: 'bracelet', defaultTypeFa: 'دستبند' },
+  { key: 'set', fa: 'نیم‌ست', count: 45, minW: 9.0, maxW: 65.0, minWage: 0.17, maxWage: 0.25, defaultType: 'half_set', defaultTypeFa: 'نیم‌ست' },
+  { key: 'coin', fa: 'سکه و شمش', count: 35, minW: 0.5, maxW: 50.0, minWage: 0.02, maxWage: 0.06, defaultType: 'coin', defaultTypeFa: 'سکه و شمش' },
+  { key: 'pendant', fa: 'آویز و پلاک', count: 50, minW: 0.8, maxW: 7.5, minWage: 0.14, maxWage: 0.20, defaultType: 'pendant', defaultTypeFa: 'آویز و پلاک' },
+  { key: 'men', fa: 'محصولات مردانه', count: 35, minW: 3.5, maxW: 28.0, minWage: 0.11, maxWage: 0.17, defaultType: 'bracelet', defaultTypeFa: 'دستبند مردانه' },
+  { key: 'kids', fa: 'محصولات بچگانه', count: 35, minW: 0.6, maxW: 3.2, minWage: 0.14, maxWage: 0.18, defaultType: 'pendant', defaultTypeFa: 'طلا کودک' },
+  { key: 'economic', fa: 'محصولات کم‌اجرت', count: 40, minW: 1.2, maxW: 18.0, minWage: 0.07, maxWage: 0.12, defaultType: 'bangle', defaultTypeFa: 'طلای کم‌اجرت' },
 ];
 
 const DESCRIPTIONS = [
   'طراحی مدرن و ارگونومیک با پرداخت آینه‌ای براق و استحکام بالا برای استفاده روزانه.',
   'هنر دست استادکاران سنتی یزد با الهام از نقوش معماری کویر و ظرافت بی‌نظیر.',
   'الگوی مینیمال مناسب استایل‌های معاصر، با عیار استاندارد و درخشش چشم‌نواز.',
-  'ساخته شده از طلای خالص ۱۸ عیار با فاکتور رسمی اتحادیه و شناسنامه معتبر میوان.',
+  'ساخته شده از طلای خالص با فاکتور رسمی اتحادیه و شناسنامه معتبر میوان.',
   'ترکیب کلاسیک خطوط منحنی و تراش دقیق که جلوه‌ای لوکس و ماندگار خلق می‌کند.',
   'دارای قفل مطمئن و استاندارد، ضدحساسیت و بسیار شیک برای موقعیت‌های خاص.'
+];
+
+const GENERAL_NAMES = [
+  'پرنیان', 'خورشید', 'مهتاب', 'آوا', 'باروک', 'سولاریس', 'شهبانو',
+  'ونکلیف', 'کارتیه', 'تیفانی', 'ترینیتی', 'میوان', 'گندم', 'اسلیمی',
+  'ترنج', 'شباهنگ', 'گلنار', 'فلورا', 'سولیتیر', 'آناهیتا', 'ترمه',
+  'رویا', 'سپهر', 'پوپک', 'مهرگان', 'آتشین', 'برلیان', 'افرا', 'نیلوفر',
+  'آترین', 'ماهک', 'چوگان', 'شمس', 'کویری', 'یزدان', 'نگین‌رخ'
 ];
 
 const products = [];
@@ -106,62 +70,158 @@ let skuCounter = 1;
 for (const cat of CATEGORIES) {
   for (let i = 0; i < cat.count; i++) {
     const sku = `MY-${String(skuCounter).padStart(4, '0')}`;
-    const typeObj = pick(TYPES_BY_CAT[cat.key]);
-    const noun = pick(NOUNS);
-    const noun2 = pick(NOUNS);
-    const name = `${typeObj.fa} طلا ${noun} ${noun !== noun2 ? noun2 : 'لوکس'}`;
-    const slug = `${typeObj.key}-${cat.key}-${noun.toLowerCase()}-${skuCounter}`;
+    let typeKey = cat.defaultType;
+    let typeFa = cat.defaultTypeFa;
 
-    // Karat distribution (18k standard, 21k for heavy traditional Yazdi gold)
-    const karatRoll = random();
     let karat = 18;
-    if (cat.key === 'heavy' && karatRoll > 0.75) {
-      karat = 21;
-    }
+    let weightGrams = randRange(cat.minW, cat.maxW, 2);
+    let wagePercent = randRange(cat.minWage, cat.maxWage, 2);
+    const profitPercent = 0.07;
+    const vatPercent = 0.10;
 
-    const weightGrams = randRange(cat.minW, cat.maxW, 2);
-    const wagePercent = randRange(cat.minWage, cat.maxWage, 2);
-    const profitPercent = 0.07; // standard 7%
-    const vatPercent = 0.10; // 10% on wage + profit
-
-    // Stone price
-    const hasStone = random() < cat.stoneRate;
+    let hasStone = false;
     let stonePrice = 0;
-    if (hasStone) {
-      stonePrice = randInt(1, 15) * 500000; // 500k to 7.5M Tomans
+    let primaryImage = '';
+    let secondaryImage = '/images/products/signature.jpg';
+    let name = '';
+    let noun = pick(GENERAL_NAMES);
+
+    // Specific category rules to guarantee accurate imagery and naming:
+    if (cat.key === 'coin') {
+      typeKey = random() > 0.5 ? 'coin' : 'bullion';
+      if (typeKey === 'coin') {
+        typeFa = 'سکه بانکی';
+        const coinTypes = ['تمام بهار آزادی', 'نیم بهار آزادی', 'ربع بهار آزادی', 'گرمی بانکی'];
+        name = `سکه ${pick(coinTypes)} میوان`;
+        karat = 21; // Bahar Azadi is 900 purity (~21.6k)
+        weightGrams = pick([8.13, 4.06, 2.03, 1.01]);
+      } else {
+        typeFa = 'شمش طلا';
+        const weights = [1, 2.5, 5, 10, 20, 50];
+        const w = pick(weights);
+        weightGrams = w;
+        name = `شمش طلا خالص ۲۴ عیار ${w} گرمی میوان`;
+        karat = 24;
+      }
+      wagePercent = randRange(0.02, 0.05, 3);
+      primaryImage = '/images/products/coin_bullion.jpg';
+      secondaryImage = '/images/products/luxury_packaging.jpg';
+    } else if (cat.key === 'men') {
+      typeKey = pick(['bracelet', 'ring']);
+      typeFa = typeKey === 'bracelet' ? 'دستبند مردانه' : 'انگشتر مردانه';
+      name = `${typeFa} طلا و چرم ${noun} مردانه`;
+      primaryImage = '/images/products/men_jewelry.jpg';
+      secondaryImage = '/images/products/craft_goldsmith.jpg';
+    } else if (cat.key === 'kids') {
+      typeKey = pick(['pendant', 'bracelet']);
+      typeFa = typeKey === 'pendant' ? 'پلاک کودک' : 'دستبند کودک';
+      name = `${typeFa} طلا طرح ${pick(['خرس تدی', 'پروانه', 'فرشته', 'ماه و ستاره'])} کودکانه`;
+      primaryImage = '/images/products/kids_jewelry.jpg';
+      secondaryImage = '/images/products/luxury_packaging.jpg';
+    } else if (cat.key === 'pendant') {
+      typeKey = 'pendant';
+      typeFa = 'آویز و پلاک';
+      name = `آویز گردنبند طلا طرح ${noun} اسلیمی یزد`;
+      primaryImage = '/images/products/pendant_medallion.jpg';
+      secondaryImage = '/images/products/necklace.jpg';
+    } else if (cat.key === 'economic') {
+      typeKey = pick(['bangle', 'ring', 'pendant']);
+      typeFa = typeKey === 'bangle' ? 'النگو' : typeKey === 'ring' ? 'رینگ کم‌اجرت' : 'پلاک کم‌اجرت';
+      name = `${typeFa} طلا مینیمال ${noun} (کم‌اجرت)`;
+      wagePercent = randRange(0.07, 0.12, 2);
+      primaryImage = '/images/products/low_wage_economic.jpg';
+      secondaryImage = '/images/products/bracelet.jpg';
+    } else if (cat.key === 'earrings') {
+      typeKey = 'earrings';
+      typeFa = 'گوشواره';
+      
+      // Determine subtype by weight and style
+      if (random() < 0.22) {
+        // Turquoise or Pomegranate specialty earring
+        hasStone = true;
+        stonePrice = randInt(10, 35) * 100000;
+        name = `گوشواره طلا انار و فیروزه نیشابور ${noun}`;
+        primaryImage = '/images/products/pomegranate_turquoise.jpg';
+        secondaryImage = '/images/products/earrings_chandelier.jpg';
+      } else if (weightGrams <= 3.2) {
+        name = `گوشواره طلا میخی مینیمال ${noun}`;
+        primaryImage = '/images/products/earrings_stud.jpg';
+        secondaryImage = '/images/products/earrings.jpg';
+      } else if (weightGrams >= 6.0) {
+        name = `گوشواره طلا آویز مجلسی لوکس ${noun}`;
+        if (random() > 0.4) {
+          hasStone = true;
+          stonePrice = randInt(15, 45) * 100000;
+          name = `گوشواره طلا آویز مجلسی با سنگ یاقوت ${noun}`;
+        }
+        primaryImage = '/images/products/earrings_chandelier.jpg';
+        secondaryImage = '/images/products/earrings.jpg';
+      } else {
+        name = `گوشواره طلا حلقه‌ای ${noun}`;
+        primaryImage = '/images/products/earrings.jpg';
+        secondaryImage = '/images/products/earrings_stud.jpg';
+      }
+    } else if (cat.key === 'ring') {
+      typeKey = 'ring';
+      typeFa = 'انگشتر';
+      if (weightGrams > 5.0 || random() > 0.5) {
+        name = `انگشتر طلا فاخر و نگین‌دار ${noun}`;
+        hasStone = random() > 0.4;
+        if (hasStone) stonePrice = randInt(10, 40) * 100000;
+        primaryImage = '/images/products/gold_ring_luxury_1791946268061.jpg';
+      } else {
+        name = `انگشتر طلا ظریف ${noun}`;
+        primaryImage = '/images/products/ring.jpg';
+      }
+      secondaryImage = '/images/products/gold_ring_luxury_1791946268061.jpg';
+    } else if (cat.key === 'necklace') {
+      typeKey = 'necklace';
+      typeFa = 'گردنبند';
+      if (weightGrams > 8.0) {
+        name = `گردنبند طلا مجلسی تراش‌خورده ${noun}`;
+        primaryImage = '/images/products/gold_necklace_pendant_1791946268677.jpg';
+      } else {
+        name = `گردنبند طلا ظریف زنجیری ${noun}`;
+        primaryImage = '/images/products/necklace.jpg';
+      }
+      secondaryImage = '/images/products/pendant_medallion.jpg';
+    } else if (cat.key === 'bracelet') {
+      typeKey = random() > 0.4 ? 'bracelet' : 'bangle';
+      typeFa = typeKey === 'bangle' ? 'النگو' : 'دستبند';
+      if (weightGrams > 7.0) {
+        name = `${typeFa} طلا بنگل کارتیه ${noun}`;
+        primaryImage = '/images/products/gold_bracelet_bangle_1791946279045.jpg';
+      } else {
+        name = `${typeFa} طلا زنجیری ${noun}`;
+        primaryImage = '/images/products/bracelet.jpg';
+      }
+      secondaryImage = '/images/products/low_wage_economic.jpg';
+    } else if (cat.key === 'set') {
+      typeKey = weightGrams > 25.0 ? 'set' : 'half_set';
+      typeFa = typeKey === 'set' ? 'سرویس کامل' : 'نیم‌ست';
+      if (weightGrams > 20.0) {
+        name = `${typeFa} طلا عروس فاخر ${noun}`;
+        primaryImage = '/images/products/gold_bridal_set_suite_1791946299635.jpg';
+      } else {
+        name = `${typeFa} طلا مدرن ${noun}`;
+        primaryImage = '/images/products/set.jpg';
+      }
+      secondaryImage = '/images/products/signature.jpg';
     }
 
-    const stock = randInt(1, 6);
-    const featured = random() < 0.12;
+    const slug = `${typeKey}-${cat.key}-${skuCounter}`;
 
-    const tags = [cat.fa, typeObj.fa, `${karat} عیار`];
+    const tags = [cat.fa, typeFa, `${karat} عیار`];
     if (hasStone) tags.push('نگین‌دار');
     else tags.push('بدون نگین');
-    if (featured) tags.push('پیشنهاد ویژه');
+    if (wagePercent <= 0.12) tags.push('کم‌اجرت');
+    if (weightGrams <= 2.5) tags.push('سبک');
+    if (i < 4) tags.push('پیشنهاد ویژه');
 
-    // High resolution product images matching category and item
-    let primaryImage = '/images/products/ring.jpg';
-    let secondaryImage = '/images/products/signature.jpg';
-
-    if (name.includes('انار') || name.includes('فیروزه')) {
-      primaryImage = '/images/products/pomegranate_turquoise.jpg';
-      secondaryImage = '/images/products/earrings.jpg';
-    } else if (typeObj.key === 'ring') {
-      primaryImage = '/images/products/ring.jpg';
-      secondaryImage = '/images/products/signature.jpg';
-    } else if (typeObj.key === 'necklace' || typeObj.key === 'pendant') {
-      primaryImage = '/images/products/necklace.jpg';
-      secondaryImage = '/images/products/signature.jpg';
-    } else if (typeObj.key === 'earrings') {
-      primaryImage = '/images/products/earrings.jpg';
-      secondaryImage = '/images/products/pomegranate_turquoise.jpg';
-    } else if (typeObj.key === 'bracelet' || typeObj.key === 'bangle' || typeObj.key === 'anklet') {
-      primaryImage = '/images/products/bracelet.jpg';
-      secondaryImage = '/images/products/signature.jpg';
-    } else if (typeObj.key === 'set' || typeObj.key === 'half_set') {
-      primaryImage = '/images/products/set.jpg';
-      secondaryImage = '/images/products/signature.jpg';
-    }
+    // Dynamic weight customization capabilities
+    const isCustomizable = cat.key !== 'coin';
+    const minCustomWeight = isCustomizable ? Number(Math.max(0.5, (weightGrams * 0.7)).toFixed(1)) : weightGrams;
+    const maxCustomWeight = isCustomizable ? Number((weightGrams * 1.5).toFixed(1)) : weightGrams;
 
     products.push({
       id: `p-${skuCounter}`,
@@ -170,8 +230,8 @@ for (const cat of CATEGORIES) {
       name,
       category: cat.key,
       categoryFa: cat.fa,
-      type: typeObj.key,
-      typeFa: typeObj.fa,
+      type: typeKey,
+      typeFa,
       karat,
       weightGrams,
       wagePercent,
@@ -179,22 +239,27 @@ for (const cat of CATEGORIES) {
       vatPercent,
       stonePrice,
       hasStone,
-      stock,
+      stock: randInt(1, 8),
       images: [
         primaryImage,
         secondaryImage
       ],
       tags,
       description: pick(DESCRIPTIONS),
-      createdAt: new Date(Date.now() - randInt(1, 180) * 86400000).toISOString(),
-      featured
+      createdAt: new Date(Date.now() - randInt(1, 150) * 86400000).toISOString(),
+      featured: i < 3,
+      weightMode: isCustomizable ? 'custom_range' : 'preset',
+      minCustomWeight,
+      maxCustomWeight,
+      weightStep: 0.1,
+      weightOptions: isCustomizable ? [minCustomWeight, weightGrams, maxCustomWeight] : [weightGrams]
     });
 
     skuCounter++;
   }
 }
 
-// Ensure output directories
+// Ensure output directory exists
 const dataDir = path.join(ROOT_DIR, 'public', 'data');
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
@@ -215,7 +280,7 @@ const sitemapUrls = [
   'https://meyvan.ir/#/terms',
   'https://meyvan.ir/#/returns',
   'https://meyvan.ir/#/privacy',
-  ...products.slice(0, 150).map(p => `https://meyvan.ir/#/product/${p.slug}`)
+  ...products.slice(0, 200).map(p => `https://meyvan.ir/#/product/${p.slug}`)
 ];
 
 const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>

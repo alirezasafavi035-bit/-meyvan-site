@@ -167,25 +167,29 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               )}
             </div>
 
-            <div className="bg-white p-3.5 rounded-xl border border-[#E5DED2] space-y-1.5 shadow-sm">
+            <div className="bg-white p-3.5 rounded-xl border border-[#E5DED2] space-y-1.5 shadow-sm text-[11px]">
               <span className="font-bold text-[#0B080F] block text-[11px] border-b pb-1 text-[#997D24]">
-                مشخصات فروشنده و شوروم:
+                مشخصات فروشنده و کارگاه:
               </span>
               <div className="flex justify-between">
-                <span className="text-[#77716A]">نام مجموعه:</span>
+                <span className="text-[#77716A]">واحد صنفی:</span>
                 <span className="font-semibold text-[#0B080F]">گالری طلا و جواهر میوان</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#77716A]">تلفن تماس مستقیم:</span>
-                <span className="font-numeral font-bold text-[#0B080F]">۰۹۱۳۲۵۶۰۶۱۶</span>
+                <span className="text-[#77716A]">پروانه کسب اتحادیه:</span>
+                <span className="font-numeral text-[#0B080F]">[TODO: شماره پروانه کسب اتحادیه طلا و جواهر یزد]</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#77716A]">نشانی شوروم:</span>
-                <span>یزد، خیابان قیام، بازار خان، راسته زرگران</span>
+                <span className="text-[#77716A]">کد اقتصادی مالیاتی:</span>
+                <span className="font-numeral text-[#0B080F]">[TODO: کد اقتصادی ۱۰ رقمی صنف طلا]</span>
               </div>
-              <div className="flex justify-between text-[11px]">
-                <span className="text-[#77716A]">وب‌سایت رسمی:</span>
-                <span className="font-sans text-[#0B080F]">meyvan.ir</span>
+              <div className="flex justify-between">
+                <span className="text-[#77716A]">نشانی و پلاک:</span>
+                <span>یزد، بازار خان، راسته زرگران [TODO: شماره پلاک و واحد]</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#77716A]">تلفن تماس:</span>
+                <span className="font-numeral font-bold text-[#0B080F]">۰۹۱۳۲۵۶۰۶۱۶ [TODO: تلفن ثابت]</span>
               </div>
             </div>
           </div>

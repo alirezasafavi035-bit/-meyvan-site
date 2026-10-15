@@ -27,18 +27,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     if (!imageError && product.images && product.images[0]) {
       return product.images[0];
     }
+    if (product.category === 'coin' || product.type === 'coin') {
+      return '/images/products/coin_bullion.jpg';
+    }
+    if (product.category === 'men' || product.tags?.includes('مردانه')) {
+      return '/images/products/men_jewelry.jpg';
+    }
+    if (product.category === 'kids' || product.tags?.includes('کودک')) {
+      return '/images/products/kids_jewelry.jpg';
+    }
+    if (product.category === 'pendant' || product.type === 'pendant') {
+      return '/images/products/pendant_medallion.jpg';
+    }
+    if (product.category === 'economic' || product.wagePercent <= 0.12) {
+      return '/images/products/low_wage_economic.jpg';
+    }
     const nameLower = product.name.toLowerCase();
-    const slugLower = product.slug.toLowerCase();
-    if (nameLower.includes('انار') || slugLower.includes('pomegranate') || slugLower.includes('فیروزه')) {
-      return '/images/products/gold_pomegranate_turquoise_1791946300076.jpg';
+    if (nameLower.includes('انار') || nameLower.includes('فیروزه')) {
+      return '/images/products/pomegranate_turquoise.jpg';
     }
     if (product.type === 'earrings') {
-      return '/images/products/gold_earrings_drop_1791946270534.jpg';
+      return product.weightGrams <= 3.2 ? '/images/products/earrings_stud.jpg' : '/images/products/earrings_chandelier.jpg';
     }
     if (product.type === 'ring') {
       return '/images/products/gold_ring_luxury_1791946268061.jpg';
     }
-    if (product.type === 'necklace' || product.type === 'pendant') {
+    if (product.type === 'necklace') {
       return '/images/products/gold_necklace_pendant_1791946268677.jpg';
     }
     if (product.type === 'bracelet' || product.type === 'bangle' || product.type === 'anklet') {
@@ -47,7 +61,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     if (product.type === 'set' || product.type === 'half_set') {
       return '/images/products/gold_bridal_set_suite_1791946299635.jpg';
     }
-    return '/images/products/gold_earrings_drop_1791946270534.jpg';
+    return '/images/products/ring.jpg';
   };
 
   const wagePercentageText = toPersianDigits(Math.round((product.wagePercent || breakdown.wageRate || 0.15) * 100));

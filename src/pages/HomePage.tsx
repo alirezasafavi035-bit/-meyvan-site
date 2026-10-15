@@ -27,97 +27,122 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
 
   const featuredProducts = products.filter((p) => p.featured).slice(0, 4);
 
-  // Axis 1: ۱۰ دسته‌بندی تخصصی میوان همراه با تصویر، عنوان، تعداد محصول و لینک مستقیم
+  // Helper to dynamically calculate real statistics from products array
+  const getCatData = (filterFn: (p: Product) => boolean) => {
+    const matching = products.filter(filterFn);
+    const count = matching.length;
+    if (count === 0) return { count: 0, weight: '—' };
+    const weights = matching.map(p => p.weightGrams);
+    const minW = Math.min(...weights);
+    const maxW = Math.max(...weights);
+    const weight = minW === maxW
+      ? `${toPersianDigits(minW.toFixed(1))} گرم`
+      : `${toPersianDigits(minW.toFixed(1))} تا ${toPersianDigits(maxW.toFixed(1))} گرم`;
+    return { count, weight };
+  };
+
+  const earringsData = getCatData(p => p.category === 'earrings' || p.type === 'earrings');
+  const ringData = getCatData(p => p.category === 'ring' || p.type === 'ring');
+  const necklaceData = getCatData(p => p.category === 'necklace' || p.type === 'necklace');
+  const braceletData = getCatData(p => p.category === 'bracelet' || p.type === 'bracelet' || p.type === 'bangle' || p.type === 'anklet');
+  const setData = getCatData(p => p.category === 'set' || p.type === 'set' || p.type === 'half_set');
+  const coinData = getCatData(p => p.category === 'coin' || p.type === 'coin' || p.type === 'bullion');
+  const pendantData = getCatData(p => p.category === 'pendant' || p.type === 'pendant');
+  const menData = getCatData(p => p.category === 'men' || p.tags.includes('مردانه') || p.name.includes('مردانه'));
+  const kidsData = getCatData(p => p.category === 'kids' || p.tags.includes('کودک') || p.name.includes('کودک'));
+  const economicData = getCatData(p => p.category === 'economic' || p.wagePercent <= 0.12 || p.tags.includes('کم‌اجرت'));
+
+  // Axis 1: ۱۰ دسته‌بندی تخصصی میوان همراه با تصویر دقیق، عنوان، تعداد محاسبه‌شده و لینک مستقیم
   const categories = [
     {
       key: 'earrings',
       type: 'earrings',
       name: 'گوشواره',
-      count: products.filter(p => p.type === 'earrings').length || 85,
-      desc: 'انواع گوشواره‌های میخی، آویز و حلقه‌ای ۱۸ عیار با قفل استاندارد و محکم',
-      weight: '۱ تا ۸ گرم',
-      image: '/images/products/gold_earrings_drop_1791946270534.jpg'
+      count: earringsData.count,
+      desc: 'انواع گوشواره‌های میخی، آویز و مجلسی ۱۸ عیار با قفل استاندارد و مطمئن',
+      weight: earringsData.weight,
+      image: '/images/products/earrings_stud.jpg'
     },
     {
       key: 'ring',
       type: 'ring',
       name: 'انگشتر',
-      count: products.filter(p => p.type === 'ring').length || 110,
+      count: ringData.count,
       desc: 'انگشترهای فاخر، پورتوفینو، رینگ‌های مینیمال و تراش‌های اصیل سنتی',
-      weight: '۲ تا ۱۲ گرم',
+      weight: ringData.weight,
       image: '/images/products/gold_ring_luxury_1791946268061.jpg'
     },
     {
       key: 'necklace',
       type: 'necklace',
       name: 'گردنبند',
-      count: products.filter(p => p.type === 'necklace').length || 92,
+      count: necklaceData.count,
       desc: 'گردنبندهای کارتیه، رولباسی، زنجیرهای ونزی و مدال‌های اسلیمی یزد',
-      weight: '۳ تا ۳۵ گرم',
+      weight: necklaceData.weight,
       image: '/images/products/gold_necklace_pendant_1791946268677.jpg'
     },
     {
       key: 'bracelet',
       type: 'bracelet',
       name: 'دستبند',
-      count: products.filter(p => p.type === 'bracelet' || p.type === 'bangle' || p.type === 'anklet').length || 78,
+      count: braceletData.count,
       desc: 'النگو، تک‌پوش، بنگل و دستبندهای تراش‌خورده با بالاترین دوام فیزیکی',
-      weight: '۲ تا ۲۵ گرم',
+      weight: braceletData.weight,
       image: '/images/products/gold_bracelet_bangle_1791946279045.jpg'
     },
     {
       key: 'set',
       type: 'set',
       name: 'نیم‌ست',
-      count: products.filter(p => p.type === 'set' || p.type === 'half_set' || p.category === 'set').length || 45,
+      count: setData.count,
       desc: 'مجموعه‌های هماهنگ گردنبند، گوشواره و دستبند برای مجالس و هدایا',
-      weight: '۸ تا ۶۰ گرم',
+      weight: setData.weight,
       image: '/images/products/gold_bridal_set_suite_1791946299635.jpg'
     },
     {
       key: 'coin',
       type: 'coin',
       name: 'سکه و شمش',
-      count: products.filter(p => p.type === 'coin' || p.category === 'heavy').length || 32,
+      count: coinData.count,
       desc: 'شمش‌های سرمایه‌گذاری استاندارد و سکه‌های بانکی با فاکتور و شناسه یکتا',
-      weight: '۰.۵ تا ۵۰ گرم',
-      image: '/images/products/signature_gold_set_1791741211906.jpg'
+      weight: coinData.weight,
+      image: '/images/products/coin_bullion.jpg'
     },
     {
       key: 'pendant',
       type: 'pendant',
       name: 'آویز و پلاک',
-      count: products.filter(p => p.type === 'pendant' || p.tags.includes('آویز') || p.name.includes('پلاک')).length || 64,
+      count: pendantData.count,
       desc: 'پلاک‌های اسمی، حروف، طرح قلب و آویزهای مینیاتوری ظریف با طناب ابریشمی یا طلا',
-      weight: '۰.۸ تا ۶ گرم',
-      image: '/images/products/gold_pomegranate_turquoise_1791946300076.jpg'
+      weight: pendantData.weight,
+      image: '/images/products/pendant_medallion.jpg'
     },
     {
       key: 'men',
       type: 'all',
       name: 'محصولات مردانه',
-      count: products.filter(p => p.category === 'heavy' || p.tags.includes('مردانه') || p.weightGrams >= 5).length || 48,
+      count: menData.count,
       desc: 'دستبندهای چرم و طلا، انگشترهای عقیق و رینگ‌های مردانه سنگین با عیار ۷۵۰ استاندارد',
-      weight: '۴ تا ۲۵ گرم',
-      image: '/images/products/craft_goldsmith_yazd_1791741185534.jpg'
+      weight: menData.weight,
+      image: '/images/products/men_jewelry.jpg'
     },
     {
       key: 'kids',
       type: 'all',
       name: 'محصولات بچگانه',
-      count: products.filter(p => p.category === 'minimal' || p.weightGrams <= 2.2).length || 40,
+      count: kidsData.count,
       desc: 'گوشواره‌های میخی ایمن، دستبند زنجیری نوزادی و پلاک‌های کارتونی ضدحساسیت',
-      weight: '۰.۶ تا ۳ گرم',
-      image: '/images/products/necklace.jpg'
+      weight: kidsData.weight,
+      image: '/images/products/kids_jewelry.jpg'
     },
     {
       key: 'economic',
       type: 'all',
       name: 'محصولات کم‌اجرت',
-      count: products.filter(p => p.wagePercent <= 0.15 || p.category === 'economic').length || 120,
+      count: economicData.count,
       desc: 'طلاهای مینیمال با کمترین درصد اجرت کارگاهی، مناسب سرمایه‌گذاری و پس‌انداز هوشمندانه',
-      weight: '۱ تا ۲۰ گرم',
-      image: '/images/products/luxury_packaging_cert_1791741197853.jpg'
+      weight: economicData.weight,
+      image: '/images/products/low_wage_economic.jpg'
     }
   ];
 
@@ -412,11 +437,16 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
             <div className="lg:col-span-5 relative order-2 lg:order-1">
               <div className="rounded-2xl overflow-hidden border border-[#D4AF37]/30 shadow-2xl bg-[#14101A]">
                 <img
-                  src="/src/assets/images/craft_goldsmith_yazd_1791741185534.jpg"
+                  src="/images/craft.jpg"
                   alt="استادکار زرگر در کارگاه سنتی یزد"
                   width={600}
                   height={450}
                   loading="lazy"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.onerror = null;
+                    target.src = '/images/products/craft_goldsmith.jpg';
+                  }}
                   className="w-full h-auto object-cover aspect-[4/3]"
                 />
               </div>
@@ -505,11 +535,16 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
             <div className="lg:col-span-5">
               <div className="rounded-2xl overflow-hidden border border-[#D4AF37]/30 shadow-md">
                 <img
-                  src="/src/assets/images/luxury_packaging_cert_1791741197853.jpg"
+                  src="/images/packaging.jpg"
                   alt="جعبه لوکس بسته‌بندی میوان و شناسنامه رسمی طلا"
                   width={500}
                   height={375}
                   loading="lazy"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.onerror = null;
+                    target.src = '/images/products/luxury_packaging.jpg';
+                  }}
                   className="w-full h-auto object-cover aspect-[4/3]"
                 />
               </div>

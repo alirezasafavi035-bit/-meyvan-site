@@ -1,4 +1,18 @@
-export type CategoryKey = 'minimal' | 'economic' | 'everyday' | 'heavy' | 'set' | 'jewelry';
+export type CategoryKey =
+  | 'earrings'
+  | 'ring'
+  | 'necklace'
+  | 'bracelet'
+  | 'set'
+  | 'coin'
+  | 'pendant'
+  | 'men'
+  | 'kids'
+  | 'economic'
+  | 'minimal'
+  | 'everyday'
+  | 'heavy'
+  | 'jewelry';
 
 export type ProductTypeKey =
   | 'ring'
@@ -10,7 +24,8 @@ export type ProductTypeKey =
   | 'anklet'
   | 'set'
   | 'half_set'
-  | 'coin';
+  | 'coin'
+  | 'bullion';
 
 export type WageMethod = 'percentage' | 'fixed_per_gram' | 'fixed_per_item';
 export type ProfitBase = 'gold_plus_wage' | 'gold_only';

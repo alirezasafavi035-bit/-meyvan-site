@@ -37,8 +37,13 @@ export const AboutPage: React.FC = () => {
 
         <div className="md:col-span-6 rounded-2xl overflow-hidden border border-[#D4AF37]/30">
           <img
-            src="/src/assets/images/craft_goldsmith_yazd_1791741185534.jpg"
+            src="/images/craft.jpg"
             alt="کارگاه تاریخی زرگری میوان در یزد"
+            onError={(e) => {
+              const target = e.currentTarget;
+              target.onerror = null;
+              target.src = '/images/products/craft_goldsmith.jpg';
+            }}
             className="w-full h-auto object-cover aspect-[4/3]"
           />
         </div>
