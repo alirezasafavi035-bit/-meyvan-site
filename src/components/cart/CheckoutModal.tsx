@@ -32,15 +32,24 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const paymentApi = import.meta.env.VITE_PAYMENT_API;
+  const paymentApi = import.meta.env.VITE_PAYMENT_API || '/api';
 
   const validateForm = () => {
-    if (!customer.fullName.trim()) return 'لطفاً نام و نام خانوادگی خود را وارد کنید.';
-    if (!customer.mobile.trim() || !/^09[0-9]{9}$/.test(customer.mobile.trim())) {
+    if (!customer.fullName.trim() || customer.fullName.trim().length < 3) {
+      return 'لطفاً نام و نام خانوادگی کامل خود (حداقل ۳ حرف) را وارد کنید.';
+    }
+    const cleanMobile = customer.mobile.trim().replace(/[۰-۹]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 1728));
+    if (!cleanMobile || !/^09[0-9]{9}$/.test(cleanMobile)) {
       return 'لطفاً شماره موبایل معتبر ۱۱ رقمی (مانند ۰۹۱۲۳۴۵۶۷۸۹) وارد کنید.';
     }
+    if (customer.postalCode.trim()) {
+      const cleanPostal = customer.postalCode.trim().replace(/[۰-۹]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 1728));
+      if (!/^[0-9]{10}$/.test(cleanPostal)) {
+        return 'کد پستی ۱۰ رقمی باید صرفاً شامل ۱۰ رقم عددی بدون خط فاصله باشد.';
+      }
+    }
     if (!customer.address.trim() || customer.address.trim().length < 10) {
-      return 'لطفاً نشانی کامل پستی دقیق خود را وارد نمایید.';
+      return 'لطفاً نشانی کامل پستی دقیق خود (شامل خیابان، کوچه و پلاک) را وارد نمایید.';
     }
     return '';
   };
@@ -55,12 +64,50 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
     setErrorMsg('');
     setLoading(true);
 
-    // If Payment API endpoint is configured
+    const generatedOrderId = `ORD-${Date.now().toString().slice(-6)}`;
+    const snapshot = {
+      orderId: generatedOrderId,
+      items: items.map(i => ({
+        product: {
+          id: i.product.id,
+          sku: i.product.sku,
+          name: i.product.name,
+          categoryFa: i.product.categoryFa,
+          typeFa: i.product.typeFa,
+          karat: i.product.karat,
+          weightGrams: i.selectedWeight || i.product.weightGrams,
+          wagePercent: i.product.wagePercent,
+          stonePrice: i.product.stonePrice,
+          images: i.product.images
+        },
+        quantity: i.quantity,
+        selectedWeight: i.selectedWeight,
+        isCustomWeight: i.isCustomWeight
+      })),
+      customer,
+      totalWeightGrams,
+      totalPriceTomans,
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      localStorage.setItem('meyvan_last_order', JSON.stringify(snapshot));
+    } catch {
+      // Storage quota or private mode fallback
+    }
+
+    // If Payment API endpoint is configured (or proxy endpoint)
     if (paymentApi) {
       try {
         const orderPayload = {
-          items: items.map((i) => ({ sku: i.product.sku, quantity: i.quantity })),
+          items: items.map((i) => ({
+            sku: i.product.sku,
+            quantity: i.quantity,
+            selectedWeight: i.selectedWeight,
+            isCustomWeight: i.isCustomWeight
+          })),
           customer,
+          clientCalculatedTotal: totalPriceTomans,
           createdAt: new Date().toISOString()
         };
 
@@ -88,7 +135,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
         }
       } catch (err: unknown) {
         console.error('Payment error', err);
-        setErrorMsg('خطا در اتصال به درگاه. لطفاً از طریق واتساپ سفارش خود را نهایی کنید.');
+        setErrorMsg('خطا در اتصال به درگاه پرداخت آنلاین. می‌توانید از گزینه سفارش واتساپ استفاده فرمایید.');
         setLoading(false);
         return;
       }
@@ -96,11 +143,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
 
     // Fallback Mock Transaction for demonstration / sandbox preview
     setTimeout(() => {
-      const mockOrderId = `ORD-${Date.now().toString().slice(-6)}`;
       const mockRefId = `MEYVAN-${Math.floor(10000000 + Math.random() * 90000000)}`;
       clearCart();
       onSuccess();
-      navigate(`/payment-result?status=OK&orderId=${mockOrderId}&refId=${mockRefId}`);
+      navigate(`/payment-result?status=OK&orderId=${generatedOrderId}&refId=${mockRefId}`);
     }, 1200);
   };
 

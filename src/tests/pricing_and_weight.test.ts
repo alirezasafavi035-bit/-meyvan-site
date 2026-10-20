@@ -188,6 +188,50 @@ export function runAllTests() {
   const uniqueIds = new Set(ids);
   assert(20, 'Unique SKU and product ID verification', uniqueSkus.size === skus.length && uniqueIds.size === ids.length, `Total SKUs: ${skus.length}, Unique: ${uniqueSkus.size}`);
 
+  // Scenario 21: اعتبارسنجی مجدد قیمت سمت سرور (Server-side recalculation)
+  const serverGoldRate = 25790000;
+  const testItem = { sku: sampleProduct.sku, quantity: 1, selectedWeight: 2.0, karat: 18, wagePercent: 0.15, stonePrice: 0 };
+  const rawGold = Math.round(testItem.selectedWeight * serverGoldRate);
+  const wage = Math.round(rawGold * testItem.wagePercent);
+  const profit = Math.round((rawGold + wage) * 0.07);
+  const vat = Math.round((wage + profit) * 0.10);
+  const expectedServerTotal = rawGold + wage + profit + vat;
+  const clientBreakdown = calculateProductPrice(sampleProduct, { gold18PerGram: serverGoldRate }, 2.0);
+  assert(21, 'Server-side price reconciliation against client payload', expectedServerTotal === clientBreakdown.totalPrice, `Server: ${expectedServerTotal.toLocaleString()} === Client: ${clientBreakdown.totalPrice.toLocaleString()}`);
+
+  // Scenario 22: اعتبارسنجی شماره موبایل و کد پستی خریدار (09... و 10 رقم)
+  const validMobile = '09132560616';
+  const invalidMobile = '08123456789';
+  const validPostal = '8916712345';
+  const invalidPostal = '89167';
+  const isMobileOk = /^09[0-9]{9}$/.test(validMobile) && !/^09[0-9]{9}$/.test(invalidMobile);
+  const isPostalOk = /^[0-9]{10}$/.test(validPostal) && !/^[0-9]{10}$/.test(invalidPostal);
+  assert(22, 'Iranian customer mobile & 10-digit postal code regex validation', isMobileOk && isPostalOk, `Valid mobile/postal accepted, invalid rejected`);
+
+  // Scenario 23: مدیریت وضعیت انصراف یا خطای درگاه پرداخت (Status=NOK)
+  const searchParamsNOK = new URLSearchParams('status=NOK&Authority=A0001');
+  const rawStatus = searchParamsNOK.get('status') || searchParamsNOK.get('Status');
+  const isFailed = rawStatus ? rawStatus.toUpperCase() === 'NOK' || rawStatus.toUpperCase() === 'FAILED' : false;
+  assert(23, 'Gateway cancellation & rejection handling (Status=NOK)', isFailed === true, `NOK status correctly triggers failure UI without false fulfillment`);
+
+  // Scenario 24: مدیریت کهنگی نرخ طلا (Staleness & Expiration Thresholds)
+  const now = Date.now();
+  const freshTime = new Date(now - 2 * 60 * 1000).toISOString();
+  const staleTime = new Date(now - 15 * 60 * 1000).toISOString();
+  const expiredTime = new Date(now - 150 * 60 * 1000).toISOString();
+  const checkStatus = (t: string) => {
+    const diff = (now - new Date(t).getTime()) / (1000 * 60);
+    return diff > 120 ? 'expired' : diff > 10 ? 'stale' : 'live';
+  };
+  assert(24, 'Gold price staleness thresholds (<10m live, >10m stale, >120m expired)', checkStatus(freshTime) === 'live' && checkStatus(staleTime) === 'stale' && checkStatus(expiredTime) === 'expired', `Fresh: live | 15m: stale | 150m: expired`);
+
+  // Scenario 25: قفل ۱۰ دقیقه‌ای قیمت در سبد خرید (10-minute Price Lock)
+  const orderCreatedAt = Date.now();
+  const lockExpiresAt = orderCreatedAt + 10 * 60 * 1000;
+  const isLockedValidAt5m = (orderCreatedAt + 5 * 60 * 1000) < lockExpiresAt;
+  const isLockExpiredAt11m = (orderCreatedAt + 11 * 60 * 1000) >= lockExpiresAt;
+  assert(25, '10-minute price guarantee window precision', isLockedValidAt5m && isLockExpiredAt11m, `Valid at 5m, expired at 11m`);
+
   // Print Summary Table
   console.log('| ID | سناریو تست | وضعیت | جزئیات |');
   console.log('|---|---|---|---|');

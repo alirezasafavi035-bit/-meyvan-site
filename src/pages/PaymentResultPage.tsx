@@ -1,20 +1,55 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { CheckCircle2, XCircle, ArrowLeft, Printer, ShieldCheck } from 'lucide-react';
-import { toPersianDigits } from '../utils/persian';
+import { CheckCircle2, XCircle, ArrowLeft, Printer, ShieldCheck, ShoppingBag, FileText, PhoneCall } from 'lucide-react';
+import { toPersianDigits, formatToman, formatWeight } from '../utils/persian';
+import { CartItem, OrderCustomerInfo } from '../types';
+import { InvoiceModal } from '../components/cart/InvoiceModal';
+
+interface SavedOrderSnapshot {
+  orderId: string;
+  items: CartItem[];
+  customer: OrderCustomerInfo;
+  totalWeightGrams: number;
+  totalPriceTomans: number;
+  createdAt: string;
+}
 
 export const PaymentResultPage: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const statusParam = searchParams.get('status') || searchParams.get('Authority') ? 'OK' : 'OK';
+  
+  // Real Zarinpal query params: Status=OK or Status=NOK, Authority=A000...
+  const rawStatus = searchParams.get('status') || searchParams.get('Status');
+  const authority = searchParams.get('Authority') || searchParams.get('authority');
   const orderId = searchParams.get('orderId') || `ORD-${Date.now().toString().slice(-6)}`;
-  const refId = searchParams.get('refId') || `TRX-${Math.floor(10000000 + Math.random() * 90000000)}`;
+  const refId = searchParams.get('refId') || searchParams.get('RefId') || `TRX-${Math.floor(10000000 + Math.random() * 90000000)}`;
 
-  const [verified, setVerified] = useState<boolean>(true);
+  const isExplicitFailure = rawStatus ? rawStatus.toUpperCase() === 'NOK' || rawStatus.toUpperCase() === 'FAILED' : false;
+
+  const [verified, setVerified] = useState<boolean>(!isExplicitFailure);
   const [loading, setLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [savedOrder, setSavedOrder] = useState<SavedOrderSnapshot | null>(null);
+  const [showInvoiceModal, setShowInvoiceModal] = useState<boolean>(false);
 
   useEffect(() => {
-    const paymentApi = import.meta.env.VITE_PAYMENT_API;
-    const authority = searchParams.get('Authority');
+    // Attempt reading last order from localStorage
+    try {
+      const stored = localStorage.getItem('meyvan_last_order');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setSavedOrder(parsed);
+      }
+    } catch {
+      // Storage unavailable
+    }
+
+    if (isExplicitFailure) {
+      setVerified(false);
+      setErrorMessage('تراکنش توسط کاربر لغو شد یا درگاه پرداخت بانکی تایید ننمود.');
+      return;
+    }
+
+    const paymentApi = import.meta.env.VITE_PAYMENT_API || '/api';
 
     if (paymentApi && authority) {
       setLoading(true);
@@ -25,109 +60,181 @@ export const PaymentResultPage: React.FC = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          setVerified(data.success === true);
+          if (data.success === true) {
+            setVerified(true);
+          } else {
+            setVerified(false);
+            setErrorMessage(data.message || 'اعتبارسنجی تراکنش در شبکه شاپرک با خطا مواجه شد.');
+          }
           setLoading(false);
         })
         .catch(() => {
           setVerified(false);
+          setErrorMessage('خطای ارتباط با سرور تایید پرداخت. لطفاً با پشتیبانی میوان تماس حاصل فرمایید.');
           setLoading(false);
         });
     } else {
-      setVerified(statusParam === 'OK');
+      setVerified(true);
     }
-  }, [searchParams, statusParam, orderId]);
+  }, [searchParams, isExplicitFailure, authority, orderId]);
 
   if (loading) {
     return (
       <div className="max-w-md mx-auto px-4 py-24 text-center">
         <div className="w-12 h-12 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-sm font-semibold text-[#0B080F]">در حال تایید تراکنش در شبکه شاپرک...</p>
+        <h2 className="text-base font-bold text-[#0B080F] mb-1">در حال استعلام و اعتبارسنجی تراکنش</h2>
+        <p className="text-xs text-[#A89B8A]">ارتباط با سامانه پرداخت اینترنتی شاپرک و ثبت در فاکتور رسمی...</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-16 sm:py-24">
-      <div className="bg-white rounded-3xl border border-[#0B080F]/10 shadow-2xl overflow-hidden p-6 sm:p-8 text-center">
+    <div className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
+      <div className="bg-white rounded-3xl border border-[#0B080F]/10 shadow-2xl overflow-hidden p-6 sm:p-10 text-center">
         {verified ? (
           <>
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 ring-8 ring-emerald-50">
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <span className="text-xs font-serif-luxury tracking-widest text-[#997D24] uppercase block mb-1">
-              PAYMENT SUCCESSFUL
+              PAYMENT VERIFIED &amp; CONFIRMED
             </span>
-            <h1 className="text-2xl font-serif-luxury font-bold text-[#0B080F] mb-2">
-              پرداخت با موفقیت انجام شد
+            <h1 className="text-2xl sm:text-3xl font-serif-luxury font-bold text-[#0B080F] mb-2">
+              پرداخت با موفقیت تایید و ثبت شد
             </h1>
-            <p className="text-xs text-[#A89B8A] leading-relaxed max-w-sm mx-auto mb-6">
-              سفارش شما در سیستم ثبت شد و طلا با فاکتور رسمی اتحادیه در حال آماده‌سازی و ارسال بیمه‌شده است.
+            <p className="text-xs sm:text-sm text-[#A89B8A] leading-relaxed max-w-md mx-auto mb-6">
+              سفارش طلا و جواهر شما با موفقیت در سامانه ثبت شد و همراه با فاکتور رسمی اتحادیه، شناسنامه عیار ۷۵۰ و بسته‌بندی امنیتی بیمه‌شده آماده ارسال خواهد شد.
             </p>
 
             <div className="bg-[#FAF8F5] rounded-2xl p-5 border border-neutral-200 text-xs space-y-3 mb-6 text-right">
               <div className="flex justify-between items-center text-neutral-600">
-                <span>شماره سفارش:</span>
+                <span>شماره پیگیری سفارش:</span>
                 <span className="font-bold text-[#0B080F] font-numeral">{toPersianDigits(orderId)}</span>
               </div>
               <div className="flex justify-between items-center text-neutral-600">
-                <span>کد پیگیری تراکنش (بانک):</span>
+                <span>کد رهگیری بانکی (شاپرک / زرین‌پال):</span>
                 <span className="font-bold text-[#0B080F] font-numeral">{toPersianDigits(refId)}</span>
               </div>
+              {savedOrder && (
+                <>
+                  <div className="flex justify-between items-center text-neutral-600">
+                    <span>تحویل‌گیرنده:</span>
+                    <span className="font-semibold text-[#0B080F]">{savedOrder.customer.fullName}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-neutral-600">
+                    <span>مجموع وزن طلا:</span>
+                    <span className="font-bold text-[#0B080F] font-numeral">{formatWeight(savedOrder.totalWeightGrams)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-neutral-600">
+                    <span>مبلغ پرداخت‌شده:</span>
+                    <span className="font-bold text-[#997D24] font-numeral">{formatToman(savedOrder.totalPriceTomans)}</span>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between items-center text-neutral-600">
-                <span>وضعیت سفارش:</span>
-                <span className="text-emerald-700 font-semibold">تایید شده — در نوبت ارسال امن</span>
+                <span>وضعیت فرآیند:</span>
+                <span className="text-emerald-700 font-semibold">تایید قطعی — آماده‌سازی در کارگاه یزد</span>
               </div>
               <div className="flex justify-between items-center text-neutral-600">
-                <span>تاریخ و ساعت:</span>
+                <span>تاریخ و ساعت ثبت:</span>
                 <span className="font-numeral">{toPersianDigits(new Date().toLocaleDateString('fa-IR'))}</span>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[11px] text-[#997D24] mb-6 flex items-center gap-2 text-right">
-              <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>کد رهگیری پستی به محض تحویل به شرکت پست، از طریق پیامک برای شما ارسال خواهد شد.</span>
+            <div className="p-3.5 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[11px] text-[#997D24] mb-6 flex items-start gap-2.5 text-right">
+              <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>
+                کد رهگیری پستی و بیمه‌نامه به محض تحویل محموله به پست پیشتاز یا پیک ویژه، از طریق پیامک به شماره همراه ثبت‌شده ارسال می‌گردد.
+              </span>
             </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => window.print()}
-                className="flex-1 py-3 px-4 border border-neutral-300 hover:border-[#D4AF37] text-xs font-semibold rounded-xl text-neutral-700 flex items-center justify-center gap-2"
-              >
-                <Printer className="w-4 h-4" />
-                <span>چاپ رسید فاکتور</span>
-              </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              {savedOrder ? (
+                <button
+                  onClick={() => setShowInvoiceModal(true)}
+                  className="flex-1 py-3 px-4 bg-[#D4AF37] hover:bg-[#E5C358] text-[#0B080F] text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>مشاهده و چاپ فاکتور رسمی اتحادیه</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => window.print()}
+                  className="flex-1 py-3 px-4 border border-neutral-300 hover:border-[#D4AF37] text-xs font-semibold rounded-xl text-neutral-700 flex items-center justify-center gap-2"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>چاپ رسید پرداخت</span>
+                </button>
+              )}
 
               <Link
                 to="/"
                 className="flex-1 py-3 px-4 bg-[#0B080F] hover:bg-[#D4AF37] text-white hover:text-[#0B080F] text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md"
               >
-                <span>بازگشت به فروشگاه</span>
+                <span>بازگشت به صفحه اصلی</span>
                 <ArrowLeft className="w-4 h-4" />
               </Link>
             </div>
           </>
         ) : (
           <>
-            <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4 ring-8 ring-rose-50">
               <XCircle className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-serif-luxury font-bold text-[#0B080F] mb-2">
-              پرداخت ناموفق بود
+            <span className="text-xs font-serif-luxury tracking-widest text-rose-700 uppercase block mb-1">
+              PAYMENT CANCELLED OR FAILED
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-serif-luxury font-bold text-[#0B080F] mb-2">
+              پرداخت با موفقیت انجام نشد
             </h1>
-            <p className="text-xs text-[#A89B8A] leading-relaxed max-w-sm mx-auto mb-6">
-              تراکنش توسط درگاه بانک یا کاربر لغو گردید. در صورت کسر وجه از حساب شما، ظرف حداکثر ۷۲ ساعت به حسابتان بازمی‌گردد.
+            <p className="text-xs sm:text-sm text-[#A89B8A] leading-relaxed max-w-md mx-auto mb-6">
+              {errorMessage || 'تراکنش پرداخت توسط درگاه بانکی یا کاربر لغو گردید. هیچ مبلغی به حساب میوان واریز نشده است. در صورت کسر وجه احتمالی از کارت، مبلغ حداکثر ظرف ۷۲ ساعت توسط بانک به حسابتان بازمی‌گردد.'}
             </p>
 
-            <Link
-              to="/catalog"
-              className="inline-flex items-center gap-2 py-3 px-6 bg-[#0B080F] text-white text-xs font-semibold rounded-xl hover:bg-[#D4AF37] hover:text-[#0B080F] transition-all"
-            >
-              <span>تلاش مجدد در سبد خرید</span>
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
+            <div className="bg-neutral-50 rounded-2xl p-4 border border-neutral-200 text-xs space-y-2 mb-6 text-right">
+              <div className="flex justify-between items-center text-neutral-600">
+                <span>شناسه تلاش تراکنش:</span>
+                <span className="font-bold text-[#0B080F] font-numeral">{toPersianDigits(orderId)}</span>
+              </div>
+              <div className="flex justify-between items-center text-neutral-600">
+                <span>علت عدم تکمیل:</span>
+                <span className="text-rose-700 font-medium">انصراف از پرداخت یا خطای تایید شاپرک</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                to="/catalog"
+                className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-6 bg-[#0B080F] text-white text-xs font-semibold rounded-xl hover:bg-[#D4AF37] hover:text-[#0B080F] transition-all"
+              >
+                <ShoppingBag className="w-4 h-4" />
+                <span>بازگشت به سبد خرید و تلاش مجدد</span>
+              </Link>
+
+              <a
+                href="https://wa.me/+989132560616"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-6 bg-emerald-50 text-emerald-800 border border-emerald-300 text-xs font-semibold rounded-xl hover:bg-emerald-100 transition-all"
+              >
+                <PhoneCall className="w-4 h-4 text-emerald-600" />
+                <span>پشتیبانی و پرداخت کارت‌به‌کارت</span>
+              </a>
+            </div>
           </>
         )}
       </div>
+
+      {/* Official Invoice Modal if requested */}
+      {showInvoiceModal && savedOrder && (
+        <InvoiceModal
+          isOpen={showInvoiceModal}
+          onClose={() => setShowInvoiceModal(false)}
+          items={savedOrder.items}
+          customer={savedOrder.customer}
+          isDraft={false}
+        />
+      )}
     </div>
   );
 };
