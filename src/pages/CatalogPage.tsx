@@ -231,7 +231,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
             کاتالوگ طلا و جواهر میوان
           </h1>
           <p className="text-xs text-[#A89B8A] mt-1 font-numeral">
-            نمایش {toPersianDigits(filteredProducts.length)} قطعه طلا از مجموع ۵۰۰ محصول دست‌ساز
+            نمایش {toPersianDigits(filteredProducts.length)} قطعه طلا از مجموع {toPersianDigits(products.length)} محصول دست‌ساز
           </p>
         </div>
 

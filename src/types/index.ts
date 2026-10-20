@@ -61,6 +61,9 @@ export interface Product {
   maxCustomWeight?: number;
   weightStep?: number;
   weightOptions?: number[];
+  // Traceability & Reference metadata
+  sourceUrl?: string;
+  sourceStore?: string;
 }
 
 export interface PricingConfig {

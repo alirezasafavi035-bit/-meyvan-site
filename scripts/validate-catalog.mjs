@@ -23,8 +23,8 @@ const products = JSON.parse(raw);
 
 console.log(`Validating ${products.length} products...`);
 
-if (products.length !== 500) {
-  console.error(`Failed: Expected 500 products, found ${products.length}`);
+if (products.length < 500) {
+  console.error(`Failed: Expected at least 500 products, found ${products.length}`);
   process.exit(1);
 }
 
@@ -90,4 +90,4 @@ if (errors > 0) {
   process.exit(1);
 }
 
-console.log('Catalog validation PASSED! All 500 products are valid and unique.');
+console.log(`Catalog validation PASSED! All ${products.length} products are valid and unique.`);
