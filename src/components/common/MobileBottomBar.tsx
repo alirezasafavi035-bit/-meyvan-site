@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { Home, Grid, Search, Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
-import { toPersianDigits } from '../../utils/persian';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface MobileBottomBarProps {
   onOpenSearch?: () => void;
@@ -12,12 +12,13 @@ interface MobileBottomBarProps {
 export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ onOpenSearch }) => {
   const { itemCount, openCart } = useCart();
   const { count: wishlistCount } = useWishlist();
+  const { t, formatNum } = useLanguage();
 
   return (
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0B080F]/95 backdrop-blur-lg border-t border-[#D4AF37]/20 px-2 py-1.5 flex items-center justify-around text-[10px] text-white/70"
       style={{ maxHeight: '60px' }}
-      aria-label="ناوبری اصلی موبایل"
+      aria-label="Mobile Navigation"
     >
       {/* Home */}
       <NavLink
@@ -29,7 +30,7 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ onOpenSearch }
         }
       >
         <Home className="w-5 h-5" strokeWidth={1.75} />
-        <span>خانه</span>
+        <span>{t('nav.home')}</span>
       </NavLink>
 
       {/* Products */}
@@ -42,7 +43,7 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ onOpenSearch }
         }
       >
         <Grid className="w-5 h-5" strokeWidth={1.75} />
-        <span>محصولات</span>
+        <span>{t('nav.catalog')}</span>
       </NavLink>
 
       {/* Search */}
@@ -51,7 +52,7 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ onOpenSearch }
         className="flex flex-col items-center gap-0.5 py-1 px-2 hover:text-white transition-colors"
       >
         <Search className="w-5 h-5" strokeWidth={1.75} />
-        <span>جستجو</span>
+        <span>{t('nav.search')}</span>
       </button>
 
       {/* Wishlist */}
@@ -64,10 +65,10 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ onOpenSearch }
         }
       >
         <Heart className="w-5 h-5" strokeWidth={1.75} />
-        <span>علاقه‌مندی</span>
+        <span>{t('nav.wishlist')}</span>
         {wishlistCount > 0 && (
           <span className="absolute top-0.5 right-1 min-w-[14px] h-[14px] bg-[#D4AF37] text-[#0B080F] text-[9px] font-bold rounded-full flex items-center justify-center px-0.5 font-numeral">
-            {toPersianDigits(wishlistCount)}
+            {formatNum(wishlistCount)}
           </span>
         )}
       </NavLink>
@@ -78,13 +79,14 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ onOpenSearch }
         className="relative flex flex-col items-center gap-0.5 py-1 px-2 text-[#D4AF37] font-medium"
       >
         <ShoppingBag className="w-5 h-5" strokeWidth={1.75} />
-        <span>سبد خرید</span>
+        <span>{t('nav.cart')}</span>
         {itemCount > 0 && (
           <span className="absolute top-0.5 right-1 min-w-[15px] h-[15px] bg-[#D4AF37] text-[#0B080F] text-[9px] font-bold rounded-full flex items-center justify-center px-0.5 font-numeral">
-            {toPersianDigits(itemCount)}
+            {formatNum(itemCount)}
           </span>
         )}
       </button>
     </nav>
   );
 };
+

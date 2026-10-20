@@ -1,9 +1,10 @@
 import React, { useRef } from 'react';
 import { useGoldPrice } from '../../context/GoldPriceContext';
-import { CartItem, OrderCustomerInfo, Product } from '../../types';
+import { CartItem, OrderCustomerInfo } from '../../types';
 import { formatToman, formatWeight, toPersianDigits } from '../../utils/persian';
-import { X, Printer, ShieldCheck, Download, Share2, Check, MessageCircle, AlertCircle } from 'lucide-react';
+import { X, Printer, ShieldCheck, Share2, Check, MessageCircle, AlertCircle } from 'lucide-react';
 import { Logo } from '../common/Logo';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface InvoiceModalProps {
   isOpen: boolean;
@@ -20,7 +21,8 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   customer,
   isDraft = true
 }) => {
-  const { generateInvoice, pricingConfig } = useGoldPrice();
+  const { generateInvoice } = useGoldPrice();
+  const { t, language } = useLanguage();
   const [copied, setCopied] = React.useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
@@ -49,7 +51,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   };
 
   const handleCopySummary = () => {
-    const summary = `پیش‌فاکتور میوان #${invoice.invoiceNumber} | مبلغ نهایی: ${formatToman(invoice.totals.totalPayable)}`;
+    const summary = `${isDraft ? t('invoice.pre_title') : t('invoice.final_title')} #${invoice.invoiceNumber} | ${invoice.totals.totalPayable.toLocaleString(language === 'fa' ? 'fa-IR' : 'en-US')} ${t('currency')}`;
     navigator.clipboard.writeText(summary);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -65,10 +67,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             <ShieldCheck className="w-5 h-5 text-[#D4AF37]" />
             <div>
               <h3 className="font-serif-luxury text-sm sm:text-base font-semibold">
-                {isDraft ? 'پیش‌فاکتور رسمی و شفاف میوان' : 'فاکتور قطعی فروش طلا'}
+                {isDraft ? t('invoice.pre_title') : t('invoice.final_title')}
               </h3>
               <p className="text-[11px] text-[#A89B8A]">
-                محاسبه شده با موتور مرکزی قیمت‌گذاری و ضرایب مصوب
+                {language === 'fa' ? 'محاسبه شده با موتور مرکزی قیمت‌گذاری و ضرایب مصوب' : 'Calculated via central pricing engine & Union statutory rules'}
               </p>
             </div>
           </div>
@@ -77,25 +79,25 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             <button
               onClick={handlePrint}
               className="px-3 py-1.5 bg-[#D4AF37] hover:bg-[#E5C358] text-[#0B080F] font-semibold text-xs rounded-lg flex items-center gap-1.5 transition-colors"
-              title="چاپ یا ذخیره PDF"
+              title={t('invoice.print_btn')}
             >
               <Printer className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">چاپ / دانلود PDF</span>
+              <span className="hidden sm:inline">{t('invoice.print_btn')}</span>
             </button>
 
             <button
               onClick={handleShareWhatsApp}
               className="px-3 py-1.5 bg-[#25D366]/20 hover:bg-[#25D366]/30 text-emerald-300 font-semibold text-xs rounded-lg flex items-center gap-1.5 transition-colors"
-              title="ارسال فاکتور به واتساپ گالری"
+              title={t('invoice.whatsapp_btn')}
             >
               <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
-              <span className="hidden sm:inline">ارسال به واتساپ</span>
+              <span className="hidden sm:inline">{t('invoice.whatsapp_btn')}</span>
             </button>
 
             <button
               onClick={onClose}
               className="p-1.5 text-white/70 hover:text-white rounded-lg hover:bg-white/10"
-              aria-label="بستن"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -103,7 +105,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
         </div>
 
         {/* Printable Invoice Sheet */}
-        <div ref={printRef} className="p-6 sm:p-8 space-y-6 text-xs bg-[#FCFAF7] print:bg-white">
+        <div ref={printRef} className="p-6 sm:p-8 space-y-6 text-xs bg-[#FCFAF7] print:bg-white text-start">
           
           {/* Invoice Document Header */}
           <div className="border-b-2 border-[#0B080F] pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -111,124 +113,156 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <Logo variant="emblem" size="sm" />
               <div>
                 <h1 className="text-xl sm:text-2xl font-serif-luxury font-bold text-[#0B080F]">
-                  گالری طلا و جواهر میوان (MEYVAN)
+                  {language === 'fa' ? 'گالری طلا و جواهر میوان (MEYVAN)' : 'MEYVAN Fine Jewelry Atelier'}
                 </h1>
                 <p className="text-[10px] sm:text-xs text-[#77716A] mt-0.5 font-serif-luxury tracking-wider">
-                  MEYVAN GOLD &amp; JEWELRY · YAZD · SHAPING TIMELESS BEAUTY
+                  MEYVAN GOLD &amp; JEWELRY · YAZD · TIMELESS BRILLIANCE
                 </p>
                 <p className="text-[10px] text-[#A89B8A] mt-1">
-                  شناسه صنفی: کارگاه و شوروم طلای یزد | تلفن همراه و پشتیبانی: ۰۹۱۳۲۵۶۰۶۱۶
+                  {language === 'fa' ? 'شناسه صنفی: کارگاه و شوروم طلای یزد | تلفن همراه: ۰۹۱۳۲۵۶۰۶۱۶' : 'Central Atelier: Yazd Gold Bazaar | Hotline: +98 913 256 0616'}
                 </p>
               </div>
             </div>
 
-            <div className="text-left sm:text-left bg-white p-3 rounded-xl border border-[#E5DED2] text-[11px] space-y-1 w-full sm:w-auto shadow-sm">
-              <div className="flex sm:justify-end gap-2">
-                <span className="text-[#77716A]">شماره پیش‌فاکتور:</span>
-                <span className="font-numeral font-bold text-[#0B080F]">{invoice.invoiceNumber}</span>
+            <div className="bg-white p-3 rounded-xl border border-[#E5DED2] text-[11px] space-y-1 w-full sm:w-auto shadow-sm text-start">
+              <div className="flex justify-between gap-2">
+                <span className="text-[#77716A]">{t('invoice.number_label')}</span>
+                <span className="font-numeral font-bold text-[#0B080F]">
+                  {language === 'fa' ? toPersianDigits(invoice.invoiceNumber) : invoice.invoiceNumber}
+                </span>
               </div>
-              <div className="flex sm:justify-end gap-2">
-                <span className="text-[#77716A]">تاریخ و ساعت صدور:</span>
-                <span className="font-numeral text-[#0B080F]">{invoice.issuedAtFa}</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-[#77716A]">{t('invoice.date_label')}</span>
+                <span className="font-numeral text-[#0B080F]">
+                  {language === 'fa' ? invoice.issuedAtFa : new Date().toLocaleDateString('en-US')}
+                </span>
               </div>
-              <div className="flex sm:justify-end gap-2">
-                <span className="text-[#77716A]">نرخ مبنای هر گرم ۱۸:</span>
-                <span className="font-numeral font-bold text-[#997D24]">{formatToman(invoice.goldReferencePrice)}</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-[#77716A]">{language === 'fa' ? 'نرخ مبنای هر گرم ۱۸:' : '18K Benchmark Rate:'}</span>
+                <span className="font-numeral font-bold text-[#997D24]">
+                  {language === 'fa' ? formatToman(invoice.goldReferencePrice) : `${invoice.goldReferencePrice.toLocaleString('en-US')} Tomans`}
+                </span>
               </div>
-              <div className="flex sm:justify-end gap-2">
-                <span className="text-[#77716A]">وضعیت سند:</span>
-                <span className="text-amber-700 font-semibold">پیش‌فاکتور برخط (معتبر جهت تسویه)</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-[#77716A]">{language === 'fa' ? 'وضعیت سند:' : 'Doc Status:'}</span>
+                <span className="text-amber-700 font-semibold">
+                  {language === 'fa' ? 'پیش‌فاکتور برخط (معتبر)' : 'Official Pre-Invoice'}
+                </span>
               </div>
             </div>
           </div>
 
           {/* Parties Info Grid: Buyer & Seller */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="bg-white p-3.5 rounded-xl border border-[#E5DED2] space-y-1.5 shadow-sm">
+            <div className="bg-white p-3.5 rounded-xl border border-[#E5DED2] space-y-1.5 shadow-sm text-start">
               <span className="font-bold text-[#0B080F] block text-[11px] border-b pb-1 text-[#997D24]">
-                مشخصات خریدار:
+                {language === 'fa' ? 'مشخصات خریدار:' : 'Buyer Information:'}
               </span>
               <div className="flex justify-between">
-                <span className="text-[#77716A]">نام و نام خانوادگی:</span>
+                <span className="text-[#77716A]">{language === 'fa' ? 'نام و نام خانوادگی:' : 'Full Name:'}</span>
                 <span className="font-semibold text-[#0B080F]">{invoice.customer.fullName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#77716A]">شماره تماس:</span>
-                <span className="font-numeral text-[#0B080F]">{invoice.customer.mobile}</span>
+                <span className="text-[#77716A]">{language === 'fa' ? 'شماره تماس:' : 'Phone Number:'}</span>
+                <span className="font-numeral text-[#0B080F]">
+                  {language === 'fa' ? toPersianDigits(invoice.customer.mobile || '') : invoice.customer.mobile}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#77716A]">مقصد مرسوله:</span>
+                <span className="text-[#77716A]">{language === 'fa' ? 'مقصد مرسوله:' : 'Destination:'}</span>
                 <span>{invoice.customer.province} - {invoice.customer.city}</span>
               </div>
               {invoice.customer.address && (
                 <div className="text-[11px] text-[#77716A] pt-1">
-                  نشانی: {invoice.customer.address}
+                  {language === 'fa' ? 'نشانی: ' : 'Address: '}{invoice.customer.address}
                 </div>
               )}
             </div>
 
-            <div className="bg-white p-3.5 rounded-xl border border-[#E5DED2] space-y-1.5 shadow-sm text-[11px]">
+            <div className="bg-white p-3.5 rounded-xl border border-[#E5DED2] space-y-1.5 shadow-sm text-[11px] text-start">
               <span className="font-bold text-[#0B080F] block text-[11px] border-b pb-1 text-[#997D24]">
-                مشخصات فروشنده و کارگاه:
+                {language === 'fa' ? 'مشخصات فروشنده و کارگاه:' : 'Seller & Atelier Info:'}
               </span>
               <div className="flex justify-between">
-                <span className="text-[#77716A]">واحد صنفی:</span>
-                <span className="font-semibold text-[#0B080F]">گالری طلا و جواهر میوان</span>
+                <span className="text-[#77716A]">{language === 'fa' ? 'واحد صنفی:' : 'Store Name:'}</span>
+                <span className="font-semibold text-[#0B080F]">
+                  {language === 'fa' ? 'گالری طلا و جواهر میوان' : 'MEYVAN Gold Gallery'}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#77716A]">پروانه کسب اتحادیه:</span>
-                <span className="font-numeral text-[#0B080F]">[TODO: شماره پروانه کسب اتحادیه طلا و جواهر یزد]</span>
+                <span className="text-[#77716A]">{language === 'fa' ? 'اتحادیه مربوطه:' : 'Union License:'}</span>
+                <span className="font-numeral text-[#0B080F]">
+                  {language === 'fa' ? 'اتحادیه طلا و جواهر یزد' : 'Yazd Gold & Jewelry Guild'}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#77716A]">کد اقتصادی مالیاتی:</span>
-                <span className="font-numeral text-[#0B080F]">[TODO: کد اقتصادی ۱۰ رقمی صنف طلا]</span>
+                <span className="text-[#77716A]">{language === 'fa' ? 'نشانی شوروم:' : 'Atelier Address:'}</span>
+                <span>{t('footer.showroom_address')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#77716A]">نشانی و پلاک:</span>
-                <span>یزد، بازار خان، راسته زرگران [TODO: شماره پلاک و واحد]</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#77716A]">تلفن تماس:</span>
-                <span className="font-numeral font-bold text-[#0B080F]">۰۹۱۳۲۵۶۰۶۱۶ [TODO: تلفن ثابت]</span>
+                <span className="text-[#77716A]">{language === 'fa' ? 'تلفن تماس:' : 'Direct Phone:'}</span>
+                <span className="font-numeral font-bold text-[#0B080F]">
+                  {language === 'fa' ? '۰۹۱۳۲۵۶۰۶۱۶' : '+98 913 256 0616'}
+                </span>
               </div>
             </div>
           </div>
 
           {/* Line Items Table */}
           <div className="overflow-x-auto rounded-xl border border-[#E5DED2] bg-white shadow-sm">
-            <table className="w-full text-right text-xs">
+            <table className="w-full text-start text-xs">
               <thead className="bg-[#0B080F] text-white text-[11px]">
                 <tr>
-                  <th className="py-2.5 px-3 text-center">ردیف</th>
-                  <th className="py-2.5 px-3">شرح کالا و مشخصات</th>
-                  <th className="py-2.5 px-2 text-center">عیار</th>
-                  <th className="py-2.5 px-3 text-center">وزن (گرم)</th>
-                  <th className="py-2.5 px-2 text-center">تعداد</th>
-                  <th className="py-2.5 px-3 text-left">طلای خام</th>
-                  <th className="py-2.5 px-3 text-left">اجرت ساخت</th>
-                  <th className="py-2.5 px-3 text-left">سود مصوب</th>
-                  <th className="py-2.5 px-3 text-left">مالیات (VAT)</th>
-                  <th className="py-2.5 px-3 text-left">سنگ / سایر</th>
-                  <th className="py-2.5 px-3 text-left font-bold">مبلغ کل (تومان)</th>
+                  <th className="py-2.5 px-3 text-center">{language === 'fa' ? 'ردیف' : '#'}</th>
+                  <th className="py-2.5 px-3 text-start">{t('invoice.col_desc')}</th>
+                  <th className="py-2.5 px-2 text-center">{t('invoice.col_karat')}</th>
+                  <th className="py-2.5 px-3 text-center">{t('invoice.col_weight')}</th>
+                  <th className="py-2.5 px-2 text-center">{language === 'fa' ? 'تعداد' : 'Qty'}</th>
+                  <th className="py-2.5 px-3 text-start">{t('invoice.col_raw_gold')}</th>
+                  <th className="py-2.5 px-3 text-start">{t('invoice.col_wage')}</th>
+                  <th className="py-2.5 px-3 text-start">{t('invoice.col_profit')}</th>
+                  <th className="py-2.5 px-3 text-start">{t('invoice.col_vat')}</th>
+                  <th className="py-2.5 px-3 text-start">{t('invoice.col_stone')}</th>
+                  <th className="py-2.5 px-3 text-start font-bold">{t('invoice.col_subtotal')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E5DED2]">
                 {invoice.items.map((item, idx) => (
                   <tr key={item.id} className="hover:bg-[#FAF8F5]">
-                    <td className="py-3 px-3 text-center font-numeral text-[#77716A]">{toPersianDigits(idx + 1)}</td>
-                    <td className="py-3 px-3">
-                      <div className="font-bold text-[#0B080F]">{item.name}</div>
-                      <div className="text-[10px] text-[#A89B8A] font-numeral">کد SKU: {item.sku}</div>
+                    <td className="py-3 px-3 text-center font-numeral text-[#77716A]">
+                      {language === 'fa' ? toPersianDigits(idx + 1) : idx + 1}
                     </td>
-                    <td className="py-3 px-2 text-center font-numeral">{toPersianDigits(item.karat)}</td>
-                    <td className="py-3 px-3 text-center font-numeral font-semibold">{formatWeight(item.weightGrams)}</td>
-                    <td className="py-3 px-2 text-center font-numeral">{toPersianDigits(item.quantity)}</td>
-                    <td className="py-3 px-3 text-left font-numeral text-[#202124]">{formatToman(item.rawGoldPrice)}</td>
-                    <td className="py-3 px-3 text-left font-numeral text-[#202124]">{formatToman(item.wageAmount)}</td>
-                    <td className="py-3 px-3 text-left font-numeral text-[#202124]">{formatToman(item.profitAmount)}</td>
-                    <td className="py-3 px-3 text-left font-numeral text-[#202124]">{formatToman(item.vatAmount)}</td>
-                    <td className="py-3 px-3 text-left font-numeral text-[#202124]">{formatToman(item.stonePrice)}</td>
-                    <td className="py-3 px-3 text-left font-numeral font-bold text-[#997D24]">{formatToman(item.lineTotalPrice)}</td>
+                    <td className="py-3 px-3 text-start">
+                      <div className="font-bold text-[#0B080F]">{item.name}</div>
+                      <div className="text-[10px] text-[#A89B8A] font-numeral">SKU: {item.sku}</div>
+                    </td>
+                    <td className="py-3 px-2 text-center font-numeral">
+                      {language === 'fa' ? toPersianDigits(item.karat) : item.karat}
+                    </td>
+                    <td className="py-3 px-3 text-center font-numeral font-semibold">
+                      {language === 'fa' ? formatWeight(item.weightGrams) : `${item.weightGrams.toFixed(2)} g`}
+                    </td>
+                    <td className="py-3 px-2 text-center font-numeral">
+                      {language === 'fa' ? toPersianDigits(item.quantity) : item.quantity}
+                    </td>
+                    <td className="py-3 px-3 text-start font-numeral text-[#202124]">
+                      {language === 'fa' ? formatToman(item.rawGoldPrice) : item.rawGoldPrice.toLocaleString('en-US')}
+                    </td>
+                    <td className="py-3 px-3 text-start font-numeral text-[#202124]">
+                      {language === 'fa' ? formatToman(item.wageAmount) : item.wageAmount.toLocaleString('en-US')}
+                    </td>
+                    <td className="py-3 px-3 text-start font-numeral text-[#202124]">
+                      {language === 'fa' ? formatToman(item.profitAmount) : item.profitAmount.toLocaleString('en-US')}
+                    </td>
+                    <td className="py-3 px-3 text-start font-numeral text-[#202124]">
+                      {language === 'fa' ? formatToman(item.vatAmount) : item.vatAmount.toLocaleString('en-US')}
+                    </td>
+                    <td className="py-3 px-3 text-start font-numeral text-[#202124]">
+                      {language === 'fa' ? formatToman(item.stonePrice) : item.stonePrice.toLocaleString('en-US')}
+                    </td>
+                    <td className="py-3 px-3 text-start font-numeral font-bold text-[#997D24]">
+                      {language === 'fa' ? formatToman(item.lineTotalPrice) : `${item.lineTotalPrice.toLocaleString('en-US')} ${t('currency')}`}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -236,61 +270,77 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           </div>
 
           {/* Pricing Basis & Legal Disclosure Notice */}
-          <div className="bg-[#FAF8F5] p-3.5 rounded-xl border border-[#E5DED2] text-[11px] text-[#202124] flex items-start gap-2.5">
+          <div className="bg-[#FAF8F5] p-3.5 rounded-xl border border-[#E5DED2] text-[11px] text-[#202124] flex items-start gap-2.5 text-start">
             <ShieldCheck className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <span className="font-bold text-[#0B080F] block">موازین قانونی و محاسباتی این فاکتور:</span>
+              <span className="font-bold text-[#0B080F] block">
+                {language === 'fa' ? 'موازین قانونی و محاسباتی این فاکتور:' : 'Statutory Pricing Compliance:'}
+              </span>
               <p className="leading-relaxed text-[#77716A]">
                 {invoice.pricingRules.legalNote}
               </p>
               <div className="flex flex-wrap gap-4 pt-1 text-[10px] text-[#77716A]">
-                <span>• مبنای سود: {invoice.pricingRules.profitBase} (٪{toPersianDigits(Math.round(invoice.pricingRules.profitRate * 100))})</span>
-                <span>• مبنای مالیات: {invoice.pricingRules.vatBase} (٪{toPersianDigits(Math.round(invoice.pricingRules.vatRate * 100))})</span>
-                <span>• استعلام نرخ: رسمی و زنده با تایید ساعت صدور</span>
+                <span>• {language === 'fa' ? `مبنای سود: ${invoice.pricingRules.profitBase} (٪${toPersianDigits(Math.round(invoice.pricingRules.profitRate * 100))})` : `Profit Rate: 7% on Wage + Raw`}</span>
+                <span>• {language === 'fa' ? `مبنای مالیات: ${invoice.pricingRules.vatBase} (٪${toPersianDigits(Math.round(invoice.pricingRules.vatRate * 100))})` : `VAT Rate: 10% on Wage + Profit`}</span>
+                <span>• {language === 'fa' ? 'استعلام نرخ: رسمی و زنده با تایید ساعت صدور' : 'Gold Rate: Real-time TGJU Benchmark'}</span>
               </div>
             </div>
           </div>
 
           {/* Totals Breakdown Card */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
-            <div className="md:col-span-6 space-y-2 text-[11px] text-[#77716A] border-r-2 border-[#D4AF37] pr-3">
-              <p className="font-semibold text-[#0B080F]">تعهدات و شرایط تحویل میوان:</p>
-              <p>• تمام محصولات با ضمانت عیار ۱۸ (۷۵۰) و شناسنامه رسمی زرگری تحویل می‌گردند.</p>
-              <p>• ارسال با پست پیشتاز بیمه‌شده کامل ارزش طلا و بسته‌بندی امن انجام می‌پذیرد.</p>
-              <p>• پیش‌فاکتور فوق جهت واریز به مدت ۱۰ دقیقه معتبر بوده و پس از واریز قطعی می‌گردد.</p>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end text-start">
+            <div className="md:col-span-6 space-y-2 text-[11px] text-[#77716A] border-s-2 border-[#D4AF37] ps-3">
+              <p className="font-semibold text-[#0B080F]">{language === 'fa' ? 'تعهدات و شرایط تحویل میوان:' : 'Meyvan Delivery Commitments:'}</p>
+              <p>• {language === 'fa' ? 'تمام محصولات با ضمانت عیار ۱۸ (۷۵۰) و شناسنامه رسمی زرگری تحویل می‌گردند.' : 'All pieces delivered with 18K (750 purity) certificate of authenticity.'}</p>
+              <p>• {language === 'fa' ? 'ارسال با پست پیشتاز بیمه‌شده کامل ارزش طلا و بسته‌بندی امن انجام می‌پذیرد.' : 'Dispatched via insured express mail with 100% full declared value protection.'}</p>
+              <p>• {language === 'fa' ? 'پیش‌فاکتور فوق جهت واریز به مدت ۱۰ دقیقه معتبر بوده و پس از واریز قطعی می‌گردد.' : 'Price is locked for 10 minutes from pre-invoice issuance.'}</p>
             </div>
 
             <div className="md:col-span-6 bg-white p-4 rounded-xl border border-[#E5DED2] space-y-2 shadow-sm text-xs">
               <div className="flex justify-between text-[#77716A]">
-                <span>جمع کل وزن طلای فاکتور:</span>
-                <span className="font-numeral font-bold text-[#0B080F]">{formatWeight(invoice.totals.totalWeightGrams)}</span>
+                <span>{t('invoice.totals.weight')}</span>
+                <span className="font-numeral font-bold text-[#0B080F]">
+                  {language === 'fa' ? formatWeight(invoice.totals.totalWeightGrams) : `${invoice.totals.totalWeightGrams.toFixed(2)} g`}
+                </span>
               </div>
               <div className="flex justify-between text-[#77716A]">
-                <span>مجموع ارزش طلای خام:</span>
-                <span className="font-numeral text-[#0B080F]">{formatToman(invoice.totals.totalRawGold)}</span>
+                <span>{t('invoice.col_raw_gold')}:</span>
+                <span className="font-numeral text-[#0B080F]">
+                  {language === 'fa' ? formatToman(invoice.totals.totalRawGold) : `${invoice.totals.totalRawGold.toLocaleString('en-US')} ${t('currency')}`}
+                </span>
               </div>
               <div className="flex justify-between text-[#77716A]">
-                <span>مجموع اجرت ساخت:</span>
-                <span className="font-numeral text-[#0B080F]">{formatToman(invoice.totals.totalWage)}</span>
+                <span>{t('invoice.col_wage')}:</span>
+                <span className="font-numeral text-[#0B080F]">
+                  {language === 'fa' ? formatToman(invoice.totals.totalWage) : `${invoice.totals.totalWage.toLocaleString('en-US')} ${t('currency')}`}
+                </span>
               </div>
               <div className="flex justify-between text-[#77716A]">
-                <span>مجموع سود مصوب:</span>
-                <span className="font-numeral text-[#0B080F]">{formatToman(invoice.totals.totalProfit)}</span>
+                <span>{t('invoice.col_profit')}:</span>
+                <span className="font-numeral text-[#0B080F]">
+                  {language === 'fa' ? formatToman(invoice.totals.totalProfit) : `${invoice.totals.totalProfit.toLocaleString('en-US')} ${t('currency')}`}
+                </span>
               </div>
               <div className="flex justify-between text-[#77716A]">
-                <span>مجموع مالیات ارزش افزوده (VAT):</span>
-                <span className="font-numeral text-[#0B080F]">{formatToman(invoice.totals.totalVat)}</span>
+                <span>{t('invoice.col_vat')}:</span>
+                <span className="font-numeral text-[#0B080F]">
+                  {language === 'fa' ? formatToman(invoice.totals.totalVat) : `${invoice.totals.totalVat.toLocaleString('en-US')} ${t('currency')}`}
+                </span>
               </div>
               {invoice.totals.totalStone > 0 && (
                 <div className="flex justify-between text-[#77716A]">
-                  <span>مجموع بهای نگین و متعلقات:</span>
-                  <span className="font-numeral text-[#0B080F]">{formatToman(invoice.totals.totalStone)}</span>
+                  <span>{t('invoice.col_stone')}:</span>
+                  <span className="font-numeral text-[#0B080F]">
+                    {language === 'fa' ? formatToman(invoice.totals.totalStone) : `${invoice.totals.totalStone.toLocaleString('en-US')} ${t('currency')}`}
+                  </span>
                 </div>
               )}
               
               <div className="pt-2 border-t border-[#0B080F] flex justify-between items-baseline text-sm font-bold text-[#0B080F]">
-                <span>مبلغ نهایی قابل پرداخت:</span>
-                <span className="font-numeral text-base text-[#997D24]">{formatToman(invoice.totals.totalPayable)}</span>
+                <span>{t('invoice.totals.total')}</span>
+                <span className="font-numeral text-base text-[#997D24]">
+                  {language === 'fa' ? formatToman(invoice.totals.totalPayable) : `${invoice.totals.totalPayable.toLocaleString('en-US')} ${t('currency')}`}
+                </span>
               </div>
             </div>
           </div>
@@ -298,12 +348,18 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           {/* Signatures & Seal Block */}
           <div className="pt-6 border-t border-[#E5DED2] grid grid-cols-2 gap-4 text-center text-xs text-[#77716A]">
             <div className="p-4 border border-dashed border-[#E5DED2] rounded-xl flex flex-col items-center justify-center min-h-[90px]">
-              <span className="font-bold text-[#0B080F] mb-1">امضا و تایید خریدار</span>
+              <span className="font-bold text-[#0B080F] mb-1">
+                {language === 'fa' ? 'امضا و تایید خریدار' : 'Buyer Signature & Acceptance'}
+              </span>
               <span className="text-[10px] text-[#A89B8A]">{invoice.customer.fullName}</span>
             </div>
             <div className="p-4 border border-dashed border-[#E5DED2] rounded-xl flex flex-col items-center justify-center min-h-[90px] relative">
-              <span className="font-bold text-[#0B080F] mb-1">مهر و امضای گالری طلا میوان</span>
-              <span className="text-[10px] text-[#A89B8A]">شوروم مرکزی یزد — meyvan.ir</span>
+              <span className="font-bold text-[#0B080F] mb-1">
+                {language === 'fa' ? 'مهر و امضای گالری طلا میوان' : 'Official Meyvan Stamped Seal'}
+              </span>
+              <span className="text-[10px] text-[#A89B8A]">
+                {language === 'fa' ? 'شوروم مرکزی یزد — meyvan.ir' : 'Central Yazd Atelier — meyvan.ir'}
+              </span>
               <div className="absolute right-4 bottom-2 opacity-15 pointer-events-none">
                 <Logo variant="emblem" size="sm" />
               </div>
@@ -316,7 +372,11 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
         <div className="bg-[#FAF8F5] p-4 border-t border-[#E5DED2] flex flex-wrap items-center justify-between gap-3 text-xs print:hidden">
           <div className="flex items-center gap-2 text-[#77716A]">
             <AlertCircle className="w-4 h-4 text-[#D4AF37]" />
-            <span>محاسبات این فاکتور ۱۰۰٪ با قیمت صفحه محصول و درگاه تسویه یکسان است.</span>
+            <span>
+              {language === 'fa'
+                ? 'محاسبات این فاکتور ۱۰۰٪ با قیمت صفحه محصول و درگاه تسویه یکسان است.'
+                : '100% price consistency between product page, invoice and checkout.'}
+            </span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -325,7 +385,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               className="px-3.5 py-2 border border-[#E5DED2] hover:bg-white text-[#0B080F] rounded-lg transition-colors flex items-center gap-1.5"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
-              <span>{copied ? 'کپی شد' : 'کپی خلاصه فاکتور'}</span>
+              <span>{copied ? (language === 'fa' ? 'کپی شد' : 'Copied!') : (language === 'fa' ? 'کپی خلاصه فاکتور' : 'Copy Summary')}</span>
             </button>
 
             <button
@@ -333,7 +393,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               className="px-4 py-2 bg-[#0B080F] hover:bg-[#D4AF37] text-white hover:text-[#0B080F] font-semibold rounded-lg transition-all flex items-center gap-1.5 shadow"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>چاپ فاکتور رسمی</span>
+              <span>{t('invoice.print_btn')}</span>
             </button>
           </div>
         </div>

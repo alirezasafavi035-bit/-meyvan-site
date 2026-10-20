@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useGoldPrice } from '../../context/GoldPriceContext';
-import { formatToman, toPersianDigits } from '../../utils/persian';
-import { X, Settings, RotateCcw, ShieldCheck, Check, Info } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import { X, Settings, RotateCcw, ShieldCheck, Check } from 'lucide-react';
 import { DEFAULT_PRICING_CONFIG } from '../../utils/pricing';
 
 interface PricingSettingsModalProps {
@@ -10,7 +10,8 @@ interface PricingSettingsModalProps {
 }
 
 export const PricingSettingsModal: React.FC<PricingSettingsModalProps> = ({ isOpen, onClose }) => {
-  const { pricingConfig, updatePricingConfig, status } = useGoldPrice();
+  const { pricingConfig, updatePricingConfig } = useGoldPrice();
+  const { t, formatPrice, formatNum, language, dir } = useLanguage();
 
   const [goldRate, setGoldRate] = useState<number>(pricingConfig.gold18PerGram);
   const [vatRate, setVatRate] = useState<number>(Math.round(pricingConfig.defaultVatPercent * 100));
@@ -49,21 +50,21 @@ export const PricingSettingsModal: React.FC<PricingSettingsModalProps> = ({ isOp
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-[#E5DED2] text-[#0B0F14]">
+      <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-[#E5DED2] text-[#0B0F14] text-start">
         
         {/* Header */}
         <div className="bg-[#0B0F14] text-white p-5 flex items-center justify-between border-b border-[#D4AF37]/30">
           <div className="flex items-center gap-2.5">
             <Settings className="w-5 h-5 text-[#D4AF37]" />
             <div>
-              <h3 className="font-serif-luxury text-base font-semibold">پیکربندی و موازین محاسبه نرخ طلا</h3>
-              <p className="text-[11px] text-[#A89B8A] mt-0.5">شفافیت مبنای محاسبه مالیات، سود و نرخ روز</p>
+              <h3 className="font-serif-luxury text-base font-semibold">{t('settings.title')}</h3>
+              <p className="text-[11px] text-[#A89B8A] mt-0.5">{t('settings.subtitle')}</p>
             </div>
           </div>
           <button
             onClick={onClose}
             className="p-1 text-white/70 hover:text-white rounded-lg hover:bg-white/10"
-            aria-label="بستن"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -73,7 +74,7 @@ export const PricingSettingsModal: React.FC<PricingSettingsModalProps> = ({ isOp
         <div className="bg-[#F7F5EE] p-3.5 border-b border-[#E5DED2] text-xs text-[#202124] flex items-start gap-2.5">
           <ShieldCheck className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
           <p className="leading-relaxed">
-            در میوان نرخ‌های طلا و ضرایب مالیاتی ثابت و غیرقابل تغییر نیستند، بلکه مطابق جدیدترین ابلاغیه‌های قانونی اتحادیه و قانون مالیات بر ارزش افزوده طلا تنظیم می‌گردند.
+            {t('settings.union_disclaimer')}
           </p>
         </div>
 
@@ -83,8 +84,8 @@ export const PricingSettingsModal: React.FC<PricingSettingsModalProps> = ({ isOp
           {/* 1. Reference Gold Price */}
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label className="font-semibold text-[#0B0F14]">نرخ مرجع هر گرم طلای ۱۸ عیار (تومان):</label>
-              <span className="font-numeral text-[#D4AF37] font-bold">{formatToman(goldRate)}</span>
+              <label className="font-semibold text-[#0B0F14]">{t('settings.ref_rate_label')}</label>
+              <span className="font-numeral text-[#D4AF37] font-bold">{formatPrice(goldRate)}</span>
             </div>
             <input
               type="number"
@@ -93,24 +94,26 @@ export const PricingSettingsModal: React.FC<PricingSettingsModalProps> = ({ isOp
               step="10000"
               value={goldRate}
               onChange={(e) => setGoldRate(Number(e.target.value))}
-              className="w-full p-2.5 rounded-lg border border-[#E5DED2] focus:border-[#D4AF37] outline-none font-numeral text-left"
+              className="w-full p-2.5 rounded-lg border border-[#E5DED2] focus:border-[#D4AF37] outline-none font-numeral text-start"
             />
             <p className="text-[10px] text-[#77716A] mt-1">
-              * قابل تطبیق با آخرین نرخ رسمی تابلوی طلافروشان کشور
+              {language === 'fa' ? '* قابل تطبیق با آخرین نرخ رسمی تابلوی طلافروشان کشور' : '* Aligned with official live benchmark board rates across Iran'}
             </p>
           </div>
 
           {/* 2. Tax Settings (VAT) */}
           <div className="p-3.5 rounded-xl bg-[#F7F5EE] border border-[#E5DED2] space-y-3">
             <div className="flex justify-between items-center">
-              <label className="font-semibold text-[#0B0F14]">درصد مالیات بر ارزش افزوده (VAT):</label>
-              <span className="font-numeral font-bold text-[#202124]">٪{toPersianDigits(vatRate)}</span>
+              <label className="font-semibold text-[#0B0F14]">{t('settings.vat_label')}</label>
+              <span className="font-numeral font-bold text-[#202124]">
+                {language === 'fa' ? `٪${formatNum(vatRate)}` : `${vatRate}%`}
+              </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { val: 9, label: '۹٪ (قانون فعلی طلا)' },
-                { val: 10, label: '۱۰٪ (اختیاری سال نو)' },
-                { val: 0, label: '۰٪ (معافیت کامل)' }
+                { val: 10, label: language === 'fa' ? '۱۰٪ (قانون رسمی طلا)' : '10% (Official VAT)' },
+                { val: 9, label: language === 'fa' ? '۹٪ (نرخ پیشین)' : '9% (Previous)' },
+                { val: 0, label: language === 'fa' ? '۰٪ (معافیت کامل)' : '0% (Exempt)' }
               ].map((opt) => (
                 <button
                   type="button"
@@ -128,15 +131,15 @@ export const PricingSettingsModal: React.FC<PricingSettingsModalProps> = ({ isOp
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-[#0B0F14] mb-1">مبنای اعمال مالیات:</label>
+              <label className="block text-[11px] font-semibold text-[#0B0F14] mb-1">{language === 'fa' ? 'مبنای اعمال مالیات:' : 'VAT Calculation Base:'}</label>
               <select
                 value={vatBase}
                 onChange={(e) => setVatBase(e.target.value as any)}
                 className="w-full p-2 rounded-lg border border-[#E5DED2] bg-white text-xs outline-none"
               >
-                <option value="wage_and_profit">مجموع اجرت و سود (مقررات مصوب اتحادیه و قانون طلا)</option>
-                <option value="total">کل ارزش کالا (روش سنتی کالاهای عمومی)</option>
-                <option value="none">بدون محاسبه مالیات</option>
+                <option value="wage_and_profit">{language === 'fa' ? 'مجموع اجرت و سود (مقررات مصوب اتحادیه و قانون طلا)' : 'Wage & Profit Sum (Official Union Directive)'}</option>
+                <option value="total">{language === 'fa' ? 'کل ارزش کالا (روش سنتی کالاهای عمومی)' : 'Full Item Value (General Commodities)'}</option>
+                <option value="none">{language === 'fa' ? 'بدون محاسبه مالیات' : 'No Tax Assessment'}</option>
               </select>
             </div>
           </div>
@@ -144,14 +147,16 @@ export const PricingSettingsModal: React.FC<PricingSettingsModalProps> = ({ isOp
           {/* 3. Profit Settings */}
           <div className="p-3.5 rounded-xl bg-[#F7F5EE] border border-[#E5DED2] space-y-3">
             <div className="flex justify-between items-center">
-              <label className="font-semibold text-[#0B0F14]">درصد سود مصوب فروشنده طلا:</label>
-              <span className="font-numeral font-bold text-[#202124]">٪{toPersianDigits(profitRate)}</span>
+              <label className="font-semibold text-[#0B0F14]">{t('settings.profit_label')}</label>
+              <span className="font-numeral font-bold text-[#202124]">
+                {language === 'fa' ? `٪${formatNum(profitRate)}` : `${profitRate}%`}
+              </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { val: 7, label: '۷٪ (سقف اتحادیه)' },
-                { val: 5, label: '۵٪ (تخفیف ویژه)' },
-                { val: 0, label: '۰٪ (قیمت درب کارگاه)' }
+                { val: 7, label: language === 'fa' ? '۷٪ (سقف اتحادیه)' : '7% (Union Cap)' },
+                { val: 5, label: language === 'fa' ? '۵٪ (تخفیف ویژه)' : '5% (Promotional)' },
+                { val: 0, label: language === 'fa' ? '۰٪ (قیمت درب کارگاه)' : '0% (Workshop Direct)' }
               ].map((opt) => (
                 <button
                   type="button"
@@ -169,14 +174,14 @@ export const PricingSettingsModal: React.FC<PricingSettingsModalProps> = ({ isOp
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-[#0B0F14] mb-1">مبنای محاسبه سود:</label>
+              <label className="block text-[11px] font-semibold text-[#0B0F14] mb-1">{language === 'fa' ? 'مبنای محاسبه سود:' : 'Profit Base:'}</label>
               <select
                 value={profitBase}
                 onChange={(e) => setProfitBase(e.target.value as any)}
                 className="w-full p-2 rounded-lg border border-[#E5DED2] bg-white text-xs outline-none"
               >
-                <option value="gold_plus_wage">ارزش طلای خام + اجرت ساخت (فرمول استاندارد کشوری)</option>
-                <option value="gold_only">فقط ارزش طلای خام</option>
+                <option value="gold_plus_wage">{language === 'fa' ? 'ارزش طلای خام + اجرت ساخت (فرمول استاندارد کشوری)' : 'Raw Gold Value + Labor Wage (Union Standard)'}</option>
+                <option value="gold_only">{language === 'fa' ? 'فقط ارزش طلای خام' : 'Raw Gold Value Only'}</option>
               </select>
             </div>
           </div>
@@ -189,7 +194,7 @@ export const PricingSettingsModal: React.FC<PricingSettingsModalProps> = ({ isOp
               className="text-[#77716A] hover:text-[#0B0F14] text-xs flex items-center gap-1 p-2"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>بازنشانی به پیش‌فرض اتحادیه</span>
+              <span>{t('settings.reset_btn')}</span>
             </button>
 
             <button
@@ -197,7 +202,7 @@ export const PricingSettingsModal: React.FC<PricingSettingsModalProps> = ({ isOp
               className="px-6 py-2.5 bg-[#0B0F14] hover:bg-[#D4AF37] text-white hover:text-[#0B0F14] font-semibold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-md"
             >
               {savedNotice ? <Check className="w-4 h-4 text-emerald-400" /> : null}
-              <span>{savedNotice ? 'اعمال شد' : 'ذخیره و اعمال در سایت'}</span>
+              <span>{savedNotice ? (language === 'fa' ? 'اعمال شد' : 'Applied') : t('settings.save_btn')}</span>
             </button>
           </div>
         </form>

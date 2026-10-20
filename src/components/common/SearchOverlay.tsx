@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Product } from '../../types';
-import { normalizePersianText, formatToman, toPersianDigits } from '../../utils/persian';
+import { normalizePersianText } from '../../utils/persian';
 import { useGoldPrice } from '../../context/GoldPriceContext';
-import { Search, X, ArrowLeft } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import { Search, X, ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const { calculatePrice } = useGoldPrice();
+  const { t, formatPrice, getProductName, getCategoryTitle, language, dir } = useLanguage();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,18 +40,21 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
   const filteredProducts = useMemo(() => {
     if (!debouncedQuery.trim()) return [];
     const normalized = normalizePersianText(debouncedQuery);
+    const qLower = debouncedQuery.toLowerCase().trim();
     return products
       .filter((p) => {
         const pName = normalizePersianText(p.name);
-        const pSku = normalizePersianText(p.sku);
+        const pSku = p.sku.toLowerCase();
         const pCat = normalizePersianText(p.categoryFa);
         const pType = normalizePersianText(p.typeFa);
-        const pTags = p.tags.map((t) => normalizePersianText(t)).join(' ');
+        const pTags = p.tags.map((tTag) => normalizePersianText(tTag)).join(' ');
+        const nameEn = (p.nameEn || '').toLowerCase();
         return (
           pName.includes(normalized) ||
-          pSku.includes(normalized) ||
+          pSku.includes(qLower) ||
           pCat.includes(normalized) ||
           pType.includes(normalized) ||
+          nameEn.includes(qLower) ||
           pTags.includes(normalized)
         );
       })
@@ -58,9 +63,29 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
 
   if (!isOpen) return null;
 
+  const ArrowIcon = dir === 'rtl' ? ArrowLeft : ArrowRight;
+
+  const popularSearches = language === 'fa' ? [
+    'انگشتر ونکلیف',
+    'دستبند کارتیه',
+    'النگو یزد',
+    'سرویس برلیان',
+    'گردنبند مروارید',
+    'طلای مینیمال',
+    'نیم‌ست عروس'
+  ] : [
+    'Van Cleef Ring',
+    'Cartier Bracelet',
+    'Yazd Bangles',
+    'Bridal Suite',
+    'Pearl Necklace',
+    'Minimalist Gold',
+    'Demi-Parure Set'
+  ];
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md p-4 sm:p-6 flex flex-col items-center">
-      <div className="max-w-2xl w-full bg-[#14101A] border border-[#D4AF37]/30 text-white rounded-2xl shadow-2xl overflow-hidden mt-6 sm:mt-12">
+      <div className="max-w-2xl w-full bg-[#14101A] border border-[#D4AF37]/30 text-white rounded-2xl shadow-2xl overflow-hidden mt-6 sm:mt-12 text-start">
         {/* Search Input Box */}
         <div className="p-4 sm:p-6 border-b border-white/10 flex items-center gap-3">
           <Search className="w-5 h-5 text-[#D4AF37] shrink-0" />
@@ -69,7 +94,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="جستجوی نام جواهر، مدل (کارتیه، ونکلیف)، کد محصول یا دسته‌بندی..."
+            placeholder={t('search.placeholder')}
             className="w-full bg-transparent text-sm sm:text-base text-white placeholder-white/40 outline-none"
           />
           {query ? (
@@ -84,7 +109,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
               onClick={onClose}
               className="p-1 text-white/50 hover:text-white text-xs"
             >
-              انصراف
+              {t('search.cancel')}
             </button>
           )}
         </div>
@@ -92,17 +117,9 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
         {/* Popular Tags */}
         {!debouncedQuery && (
           <div className="p-5 sm:p-6 text-xs">
-            <span className="text-white/40 block mb-3">جستجوهای پرطرفدار طلا و جواهر:</span>
+            <span className="text-white/40 block mb-3">{t('search.popular_label')}</span>
             <div className="flex flex-wrap gap-2">
-              {[
-                'انگشتر ونکلیف',
-                'دستبند کارتیه',
-                'النگو یزد',
-                'سرویس برلیان',
-                'گردنبند مروارید',
-                'طلای مینیمال',
-                'نیم‌ست عروس'
-              ].map((term) => (
+              {popularSearches.map((term) => (
                 <button
                   key={term}
                   onClick={() => setQuery(term)}
@@ -120,11 +137,12 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
           <div className="max-h-96 overflow-y-auto divide-y divide-white/5 p-2">
             {filteredProducts.length === 0 ? (
               <div className="p-8 text-center text-white/40 text-xs">
-                موردی مطابق با «{debouncedQuery}» یافت نشد.
+                {t('search.no_results', { query: debouncedQuery })}
               </div>
             ) : (
               filteredProducts.map((product) => {
                 const breakdown = calculatePrice(product);
+                const pName = getProductName(product);
                 return (
                   <div
                     key={product.id}
@@ -138,7 +156,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
                       <div className="w-12 h-12 bg-black/40 rounded-lg overflow-hidden shrink-0 border border-white/10 flex items-center justify-center p-1">
                         <img
                           src={product.images[0]}
-                          alt={product.name}
+                          alt={pName}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             (e.currentTarget as HTMLImageElement).src = '/logo.svg';
@@ -147,23 +165,23 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
                       </div>
                       <div>
                         <h4 className="text-xs sm:text-sm font-semibold text-white">
-                          {product.name}
+                          {pName}
                         </h4>
                         <div className="text-[11px] text-white/50 flex items-center gap-2 mt-0.5">
-                          <span className="font-numeral">کد: {product.sku}</span>
+                          <span className="font-numeral">{language === 'fa' ? 'کد:' : 'SKU:'} {product.sku}</span>
                           <span>·</span>
-                          <span>{product.categoryFa}</span>
+                          <span>{getCategoryTitle(product.category)}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="text-left shrink-0">
+                    <div className="text-end shrink-0">
                       <div className="text-xs sm:text-sm font-bold text-[#D4AF37] font-numeral">
-                        {formatToman(breakdown.totalPrice)}
+                        {formatPrice(breakdown.totalPrice)}
                       </div>
                       <div className="text-[10px] text-white/40 flex items-center justify-end gap-1 mt-0.5">
-                        <span>مشاهده</span>
-                        <ArrowLeft className="w-3 h-3" />
+                        <span>{language === 'fa' ? 'مشاهده' : 'View'}</span>
+                        <ArrowIcon className="w-3 h-3" />
                       </div>
                     </div>
                   </div>
@@ -180,7 +198,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
                   }}
                   className="text-xs text-[#D4AF37] hover:underline"
                 >
-                  مشاهده همه نتایج برای «{debouncedQuery}» در فروشگاه
+                  {t('search.view_all', { query: debouncedQuery })}
                 </button>
               </div>
             )}
@@ -190,3 +208,4 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, p
     </div>
   );
 };
+

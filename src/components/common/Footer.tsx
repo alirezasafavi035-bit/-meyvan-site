@@ -2,10 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Logo } from './Logo';
 import { ShieldCheck, Truck, RefreshCw, Award, Instagram, Send, Phone, MapPin } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export const Footer: React.FC = () => {
+  const { t, language } = useLanguage();
+
   return (
-    <footer className="bg-[#0B080F] text-white border-t border-[#D4AF37]/20 pt-16 pb-24 md:pb-12">
+    <footer className="bg-[#0B080F] text-white border-t border-[#D4AF37]/20 pt-16 pb-24 md:pb-12 text-start">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Brand Kicker Motto */}
         <div className="text-center pb-12 border-b border-white/10">
@@ -13,22 +17,22 @@ export const Footer: React.FC = () => {
             <Logo variant="gold" size="lg" />
           </div>
           <p className="font-serif-luxury tracking-[0.25em] text-xs text-[#D4AF37] uppercase">
-            MEYVAN · MORE THAN JUST JEWELRY · YAZD · IRAN · WORLD
+            {t('footer.motto')}
           </p>
           <p className="text-white/60 text-sm mt-3 max-w-xl mx-auto leading-relaxed">
-            «درخشش، حق انتخاب توست...» از کهن‌دیار یزد، مهد زرگری اصیل ایران تا درخشش ماندگار بر دستان شما.
+            {t('footer.description')}
           </p>
         </div>
 
         {/* 4 Trust Pillars */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 py-12 border-b border-white/10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-12 border-b border-white/10">
           <div className="flex items-start gap-3.5">
             <div className="p-2.5 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37] shrink-0 border border-[#D4AF37]/20">
               <ShieldCheck className="w-5 h-5" strokeWidth={1.75} />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-1">ضمانت اصالت و عیار</h4>
-              <p className="text-xs text-white/50 leading-relaxed">شناسنامه رسمی و فاکتور اتحادیه طلا</p>
+              <h4 className="text-sm font-semibold text-white mb-1">{t('footer.pillar1.title')}</h4>
+              <p className="text-xs text-white/50 leading-relaxed">{t('footer.pillar1.desc')}</p>
             </div>
           </div>
 
@@ -37,8 +41,8 @@ export const Footer: React.FC = () => {
               <Truck className="w-5 h-5" strokeWidth={1.75} />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-1">ارسال بیمه‌شده سراسری</h4>
-              <p className="text-xs text-white/50 leading-relaxed">تحویل امن و رایگان با بیمه کامل ارزش طلا</p>
+              <h4 className="text-sm font-semibold text-white mb-1">{t('footer.pillar2.title')}</h4>
+              <p className="text-xs text-white/50 leading-relaxed">{t('footer.pillar2.desc')}</p>
             </div>
           </div>
 
@@ -47,8 +51,8 @@ export const Footer: React.FC = () => {
               <RefreshCw className="w-5 h-5" strokeWidth={1.75} />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-1">۷ روز ضمانت تعویض</h4>
-              <p className="text-xs text-white/50 leading-relaxed">آسودگی خاطر کامل در انتخاب و خرید</p>
+              <h4 className="text-sm font-semibold text-white mb-1">{t('footer.pillar3.title')}</h4>
+              <p className="text-xs text-white/50 leading-relaxed">{t('footer.pillar3.desc')}</p>
             </div>
           </div>
 
@@ -57,8 +61,8 @@ export const Footer: React.FC = () => {
               <Award className="w-5 h-5" strokeWidth={1.75} />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-1">هنر دست استادکاران یزد</h4>
-              <p className="text-xs text-white/50 leading-relaxed">ظرافت منحصربه‌فرد با برترین پرداخت طلا</p>
+              <h4 className="text-sm font-semibold text-white mb-1">{t('footer.pillar4.title')}</h4>
+              <p className="text-xs text-white/50 leading-relaxed">{t('footer.pillar4.desc')}</p>
             </div>
           </div>
         </div>
@@ -67,9 +71,13 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 text-sm">
           {/* Col 1: About & Info */}
           <div>
-            <h5 className="font-serif-luxury text-sm font-semibold text-[#D4AF37] mb-4">میوان (MEYVAN)</h5>
+            <h5 className="font-serif-luxury text-sm font-semibold text-[#D4AF37] mb-4">
+              {t('footer.col.about')}
+            </h5>
             <p className="text-xs text-white/60 leading-relaxed mb-4">
-              برند تخصصی طلا و جواهر معاصر با ریشه در هنر تاریخی زرگری یزد. ارزش، به انتخاب تو.
+              {language === 'fa'
+                ? 'برند تخصصی طلا و جواهر معاصر با ریشه در هنر تاریخی زرگری یزد. ارزش، به انتخاب تو.'
+                : 'Contemporary fine 18K jewelry boutique rooted in the historic goldsmithing heritage of Yazd.'}
             </p>
             <div className="flex items-center gap-3">
               <a
@@ -77,7 +85,7 @@ export const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37] transition-colors"
-                aria-label="اینستاگرام میوان"
+                aria-label="Instagram"
               >
                 <Instagram className="w-4 h-4" />
               </a>
@@ -86,7 +94,7 @@ export const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37] transition-colors"
-                aria-label="کانال تلگرام میوان"
+                aria-label="Telegram"
               >
                 <Send className="w-4 h-4" />
               </a>
@@ -95,61 +103,76 @@ export const Footer: React.FC = () => {
 
           {/* Col 2: Categories */}
           <div>
-            <h5 className="font-serif-luxury text-sm font-semibold text-[#D4AF37] mb-4">دسته‌بندی‌های تخصصی</h5>
+            <h5 className="font-serif-luxury text-sm font-semibold text-[#D4AF37] mb-4">
+              {t('footer.col.categories')}
+            </h5>
             <ul className="space-y-2 text-xs text-white/70">
-              <li><Link to="/catalog?category=earrings&type=earrings" className="hover:text-[#D4AF37] transition-colors">گوشواره‌های طلا ۱۸ عیار</Link></li>
-              <li><Link to="/catalog?category=ring&type=ring" className="hover:text-[#D4AF37] transition-colors">انگشترهای فاخر و مینیمال</Link></li>
-              <li><Link to="/catalog?category=necklace&type=necklace" className="hover:text-[#D4AF37] transition-colors">گردنبند و مدال‌های اسلیمی</Link></li>
-              <li><Link to="/catalog?category=bracelet&type=bracelet" className="hover:text-[#D4AF37] transition-colors">دستبند، بنگل و النگو</Link></li>
-              <li><Link to="/catalog?category=set&type=set" className="hover:text-[#D4AF37] transition-colors">نیم‌ست و سرویس کامل</Link></li>
-              <li><Link to="/catalog?category=coin&type=coin" className="hover:text-[#D4AF37] transition-colors">سکه و شمش استاندارد</Link></li>
+              <li><Link to="/catalog?category=earrings&type=earrings" className="hover:text-[#D4AF37] transition-colors">{t('cat.earrings')}</Link></li>
+              <li><Link to="/catalog?category=ring&type=ring" className="hover:text-[#D4AF37] transition-colors">{t('cat.ring')}</Link></li>
+              <li><Link to="/catalog?category=necklace&type=necklace" className="hover:text-[#D4AF37] transition-colors">{t('cat.necklace')}</Link></li>
+              <li><Link to="/catalog?category=bracelet&type=bracelet" className="hover:text-[#D4AF37] transition-colors">{t('cat.bracelet')}</Link></li>
+              <li><Link to="/catalog?category=set&type=set" className="hover:text-[#D4AF37] transition-colors">{t('cat.set')}</Link></li>
+              <li><Link to="/catalog?category=coin&type=coin" className="hover:text-[#D4AF37] transition-colors">{t('cat.coin')}</Link></li>
             </ul>
           </div>
 
           {/* Col 3: Customer Care & Legal */}
           <div>
-            <h5 className="font-serif-luxury text-sm font-semibold text-[#D4AF37] mb-4">خدمات مشتریان</h5>
+            <h5 className="font-serif-luxury text-sm font-semibold text-[#D4AF37] mb-4">
+              {t('footer.col.service')}
+            </h5>
             <ul className="space-y-2 text-xs text-white/70">
-              <li><Link to="/about" className="hover:text-[#D4AF37] transition-colors">داستان برند میوان</Link></li>
-              <li><Link to="/contact" className="hover:text-[#D4AF37] transition-colors">تماس با شوروم و پشتیبانی</Link></li>
-              <li><Link to="/terms" className="hover:text-[#D4AF37] transition-colors">قوانین خرید و صدور فاکتور</Link></li>
-              <li><Link to="/returns" className="hover:text-[#D4AF37] transition-colors">رویه بازگشت و تعویض کالا</Link></li>
-              <li><Link to="/privacy" className="hover:text-[#D4AF37] transition-colors">حفظ حریم خصوصی</Link></li>
+              <li><Link to="/about" className="hover:text-[#D4AF37] transition-colors">{t('nav.about')}</Link></li>
+              <li><Link to="/contact" className="hover:text-[#D4AF37] transition-colors">{t('nav.contact')}</Link></li>
+              <li><Link to="/terms" className="hover:text-[#D4AF37] transition-colors">{t('terms.title')}</Link></li>
+              <li><Link to="/returns" className="hover:text-[#D4AF37] transition-colors">{t('nav.returns')}</Link></li>
+              <li><Link to="/privacy" className="hover:text-[#D4AF37] transition-colors">{t('privacy.title')}</Link></li>
             </ul>
           </div>
 
-          {/* Col 4: Showroom info & E-Namad */}
+          {/* Col 4: Showroom info */}
           <div>
-            <h5 className="font-serif-luxury text-sm font-semibold text-[#D4AF37] mb-4">شوروم مرکزی</h5>
+            <h5 className="font-serif-luxury text-sm font-semibold text-[#D4AF37] mb-4">
+              {t('footer.col.showroom')}
+            </h5>
             <div className="space-y-2.5 text-xs text-white/70">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
-                <span>یزد، خیابان قیام، بازار خان، راسته زرگران، پلاک ۱۰۴</span>
+                <span>{t('footer.showroom_address')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-[#D4AF37] shrink-0" />
-                <a href="tel:09132560616" className="font-numeral hover:text-[#D4AF37] transition-colors">۰۹۱۳۲۵۶۰۶۱۶</a>
+                <a href="tel:09132560616" className="font-numeral hover:text-[#D4AF37] transition-colors">
+                  {language === 'fa' ? '۰۹۱۳۲۵۶۰۶۱۶' : '+98 913 256 0616'}
+                </a>
               </div>
               <div className="pt-2 flex flex-col gap-2">
                 <div className="p-2 border border-white/10 rounded-lg bg-white/5 text-[10px] text-white/60">
-                  <span className="text-[#D4AF37] block font-semibold mb-0.5">احراز هویت و شفافیت:</span>
-                  گالری و کارگاه طلاسازی یزد · تماس مستقیم ۰۹۱۳۲۵۶۰۶۱۶
+                  <span className="text-[#D4AF37] block font-semibold mb-0.5">
+                    {language === 'fa' ? 'احراز هویت و کارگاه حضوری:' : 'Authenticity & Atelier:'}
+                  </span>
+                  {language === 'fa'
+                    ? 'گالری و کارگاه طلاسازی یزد · تماس مستقیم ۰۹۱۳۲۵۶۰۶۱۶'
+                    : 'Yazd Goldsmith Workshop & Showroom · Hotline: +98 913 256 0616'}
                 </div>
                 <div className="p-2 border border-white/10 rounded-lg bg-white/5 text-[10px] text-white/60 flex items-center justify-between">
-                  <span>نماد اعتماد الکترونیکی (اینماد):</span>
-                  <span className="text-amber-400/80">در حال احراز و تکمیل پرونده</span>
+                  <span>{language === 'fa' ? 'نماد تجارت الکترونیکی:' : 'E-Commerce Seal:'}</span>
+                  <span className="text-amber-400/80">{t('footer.enamad_status')}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom copyright */}
+        {/* Bottom copyright & Language Switcher */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-white/40 gap-4">
-          <p>© {new Date().getFullYear()} کلیه حقوق برای برند میوان (meyvan.ir) محفوظ است.</p>
-          <p className="font-serif-luxury tracking-widest text-[#D4AF37]/60 text-[11px]">
-            MORE THAN JUST JEWELRY
-          </p>
+          <p>{t('footer.copyright')}</p>
+          <div className="flex items-center gap-4">
+            <LanguageSwitcher />
+            <p className="font-serif-luxury tracking-widest text-[#D4AF37]/60 text-[11px]">
+              MORE THAN JUST JEWELRY
+            </p>
+          </div>
         </div>
       </div>
     </footer>

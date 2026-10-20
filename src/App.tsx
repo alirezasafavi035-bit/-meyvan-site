@@ -41,6 +41,8 @@ const PageLoadingFallback = () => (
   </div>
 );
 
+import { LanguageProvider } from './context/LanguageContext';
+
 export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -61,10 +63,11 @@ export default function App() {
 
   return (
     <HashRouter>
-      <GoldPriceProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <ScrollToTop />
+      <LanguageProvider>
+        <GoldPriceProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <ScrollToTop />
             <div className="min-h-screen flex flex-col bg-[#F7F5EE] text-[#0B080F]">
               {/* Header & Sticky Gold Price Bar */}
               <Header onOpenSearch={() => setIsSearchOpen(true)} />
@@ -108,6 +111,7 @@ export default function App() {
           </WishlistProvider>
         </CartProvider>
       </GoldPriceProvider>
+      </LanguageProvider>
     </HashRouter>
   );
 }

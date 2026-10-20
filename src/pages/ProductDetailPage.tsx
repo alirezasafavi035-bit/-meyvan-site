@@ -4,7 +4,7 @@ import { Product } from '../types';
 import { useGoldPrice } from '../context/GoldPriceContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { formatToman, formatWeight, toPersianDigits } from '../utils/persian';
+import { useLanguage } from '../context/LanguageContext';
 import { ProductCard } from '../components/common/ProductCard';
 import { InvoiceModal } from '../components/cart/InvoiceModal';
 import { PricingSettingsModal } from '../components/common/PricingSettingsModal';
@@ -17,11 +17,8 @@ import {
   MessageCircle,
   Share2,
   Check,
-  ChevronLeft,
   ChevronDown,
-  Award,
   Sparkles,
-  SlidersHorizontal,
   FileText,
   Scale
 } from 'lucide-react';
@@ -33,9 +30,20 @@ interface ProductDetailPageProps {
 export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
   const { slug } = useParams<{ slug: string }>();
   const product = products.find((p) => p.slug === slug);
-  const { calculatePrice, isExpired, gold18PerGram, pricingConfig } = useGoldPrice();
+  const { calculatePrice, isExpired } = useGoldPrice();
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const {
+    t,
+    formatPrice,
+    formatGrams,
+    formatNum,
+    getProductName,
+    getProductDesc,
+    getCategoryTitle,
+    getTypeTitle,
+    language
+  } = useLanguage();
 
   const [selectedImageIdx, setSelectedImageIdx] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -44,8 +52,8 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [isPriceAccordionOpen, setIsPriceAccordionOpen] = useState(true);
 
-  // Dynamic weight selection state (Axis 2)
-  const [selectedWeight, setSelectedWeight] = useState<number>(() => product ? product.weightGrams : 2.5);
+  // Dynamic weight selection state
+  const [selectedWeight, setSelectedWeight] = useState<number>(() => (product ? product.weightGrams : 2.5));
 
   React.useEffect(() => {
     if (product) {
@@ -53,9 +61,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
     }
   }, [product?.id]);
 
-  const minWeight = product ? (product.minCustomWeight || 1.0) : 1.0;
-  const maxWeight = product ? (product.maxCustomWeight || Math.max(10.0, Math.round(product.weightGrams * 2.5 * 10) / 10)) : 10.0;
-  const weightStep = product ? (product.weightStep || 0.1) : 0.1;
+  const minWeight = product ? product.minCustomWeight || 1.0 : 1.0;
+  const maxWeight = product
+    ? product.maxCustomWeight || Math.max(10.0, Math.round(product.weightGrams * 2.5 * 10) / 10)
+    : 10.0;
+  const weightStep = product ? product.weightStep || 0.1 : 0.1;
   const isCustomWeight = product ? selectedWeight !== product.weightGrams : false;
 
   const breakdown = product ? calculatePrice(product, undefined, selectedWeight) : null;
@@ -72,23 +82,30 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
   if (!product || !breakdown) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-        <h2 className="text-xl font-bold text-[#0B080F] mb-3">محصول مورد نظر یافت نشد</h2>
-        <p className="text-xs text-[#A89B8A] mb-6">احتمالاً این محصول حذف شده یا آدرس اشتباه است.</p>
+        <h2 className="text-xl font-bold text-[#0B080F] mb-3">
+          {language === 'fa' ? 'محصول مورد نظر یافت نشد' : 'Product Not Found'}
+        </h2>
+        <p className="text-xs text-[#A89B8A] mb-6">
+          {language === 'fa' ? 'احتمالاً این محصول حذف شده یا آدرس اشتباه است.' : 'This piece may have been relocated or the link is incorrect.'}
+        </p>
         <Link
           to="/catalog"
           className="px-6 py-2.5 bg-[#0B080F] text-white text-xs font-semibold rounded-lg hover:bg-[#D4AF37] hover:text-[#0B080F]"
         >
-          بازگشت به کاتالوگ محصولات
+          {t('cart.go_catalog')}
         </Link>
       </div>
     );
   }
 
+  const productName = getProductName(product);
+  const productDesc = getProductDesc(product);
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: product.name,
-        text: `مشاهده طلا و جواهر فاخر ${product.name} در میوان`,
+        title: productName,
+        text: `MEYVAN: ${productName}`,
         url: window.location.href
       });
     } else {
@@ -140,30 +157,39 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
   };
 
   const whatsappMessage = encodeURIComponent(
-    `درود، مایل به استعلام و هماهنگی خرید این محصول در میوان هستم:\n` +
-    `نام: ${product.name}\n` +
-    `کد کالا: ${product.sku}\n` +
-    `وزن: ${formatWeight(selectedWeight)} (${product.karat} عیار)${isCustomWeight ? ' [گرماژ سفارشی]' : ''}\n` +
-    `مبلغ روز: ${breakdown.totalPrice.toLocaleString('fa-IR')} تومان\n` +
-    `لینک: https://meyvan.ir/#/product/${product.slug}`
+    language === 'fa'
+      ? `درود، مایل به استعلام و هماهنگی خرید این محصول در میوان هستم:\n` +
+        `نام: ${productName}\n` +
+        `کد کالا: ${product.sku}\n` +
+        `وزن: ${formatGrams(selectedWeight)} (${product.karat} عیار)${isCustomWeight ? ' [گرماژ سفارشی]' : ''}\n` +
+        `مبلغ روز: ${formatPrice(breakdown.totalPrice)}\n` +
+        `لینک: https://meyvan.ir/#/product/${product.slug}`
+      : `Hello, I would like to inquire about purchasing this jewelry piece from MEYVAN:\n` +
+        `Item: ${productName}\n` +
+        `SKU: ${product.sku}\n` +
+        `Weight: ${selectedWeight}g (18K 750)${isCustomWeight ? ' [Custom Weight]' : ''}\n` +
+        `Price: ${formatPrice(breakdown.totalPrice)}\n` +
+        `Link: https://meyvan.ir/#/product/${product.slug}`
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 text-start">
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center gap-2 text-xs text-[#A89B8A] mb-8 overflow-x-auto whitespace-nowrap">
-        <Link to="/" className="hover:text-[#0B080F]">خانه</Link>
+        <Link to="/" className="hover:text-[#0B080F]">{t('pdp.breadcrumb.home')}</Link>
         <span>/</span>
-        <Link to="/catalog" className="hover:text-[#0B080F]">کاتالوگ</Link>
+        <Link to="/catalog" className="hover:text-[#0B080F]">{t('pdp.breadcrumb.catalog')}</Link>
         <span>/</span>
-        <Link to={`/catalog?category=${product.category}`} className="hover:text-[#0B080F]">{product.categoryFa}</Link>
+        <Link to={`/catalog?category=${product.category}`} className="hover:text-[#0B080F]">
+          {getCategoryTitle(product.category)}
+        </Link>
         <span>/</span>
-        <span className="text-[#0B080F] font-medium">{product.name}</span>
+        <span className="text-[#0B080F] font-medium">{productName}</span>
       </nav>
 
-      {/* Main PDP Grid: Gallery Left, Purchase Module Right */}
+      {/* Main PDP Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
-        {/* Gallery Section (5 Columns) */}
+        {/* Gallery Section */}
         <div className="lg:col-span-5 space-y-4">
           <div
             onClick={() => setImageZoomed(!imageZoomed)}
@@ -171,13 +197,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
           >
             <img
               src={getProductImage(selectedImageIdx)}
-              alt={product.name}
+              alt={productName}
               className={`w-full h-full object-cover transition-transform duration-500 ${
                 imageZoomed ? 'scale-150' : 'group-hover:scale-105'
               }`}
             />
 
-            {/* Fallback container if broken */}
+            {/* Fallback container */}
             <div className="absolute inset-0 -z-10 flex flex-col items-center justify-center bg-gradient-to-br from-[#14101A] to-[#0B080F] text-[#D4AF37]">
               <Sparkles className="w-12 h-12 mb-2 opacity-60" />
               <span className="font-serif-luxury tracking-widest text-xs">MEYVAN JEWELRY</span>
@@ -185,8 +211,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
             </div>
 
             {/* Badges / Zoom indicator */}
-            <span className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] px-2.5 py-1 rounded-full">
-              {imageZoomed ? 'کلیک جهت خروج از بزرگنمایی' : 'کلیک جهت بزرگنمایی عکس'}
+            <span className="absolute bottom-3 left-3 ltr:left-auto ltr:right-3 bg-black/60 backdrop-blur-md text-white text-[10px] px-2.5 py-1 rounded-full">
+              {imageZoomed
+                ? (language === 'fa' ? 'کلیک جهت خروج از بزرگنمایی' : 'Click to exit zoom')
+                : (language === 'fa' ? 'کلیک جهت بزرگنمایی عکس' : 'Click to zoom in')}
             </span>
           </div>
 
@@ -205,7 +233,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
               >
                 <img
                   src={img}
-                  alt={`نمای ${idx + 1}`}
+                  alt={`Angle ${idx + 1}`}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     (e.currentTarget as HTMLElement).style.display = 'none';
@@ -216,73 +244,77 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
           </div>
         </div>
 
-        {/* Purchase & Details Module (7 Columns) */}
+        {/* Purchase & Details Module */}
         <div className="lg:col-span-7 space-y-6">
           <div>
-            {/* Meta Row: Zero-Pill Unboxed */}
+            {/* Meta Row */}
             <div className="flex items-center gap-2 text-xs text-[#A89B8A] mb-2">
-              <span>کد رسمی: <strong className="font-numeral text-[#0B080F]">{product.sku}</strong></span>
+              <span>{t('pdp.sku_label')} <strong className="font-numeral text-[#0B080F]">{product.sku}</strong></span>
               <span aria-hidden="true">·</span>
-              <span>{product.categoryFa}</span>
+              <span>{getCategoryTitle(product.category)}</span>
               <span aria-hidden="true">·</span>
-              <span>{product.typeFa}</span>
+              <span>{getTypeTitle(product.type)}</span>
               <span aria-hidden="true">·</span>
-              <span className="text-emerald-700 font-medium">موجود در انبار یزد</span>
+              <span className="text-emerald-700 font-medium">{t('card.in_stock')}</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-serif-luxury font-bold text-[#0B080F] mb-3">
-              {product.name}
+              {productName}
             </h1>
 
             <p className="text-xs sm:text-sm text-[#A89B8A] leading-relaxed">
-              {product.description}
+              {productDesc}
             </p>
           </div>
 
           {/* Specifications Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 border-y border-neutral-200 text-xs">
             <div className="bg-[#FAF8F5] p-3 rounded-xl border border-neutral-100">
-              <span className="text-[#A89B8A] block mb-1">عیار طلا</span>
-              <span className="font-bold text-[#0B080F] font-numeral">{toPersianDigits(product.karat)} عیار (۷۵۰)</span>
+              <span className="text-[#A89B8A] block mb-1">{t('pdp.karat_label')}</span>
+              <span className="font-bold text-[#0B080F] font-numeral">
+                {formatNum(product.karat)} {t('karat_suffix')} (750)
+              </span>
             </div>
             <div className="bg-[#FAF8F5] p-3 rounded-xl border border-neutral-100">
-              <span className="text-[#A89B8A] block mb-1">وزن کل</span>
-              <span className="font-bold text-[#0B080F] font-numeral">{formatWeight(product.weightGrams)}</span>
+              <span className="text-[#A89B8A] block mb-1">{t('pdp.weight_label')}</span>
+              <span className="font-bold text-[#0B080F] font-numeral">{formatGrams(product.weightGrams)}</span>
             </div>
             <div className="bg-[#FAF8F5] p-3 rounded-xl border border-neutral-100">
-              <span className="text-[#A89B8A] block mb-1">اجرت ساخت</span>
-              <span className="font-bold text-[#0B080F] font-numeral">٪{toPersianDigits(Math.round(product.wagePercent * 100))}</span>
+              <span className="text-[#A89B8A] block mb-1">{t('pdp.wage_label')}</span>
+              <span className="font-bold text-[#0B080F] font-numeral">
+                {language === 'fa' ? `٪${formatNum(Math.round(product.wagePercent * 100))}` : `${formatNum(Math.round(product.wagePercent * 100))}%`}
+              </span>
             </div>
             <div className="bg-[#FAF8F5] p-3 rounded-xl border border-neutral-100">
-              <span className="text-[#A89B8A] block mb-1">نگین و جواهر</span>
+              <span className="text-[#A89B8A] block mb-1">{t('pdp.gem_label')}</span>
               <span className="font-bold text-[#0B080F]">
-                {product.hasStone ? 'شناسنامه‌دار' : 'بدون نگین (طلای خالص)'}
+                {product.hasStone ? t('pdp.gem_with') : t('pdp.gem_none')}
               </span>
             </div>
           </div>
 
-          {/* Axis 2: انتخاب گرماژ موردنظر (وزن دلخواه طلا) با محاسبه آنی */}
+          {/* Dynamic Weight Selection Slider */}
           <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#D4AF37]/35 shadow-sm space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
                 <Scale className="w-4 h-4 text-[#997D24]" />
                 <h3 className="font-bold text-xs sm:text-sm text-[#0B080F]">
-                  انتخاب گرماژ موردنظر (سفارش در وزن دلخواه)
+                  {t('pdp.weight_module.title')}
                 </h3>
               </div>
               {isCustomWeight ? (
                 <span className="text-[10px] bg-amber-500/15 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full font-medium">
-                  گرماژ سفارشی (قیمت تخمینی)
+                  {t('pdp.weight_module.custom_badge')}
                 </span>
               ) : (
                 <span className="text-[10px] bg-emerald-500/15 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-medium">
-                  وزن استاندارد کاتالوگ (قطعی)
+                  {t('pdp.weight_module.standard_badge')}
                 </span>
               )}
             </div>
 
             <p className="text-[11px] text-[#A89B8A] leading-relaxed">
-              این مدل قابلیت ساخت در گرماژهای مختلف را دارد. با تغییر اسلایدر یا وارد کردن عدد، ارزش طلای خام، اجرت، سود و مالیات ۱۰٪ فوراً تجدید محاسبه می‌شوند.
+              {t('pdp.weight_module.desc')}
             </p>
 
             {/* Slider & Number Input Row */}
@@ -296,14 +328,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
                   value={selectedWeight}
                   onChange={(e) => setSelectedWeight(Number(parseFloat(e.target.value).toFixed(2)))}
                   className="w-full accent-[#D4AF37] cursor-pointer h-2 bg-neutral-200 rounded-lg"
-                  aria-label="اسلایدر انتخاب وزن طلا"
+                  aria-label="Gold weight slider"
                 />
               </div>
 
               {/* Range Bounds & Numeric Stepper Input */}
               <div className="flex items-center justify-between gap-3 text-xs">
                 <span className="text-[11px] text-neutral-500 font-numeral">
-                  حداقل: {toPersianDigits(minWeight)} گرم
+                  {t('pdp.weight_module.min')} {formatGrams(minWeight)}
                 </span>
 
                 {/* Stepper with number input */}
@@ -313,7 +345,6 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
                     onClick={() => setSelectedWeight((prev) => Math.max(minWeight, Number((prev - 0.1).toFixed(2))))}
                     disabled={selectedWeight <= minWeight}
                     className="w-6 h-6 rounded flex items-center justify-center bg-neutral-100 hover:bg-neutral-200 text-neutral-800 disabled:opacity-30 text-xs font-bold transition-colors"
-                    title="کاهش ۰.۱ گرم"
                   >
                     -
                   </button>
@@ -332,155 +363,106 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
                       }}
                       className="w-16 text-center font-bold text-sm bg-transparent focus:outline-none"
                     />
-                    <span className="text-xs text-neutral-500 font-normal">گرم</span>
+                    <span className="text-xs text-neutral-500 font-normal">{t('grams')}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setSelectedWeight((prev) => Math.min(maxWeight, Number((prev + 0.1).toFixed(2))))}
                     disabled={selectedWeight >= maxWeight}
                     className="w-6 h-6 rounded flex items-center justify-center bg-neutral-100 hover:bg-neutral-200 text-neutral-800 disabled:opacity-30 text-xs font-bold transition-colors"
-                    title="افزایش ۰.۱ گرم"
                   >
                     +
                   </button>
                 </div>
 
                 <span className="text-[11px] text-neutral-500 font-numeral">
-                  حداکثر: {toPersianDigits(maxWeight)} گرم
+                  {t('pdp.weight_module.max')} {formatGrams(maxWeight)}
                 </span>
-              </div>
-
-              {/* Quick-Preset Weight Pills */}
-              <div className="flex items-center gap-1.5 flex-wrap pt-1 text-[11px]">
-                <span className="text-neutral-500 text-[10px]">وزن‌های پیشنهادی:</span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedWeight(product.weightGrams)}
-                  className={`px-2.5 py-1 rounded-lg border font-numeral transition-colors ${
-                    selectedWeight === product.weightGrams
-                      ? 'bg-[#0B080F] text-white border-[#0B080F]'
-                      : 'bg-white hover:bg-neutral-100 border-neutral-200 text-neutral-700'
-                  }`}
-                >
-                  وزن کاتالوگ ({toPersianDigits(product.weightGrams)} گرم)
-                </button>
-
-                {[1.5, 2.0, 3.0, 4.5, 6.0]
-                  .filter((w) => w >= minWeight && w <= maxWeight && w !== product.weightGrams)
-                  .map((w) => (
-                    <button
-                      key={w}
-                      type="button"
-                      onClick={() => setSelectedWeight(w)}
-                      className={`px-2.5 py-1 rounded-lg border font-numeral transition-colors ${
-                        selectedWeight === w
-                          ? 'bg-[#0B080F] text-white border-[#0B080F]'
-                          : 'bg-white hover:bg-neutral-100 border-neutral-200 text-neutral-700'
-                      }`}
-                    >
-                      {toPersianDigits(w)} گرم
-                    </button>
-                  ))}
               </div>
             </div>
           </div>
 
-          {/* Accordion: جزئیات قیمت */}
-          <div className="bg-white rounded-2xl border border-[#D4AF37]/30 overflow-hidden shadow-sm">
-            <button
-              type="button"
-              onClick={() => setIsPriceAccordionOpen(!isPriceAccordionOpen)}
-              className="w-full bg-[#0B080F] text-white p-3.5 flex items-center justify-between hover:bg-[#14101A] transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Award className="w-4 h-4 text-[#D4AF37]" />
-                <span className="text-xs font-semibold">جزئیات و شفافیت فرمول قیمت</span>
-                <span className="text-[10px] text-[#D4AF37]/80 bg-[#D4AF37]/10 px-2 py-0.5 rounded">
-                  {isCustomWeight ? `محاسبه بر اساس ${formatWeight(selectedWeight)}` : '(محاسبه مستقیم)'}
-                </span>
+          {/* Pricing Module */}
+          <div className="bg-white rounded-2xl border border-neutral-200/80 p-5 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-[#0B080F]">
+                  {t('pdp.breakdown_title')}
+                </h3>
+                <p className="text-[11px] text-[#A89B8A]">
+                  {t('pdp.breakdown_desc')}
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowSettingsModal(true);
-                  }}
-                  className="text-[11px] text-[#D4AF37] hover:underline flex items-center gap-1 focus-visible:outline-none"
-                  title="تغییر یا بررسی نرخ روز و موازین مالیات"
-                >
-                  <SlidersHorizontal className="w-3 h-3" />
-                  <span className="hidden sm:inline">تنظیم موازین</span>
-                </button>
-                <ChevronDown className={`w-4 h-4 text-[#D4AF37] transition-transform duration-300 ${isPriceAccordionOpen ? 'rotate-180' : ''}`} />
-              </div>
-            </button>
 
-            {/* Accordion Body */}
+              <button
+                type="button"
+                onClick={() => setIsPriceAccordionOpen(!isPriceAccordionOpen)}
+                className="text-xs font-semibold text-[#D4AF37] hover:underline flex items-center gap-1"
+              >
+                <span>{isPriceAccordionOpen ? t('card.close_breakdown') : t('card.view_breakdown')}</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isPriceAccordionOpen ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+
             {isPriceAccordionOpen && (
-              <div className="p-4 space-y-2.5 text-xs animate-in fade-in duration-200">
-                {/* 1. Gold Weight */}
+              <div className="pt-2 border-t border-neutral-100 space-y-2 text-xs">
+                {/* 1. Raw Gold Value */}
                 <div className="flex justify-between items-center text-neutral-600">
-                  <span>وزن طلای محاسبه‌شده:</span>
+                  <span>
+                    {t('pdp.raw_gold_formula', {
+                      weight: formatNum(selectedWeight),
+                      rate: formatPrice(breakdown.goldPricePerGram)
+                    })}
+                  </span>
+                  <span className="font-semibold text-[#0B080F] font-numeral">{formatPrice(breakdown.rawGoldPrice)}</span>
+                </div>
+
+                {/* 2. Making Charge */}
+                <div className="flex justify-between items-center text-neutral-600">
+                  <span>
+                    {t('pdp.wage_calc', {
+                      wage: formatNum(Math.round(breakdown.wageRate * 100))
+                    })}
+                  </span>
                   <span className="font-semibold text-[#0B080F] font-numeral">
-                    {formatWeight(breakdown.weightGrams)} {isCustomWeight ? '(انتخابی)' : ''}
+                    {formatPrice(breakdown.wageAmount)}
                   </span>
                 </div>
 
-                {/* 2. Gold Reference Rate from /price */}
+                {/* 3. Seller Profit */}
                 <div className="flex justify-between items-center text-neutral-600">
-                  <span>نرخ روز هر گرم طلا ۱۸ عیار (از /price):</span>
-                  <span className="font-semibold text-[#997D24] font-numeral">{formatToman(breakdown.goldPricePerGram)}</span>
+                  <span>{t('pdp.profit_calc')}</span>
+                  <span className="font-semibold text-[#0B080F] font-numeral">{formatPrice(breakdown.profitAmount)}</span>
                 </div>
 
-                {/* Raw Gold Value */}
+                {/* 4. VAT Tax */}
                 <div className="flex justify-between items-center text-neutral-600">
-                  <span>ارزش طلای خام (وزن × نرخ روز):</span>
-                  <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.rawGoldPrice)}</span>
-                </div>
-
-                {/* 3. Making Charge / Wage (Percentage + Amount) */}
-                <div className="flex justify-between items-center text-neutral-600">
-                  <span>اجرت ساخت کارگاهی (درصد + مبلغ):</span>
-                  <span className="font-semibold text-[#0B080F] font-numeral">
-                    ٪{toPersianDigits(Math.round(breakdown.wageRate * 100))} ({formatToman(breakdown.wageAmount)})
-                  </span>
-                </div>
-
-                {/* 4. Seller Profit (7%) */}
-                <div className="flex justify-between items-center text-neutral-600">
-                  <span>سود فروشنده (۷٪ مصوب اتحادیه):</span>
-                  <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.profitAmount)}</span>
-                </div>
-
-                {/* 5. VAT Tax (10% on Wage and Profit) */}
-                <div className="flex justify-between items-center text-neutral-600">
-                  <span>مالیات بر ارزش افزوده (٪{toPersianDigits(Math.round(breakdown.vatPercent * 100))} منحصراً روی اجرت و سود):</span>
-                  <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.vatAmount)}</span>
+                  <span>{t('pdp.vat_calc')}</span>
+                  <span className="font-semibold text-[#0B080F] font-numeral">{formatPrice(breakdown.vatAmount)}</span>
                 </div>
                 <div className="text-[10px] text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-200/60 leading-relaxed">
-                  ✓ اصل طلا معاف از مالیات است؛ مالیات ۱۰٪ فقط روی (اجرت ساخت + سود فروشنده) اعمال می‌شود.
+                  {t('pdp.vat_exempt_note')}
                 </div>
 
                 {breakdown.stonePrice > 0 && (
                   <div className="flex justify-between items-center text-neutral-600">
-                    <span>بهای سنگ و نگین‌های مخراجی‌شده:</span>
-                    <span className="font-semibold text-[#0B080F] font-numeral">{formatToman(breakdown.stonePrice)}</span>
+                    <span>{t('pdp.stone_calc')}</span>
+                    <span className="font-semibold text-[#0B080F] font-numeral">{formatPrice(breakdown.stonePrice)}</span>
                   </div>
                 )}
 
-                {/* 6. Final Payable Price */}
-                <div className="pt-3 border-t border-neutral-200 flex items-baseline justify-between bg-[#FAF8F5] -mx-4 -mb-4 p-4 rounded-b-2xl">
+                {/* 5. Final Payable */}
+                <div className="pt-3 border-t border-neutral-200 flex items-baseline justify-between bg-[#FAF8F5] -mx-5 -mb-5 p-4 rounded-b-2xl">
                   <div>
-                    <span className="text-sm font-bold text-[#0B080F] block">قیمت نهایی قابل پرداخت:</span>
-                    <span className="text-[10px] text-[#A89B8A]">مطابق دقیق با پیش‌فاکتور رسمی و ارسال رایگان</span>
+                    <span className="text-sm font-bold text-[#0B080F] block">{t('pdp.final_payable_label')}</span>
+                    <span className="text-[10px] text-[#A89B8A]">{language === 'fa' ? 'مطابق دقیق با پیش‌فاکتور رسمی و ارسال رایگان' : 'Guaranteed price matching official stamped invoice'}</span>
                   </div>
                   <span className="text-xl sm:text-2xl font-bold text-[#997D24] font-numeral">
-                    {formatToman(breakdown.totalPrice)}
+                    {formatPrice(breakdown.totalPrice)}
                   </span>
                 </div>
 
-                {/* View Item Pre-Invoice CTA */}
+                {/* View Pre-Invoice CTA */}
                 <div className="pt-2">
                   <button
                     type="button"
@@ -488,7 +470,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
                     className="w-full py-2 px-3 rounded-lg bg-white hover:bg-neutral-50 text-[#0B080F] text-xs font-semibold flex items-center justify-center gap-1.5 border border-[#E5DED2] transition-colors"
                   >
                     <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
-                    <span>مشاهده و چاپ پیش‌فاکتور رسمی این قطعه طلا</span>
+                    <span>{t('pdp.invoice_cta')}</span>
                   </button>
                 </div>
               </div>
@@ -506,10 +488,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
                 <ShoppingBag className="w-4 h-4" />
                 <span>
                   {isExpired
-                    ? 'قیمت در دسترس نیست'
+                    ? (language === 'fa' ? 'قیمت در دسترس نیست' : 'Price Unavailable')
                     : isCustomWeight
-                    ? `افزودن با وزن ${formatWeight(selectedWeight)}`
-                    : 'افزودن به سبد خرید'}
+                    ? t('pdp.add_btn_custom', { weight: formatGrams(selectedWeight) })
+                    : t('pdp.add_btn')}
                 </span>
               </button>
 
@@ -520,7 +502,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
                     ? 'bg-[#D4AF37] text-[#0B080F] border-[#D4AF37]'
                     : 'border-neutral-300 hover:border-[#D4AF37] text-neutral-700'
                 }`}
-                aria-label="افزودن به علاقه‌مندی‌ها"
+                aria-label="Wishlist"
               >
                 <Heart className="w-5 h-5 fill-current" strokeWidth={isWish ? 0 : 2} />
               </button>
@@ -528,8 +510,8 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
               <button
                 onClick={handleShare}
                 className="p-3.5 rounded-xl border border-neutral-300 hover:border-[#D4AF37] text-neutral-700 transition-all"
-                aria-label="اشتراک‌گذاری"
-                title="اشتراک‌گذاری"
+                aria-label="Share"
+                title={t('pdp.share_btn')}
               >
                 {copied ? <Check className="w-5 h-5 text-emerald-600" /> : <Share2 className="w-5 h-5" />}
               </button>
@@ -543,7 +525,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
               className="w-full py-3 px-4 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#128C7E] border border-[#25D366]/40 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors"
             >
               <MessageCircle className="w-4 h-4 text-[#25D366]" />
-              <span>استعلام و مشاوره اختصاصی از طریق واتساپ میوان</span>
+              <span>{t('pdp.whatsapp_btn')}</span>
             </a>
           </div>
 
@@ -551,15 +533,15 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
           <div className="grid grid-cols-3 gap-3 pt-4 border-t border-neutral-200 text-center text-xs text-neutral-600">
             <div className="flex flex-col items-center gap-1">
               <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
-              <span>شناسنامه و فاکتور اتحادیه</span>
+              <span>{language === 'fa' ? 'شناسنامه و فاکتور اتحادیه' : 'Official Certificate'}</span>
             </div>
             <div className="flex flex-col items-center gap-1">
               <Truck className="w-4 h-4 text-[#D4AF37]" />
-              <span>پست پیشتاز بیمه‌شده رایگان</span>
+              <span>{language === 'fa' ? 'پست پیشتاز بیمه‌شده رایگان' : 'Insured Free Delivery'}</span>
             </div>
             <div className="flex flex-col items-center gap-1">
               <RotateCcw className="w-4 h-4 text-[#D4AF37]" />
-              <span>۷ روز ضمانت تعویض</span>
+              <span>{language === 'fa' ? '۷ روز ضمانت تعویض' : '7-Day Return Guarantee'}</span>
             </div>
           </div>
         </div>
@@ -567,38 +549,35 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }
 
       {/* Similar Products */}
       {similarProducts.length > 0 && (
-        <section className="mt-20 pt-12 border-t border-neutral-200">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-serif-luxury font-bold text-[#0B080F]">
-              محصولات مشابه در این کالکشن
-            </h3>
-            <Link
-              to={`/catalog?category=${product.category}`}
-              className="text-xs text-[#997D24] hover:underline flex items-center gap-1"
-            >
-              <span>مشاهده بیشتر</span>
-              <ChevronLeft className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        <div className="mt-16 pt-12 border-t border-neutral-200">
+          <h2 className="text-xl font-serif-luxury font-bold text-[#0B080F] mb-6">
+            {t('pdp.similar_title')}
+          </h2>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {similarProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
-        </section>
+        </div>
       )}
 
-      {/* Invoice Modal for Single Product Item with selectedWeight */}
+      {/* Invoice Modal */}
       <InvoiceModal
         isOpen={showInvoiceModal}
         onClose={() => setShowInvoiceModal(false)}
-        items={[{ product, quantity: 1, selectedWeight, isCustomWeight, addedAt: Date.now() }]}
-        customer={{ fullName: 'مشتری گرامی (استعلام طلا)', province: 'یزد', city: 'یزد' }}
-        isDraft={true}
+        items={[
+          {
+            product,
+            quantity: 1,
+            selectedWeight,
+            isCustomWeight,
+            breakdown,
+            addedAt: Date.now()
+          }
+        ]}
       />
 
-      {/* Pricing Settings and Transparency Modal */}
+      {/* Pricing Settings Modal */}
       <PricingSettingsModal
         isOpen={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}

@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useEffect, useTransition } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Product, FilterState } from '../types';
 import { ProductCard } from '../components/common/ProductCard';
 import { useGoldPrice } from '../context/GoldPriceContext';
-import { normalizePersianText, toPersianDigits, formatToman } from '../utils/persian';
+import { useLanguage } from '../context/LanguageContext';
+import { normalizePersianText } from '../utils/persian';
 import { Filter, SlidersHorizontal, X, Search, RotateCcw } from 'lucide-react';
 
 interface CatalogPageProps {
@@ -15,7 +16,7 @@ const PAGE_SIZE = 24;
 export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { calculatePrice } = useGoldPrice();
-  const [isPending, startTransition] = useTransition();
+  const { t, formatNum, formatGrams, getCategoryTitle, getTypeTitle, language } = useLanguage();
 
   // Mobile Filter Drawer State
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
@@ -27,7 +28,6 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
   const initialKarat = searchParams.get('karat') || 'all';
   const initialSort = (searchParams.get('sortBy') as FilterState['sortBy']) || 'newest';
   const initialQuery = searchParams.get('q') || '';
-  const initialWishlistOnly = searchParams.get('filter') === 'wishlist';
 
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -57,10 +57,10 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
     updateUrlParams({ category: cat });
   };
 
-  const handleTypeChange = (t: string) => {
-    setSelectedType(t);
+  const handleTypeChange = (tVal: string) => {
+    setSelectedType(tVal);
     setVisibleCount(PAGE_SIZE);
-    updateUrlParams({ type: t });
+    updateUrlParams({ type: tVal });
   };
 
   const handleSortChange = (s: FilterState['sortBy']) => {
@@ -85,19 +85,23 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
-    // Search query with Persian normalization
+    // Search query with Persian & Latin normalization
     if (searchQuery.trim()) {
+      const qLower = searchQuery.toLowerCase().trim();
       const normQuery = normalizePersianText(searchQuery);
       result = result.filter((p) => {
         const normName = normalizePersianText(p.name);
-        const normSku = normalizePersianText(p.sku);
+        const normSku = p.sku.toLowerCase();
         const normCat = normalizePersianText(p.categoryFa);
         const normType = normalizePersianText(p.typeFa);
+        const nameEn = (p.nameEn || '').toLowerCase();
         return (
           normName.includes(normQuery) ||
-          normSku.includes(normQuery) ||
+          normSku.includes(qLower) ||
           normCat.includes(normQuery) ||
-          normType.includes(normQuery)
+          normType.includes(normQuery) ||
+          nameEn.includes(qLower) ||
+          p.tags.some((tTag) => normalizePersianText(tTag).includes(normQuery))
         );
       });
     }
@@ -131,7 +135,13 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
 
     // Type Filter
     if (selectedType !== 'all') {
-      result = result.filter((p) => p.type === selectedType || (selectedType === 'set' && (p.type === 'half_set' || p.category === 'set')) || (selectedType === 'necklace' && p.type === 'pendant') || (selectedType === 'bracelet' && (p.type === 'bangle' || p.type === 'anklet')));
+      result = result.filter(
+        (p) =>
+          p.type === selectedType ||
+          (selectedType === 'set' && (p.type === 'half_set' || p.category === 'set')) ||
+          (selectedType === 'necklace' && p.type === 'pendant') ||
+          (selectedType === 'bracelet' && (p.type === 'bangle' || p.type === 'anklet'))
+      );
     }
 
     // Karat
@@ -196,42 +206,45 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
   const hasMore = visibleCount < filteredProducts.length;
 
   const categories = [
-    { key: 'all', label: 'همه کالکشن‌ها' },
-    { key: 'earrings', label: 'گوشواره' },
-    { key: 'ring', label: 'انگشتر' },
-    { key: 'necklace', label: 'گردنبند' },
-    { key: 'bracelet', label: 'دستبند و النگو' },
-    { key: 'set', label: 'نیم‌ست و سرویس' },
-    { key: 'coin', label: 'سکه و شمش' },
-    { key: 'pendant', label: 'آویز و پلاک' },
-    { key: 'men', label: 'محصولات مردانه' },
-    { key: 'kids', label: 'محصولات بچگانه' },
-    { key: 'economic', label: 'محصولات کم‌اجرت' }
+    { key: 'all', label: getCategoryTitle('all') },
+    { key: 'earrings', label: getCategoryTitle('earrings') },
+    { key: 'ring', label: getCategoryTitle('ring') },
+    { key: 'necklace', label: getCategoryTitle('necklace') },
+    { key: 'bracelet', label: getCategoryTitle('bracelet') },
+    { key: 'set', label: getCategoryTitle('set') },
+    { key: 'coin', label: getCategoryTitle('coin') },
+    { key: 'pendant', label: getCategoryTitle('pendant') },
+    { key: 'men', label: getCategoryTitle('men') },
+    { key: 'kids', label: getCategoryTitle('kids') },
+    { key: 'economic', label: getCategoryTitle('economic') }
   ];
 
   const types = [
-    { key: 'all', label: 'همه انواع' },
-    { key: 'ring', label: 'انگشتر' },
-    { key: 'necklace', label: 'گردنبند' },
-    { key: 'pendant', label: 'آویز' },
-    { key: 'earrings', label: 'گوشواره' },
-    { key: 'bracelet', label: 'دستبند' },
-    { key: 'bangle', label: 'النگو' },
-    { key: 'anklet', label: 'پابند' },
-    { key: 'set', label: 'سرویس کامل' },
-    { key: 'half_set', label: 'نیم‌ست' }
+    { key: 'all', label: getTypeTitle('all') },
+    { key: 'ring', label: getTypeTitle('ring') },
+    { key: 'necklace', label: getTypeTitle('necklace') },
+    { key: 'pendant', label: getTypeTitle('pendant') },
+    { key: 'earrings', label: getTypeTitle('earrings') },
+    { key: 'bracelet', label: getTypeTitle('bracelet') },
+    { key: 'bangle', label: getTypeTitle('bangle') },
+    { key: 'anklet', label: getTypeTitle('anklet') },
+    { key: 'set', label: getTypeTitle('set') },
+    { key: 'half_set', label: getTypeTitle('half_set') }
   ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       {/* Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#0B080F]/10 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#0B080F]/10 gap-4 text-start">
         <div>
           <h1 className="text-2xl sm:text-3xl font-serif-luxury font-bold text-[#0B080F]">
-            کاتالوگ طلا و جواهر میوان
+            {t('catalog.title')}
           </h1>
           <p className="text-xs text-[#A89B8A] mt-1 font-numeral">
-            نمایش {toPersianDigits(filteredProducts.length)} قطعه طلا از مجموع {toPersianDigits(products.length)} محصول دست‌ساز
+            {t('catalog.count_summary', {
+              count: formatNum(filteredProducts.length),
+              total: formatNum(products.length)
+            })}
           </p>
         </div>
 
@@ -246,26 +259,26 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
                 setSearchQuery(e.target.value);
                 setVisibleCount(PAGE_SIZE);
               }}
-              placeholder="جستجو در محصولات..."
-              className="w-full text-xs bg-white border border-neutral-300 rounded-lg pl-8 pr-3 py-2 text-[#0B080F] focus:border-[#D4AF37] outline-none"
+              placeholder={t('catalog.search_placeholder')}
+              className="w-full text-xs bg-white border border-neutral-300 rounded-lg ltr:pl-8 ltr:pr-3 rtl:pr-8 rtl:pl-3 py-2 text-[#0B080F] focus:border-[#D4AF37] outline-none"
             />
-            <Search className="w-4 h-4 text-neutral-400 absolute left-2.5 top-2.5 pointer-events-none" />
+            <Search className="w-4 h-4 text-neutral-400 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 pointer-events-none" />
           </div>
 
           {/* Sort Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#A89B8A] hidden sm:inline">مرتب‌سازی:</span>
+            <span className="text-xs text-[#A89B8A] hidden sm:inline">{t('sort.label')}</span>
             <select
               value={sortBy}
               onChange={(e) => handleSortChange(e.target.value as FilterState['sortBy'])}
               className="text-xs bg-white border border-neutral-300 rounded-lg px-3 py-2 text-[#0B080F] focus:border-[#D4AF37] outline-none"
             >
-              <option value="newest">جدیدترین محصولات</option>
-              <option value="bestseller">پرفروش‌ترین‌ها</option>
-              <option value="cheapest">ارزان‌ترین به گران‌ترین</option>
-              <option value="expensive">گران‌ترین به ارزان‌ترین</option>
-              <option value="lightest">سبک‌ترین وزن</option>
-              <option value="heaviest">سنگین‌ترین وزن</option>
+              <option value="newest">{t('sort.newest')}</option>
+              <option value="bestseller">{t('sort.bestseller')}</option>
+              <option value="cheapest">{t('sort.cheapest')}</option>
+              <option value="expensive">{t('sort.expensive')}</option>
+              <option value="lightest">{t('sort.lightest')}</option>
+              <option value="heaviest">{t('sort.heaviest')}</option>
             </select>
           </div>
 
@@ -275,37 +288,39 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
             className="lg:hidden p-2 bg-[#0B080F] text-white rounded-lg flex items-center gap-1.5 text-xs"
           >
             <SlidersHorizontal className="w-4 h-4" />
-            <span>فیلترها</span>
+            <span>{t('catalog.filter.open_btn')}</span>
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pt-8">
         {/* Desktop Sidebar Filters */}
-        <aside className="hidden lg:block space-y-6 bg-white p-6 rounded-2xl border border-[#0B080F]/5 h-fit sticky top-28">
+        <aside className="hidden lg:block space-y-6 bg-white p-6 rounded-2xl border border-[#0B080F]/5 h-fit sticky top-28 text-start">
           <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
             <div className="flex items-center gap-2 font-bold text-sm text-[#0B080F]">
               <Filter className="w-4 h-4 text-[#D4AF37]" />
-              <span>فیلترهای پیشرفته</span>
+              <span>{t('catalog.filter.open_btn')}</span>
             </div>
             <button
               onClick={handleResetFilters}
               className="text-[11px] text-[#A89B8A] hover:text-[#0B080F] flex items-center gap-1"
             >
               <RotateCcw className="w-3 h-3" />
-              <span>بازنشانی</span>
+              <span>{t('catalog.filter.reset')}</span>
             </button>
           </div>
 
           {/* Categories */}
           <div>
-            <span className="block text-xs font-semibold text-[#0B080F] mb-2.5">دسته‌بندی اصلی</span>
+            <span className="block text-xs font-semibold text-[#0B080F] mb-2.5">
+              {t('catalog.filter.category')}
+            </span>
             <div className="space-y-1">
               {categories.map((c) => (
                 <button
                   key={c.key}
                   onClick={() => handleCategoryChange(c.key)}
-                  className={`w-full text-right px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between ${
+                  className={`w-full text-start px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between ${
                     selectedCategory === c.key
                       ? 'bg-[#0B080F] text-[#D4AF37] font-semibold'
                       : 'text-neutral-600 hover:bg-neutral-50'
@@ -319,19 +334,21 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
 
           {/* Types */}
           <div>
-            <span className="block text-xs font-semibold text-[#0B080F] mb-2.5">نوع زیورآلات</span>
+            <span className="block text-xs font-semibold text-[#0B080F] mb-2.5">
+              {t('catalog.filter.type')}
+            </span>
             <div className="flex flex-wrap gap-1.5">
-              {types.map((t) => (
+              {types.map((tItem) => (
                 <button
-                  key={t.key}
-                  onClick={() => handleTypeChange(t.key)}
+                  key={tItem.key}
+                  onClick={() => handleTypeChange(tItem.key)}
                   className={`text-[11px] px-2.5 py-1 rounded-md border transition-colors ${
-                    selectedType === t.key
+                    selectedType === tItem.key
                       ? 'bg-[#D4AF37] text-[#0B080F] border-[#D4AF37] font-semibold'
                       : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
                   }`}
                 >
-                  {t.label}
+                  {tItem.label}
                 </button>
               ))}
             </div>
@@ -339,12 +356,14 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
 
           {/* Karat */}
           <div>
-            <span className="block text-xs font-semibold text-[#0B080F] mb-2">عیار طلا</span>
+            <span className="block text-xs font-semibold text-[#0B080F] mb-2">
+              {t('catalog.filter.karat')}
+            </span>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { val: 'all', label: 'همه' },
-                { val: '18', label: '۱۸ عیار' },
-                { val: '21', label: '۲۱ عیار' },
+                { val: 'all', label: language === 'fa' ? 'همه' : 'All' },
+                { val: '18', label: language === 'fa' ? '۱۸ عیار' : '18K' },
+                { val: '21', label: language === 'fa' ? '۲۱ عیار' : '21K' },
               ].map((k) => (
                 <button
                   key={k.val}
@@ -364,8 +383,8 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
           {/* Weight Filter */}
           <div>
             <div className="flex justify-between items-center text-xs mb-2">
-              <span className="font-semibold text-[#0B080F]">حداکثر وزن:</span>
-              <span className="text-[#997D24] font-numeral">{toPersianDigits(maxWeight)} گرم</span>
+              <span className="font-semibold text-[#0B080F]">{t('catalog.filter.max_weight')}</span>
+              <span className="text-[#997D24] font-numeral">{formatGrams(maxWeight)}</span>
             </div>
             <input
               type="range"
@@ -380,7 +399,9 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
 
           {/* Stone Status */}
           <div>
-            <span className="block text-xs font-semibold text-[#0B080F] mb-2">نگین و جواهر</span>
+            <span className="block text-xs font-semibold text-[#0B080F] mb-2">
+              {language === 'fa' ? 'نگین و جواهر' : 'Gemstones'}
+            </span>
             <div className="grid grid-cols-3 gap-2 text-xs">
               <button
                 onClick={() => setStoneFilter('all')}
@@ -388,7 +409,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
                   stoneFilter === 'all' ? 'bg-[#0B080F] text-[#D4AF37]' : 'border-neutral-200 text-neutral-600'
                 }`}
               >
-                همه
+                {language === 'fa' ? 'همه' : 'All'}
               </button>
               <button
                 onClick={() => setStoneFilter('withStone')}
@@ -396,7 +417,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
                   stoneFilter === 'withStone' ? 'bg-[#0B080F] text-[#D4AF37]' : 'border-neutral-200 text-neutral-600'
                 }`}
               >
-                نگین‌دار
+                {language === 'fa' ? 'نگین‌دار' : 'Gems'}
               </button>
               <button
                 onClick={() => setStoneFilter('noStone')}
@@ -404,7 +425,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
                   stoneFilter === 'noStone' ? 'bg-[#0B080F] text-[#D4AF37]' : 'border-neutral-200 text-neutral-600'
                 }`}
               >
-                بدون نگین
+                {language === 'fa' ? 'بدون نگین' : 'Plain'}
               </button>
             </div>
           </div>
@@ -417,7 +438,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
               onChange={(e) => setInStockOnly(e.target.checked)}
               className="rounded accent-[#D4AF37]"
             />
-            <span className="text-xs text-[#0B080F]">فقط کالاهای آماده ارسال (موجود)</span>
+            <span className="text-xs text-[#0B080F]">{t('catalog.filter.in_stock')}</span>
           </label>
         </aside>
 
@@ -426,16 +447,20 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
           {visibleProducts.length === 0 ? (
             <div className="bg-white rounded-2xl p-12 text-center border border-neutral-200">
               <p className="text-base font-semibold text-[#0B080F] mb-2">
-                هیچ محصولی با فیلترهای انتخابی یافت نشد.
+                {language === 'fa'
+                  ? 'هیچ محصولی با فیلترهای انتخابی یافت نشد.'
+                  : 'No jewelry pieces match your active filters.'}
               </p>
               <p className="text-xs text-[#A89B8A] mb-6">
-                می‌توانید فیلترها را حذف کرده یا عبارت دیگری را جستجو نمایید.
+                {language === 'fa'
+                  ? 'می‌توانید فیلترها را حذف کرده یا عبارت دیگری را جستجو نمایید.'
+                  : 'You can reset filters or try searching for a different keyword.'}
               </p>
               <button
                 onClick={handleResetFilters}
                 className="px-5 py-2.5 bg-[#0B080F] text-white text-xs font-semibold rounded-xl hover:bg-[#D4AF37] hover:text-[#0B080F] transition-colors"
               >
-                حذف همه فیلترها
+                {t('catalog.filter.reset')}
               </button>
             </div>
           ) : (
@@ -449,12 +474,12 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
 
               {/* Load More Button */}
               {hasMore && (
-                <div className="text-center pt-6">
+                <div className="text-center pt-8">
                   <button
                     onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
-                    className="px-8 py-3 bg-white border border-[#D4AF37] text-[#0B080F] hover:bg-[#D4AF37] hover:text-[#0B080F] text-xs font-semibold rounded-xl transition-all shadow-sm active:scale-95"
+                    className="px-8 py-3 bg-white hover:bg-neutral-50 text-[#0B080F] border border-neutral-300 hover:border-[#D4AF37] text-xs font-bold rounded-xl transition-all shadow-sm"
                   >
-                    نمایش بیشتر ({toPersianDigits(filteredProducts.length - visibleCount)} محصول دیگر)
+                    {t('catalog.load_more')}
                   </button>
                 </div>
               )}
@@ -465,18 +490,18 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
 
       {/* Mobile Filter Drawer */}
       {isFilterDrawerOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden overflow-hidden bg-black/60 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-xs bg-white h-full p-6 overflow-y-auto space-y-6">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
+          <div className="w-full max-w-xs bg-white h-full p-6 overflow-y-auto space-y-6 text-start">
             <div className="flex items-center justify-between pb-4 border-b">
-              <h3 className="font-bold text-sm text-[#0B080F]">فیلترهای محصولات</h3>
-              <button onClick={() => setIsFilterDrawerOpen(false)} className="p-1">
-                <X className="w-5 h-5" />
+              <span className="font-bold text-sm text-[#0B080F]">{t('catalog.filter.open_btn')}</span>
+              <button onClick={() => setIsFilterDrawerOpen(false)}>
+                <X className="w-5 h-5 text-neutral-500" />
               </button>
             </div>
 
-            {/* Mobile Categories */}
+            {/* Category Options */}
             <div>
-              <span className="block text-xs font-semibold text-[#0B080F] mb-2">دسته‌بندی</span>
+              <span className="block text-xs font-semibold mb-2">{t('catalog.filter.category')}</span>
               <div className="space-y-1">
                 {categories.map((c) => (
                   <button
@@ -485,8 +510,10 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
                       handleCategoryChange(c.key);
                       setIsFilterDrawerOpen(false);
                     }}
-                    className={`w-full text-right px-3 py-2 rounded-lg text-xs ${
-                      selectedCategory === c.key ? 'bg-[#0B080F] text-[#D4AF37] font-bold' : 'text-neutral-600'
+                    className={`w-full text-start px-2 py-1.5 rounded-lg text-xs ${
+                      selectedCategory === c.key
+                        ? 'bg-[#0B080F] text-[#D4AF37] font-semibold'
+                        : 'text-neutral-600'
                     }`}
                   >
                     {c.label}
@@ -495,11 +522,15 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
               </div>
             </div>
 
+            {/* Reset CTA */}
             <button
-              onClick={() => setIsFilterDrawerOpen(false)}
-              className="w-full py-3 bg-[#0B080F] text-white text-xs font-bold rounded-xl"
+              onClick={() => {
+                handleResetFilters();
+                setIsFilterDrawerOpen(false);
+              }}
+              className="w-full py-2.5 bg-neutral-100 hover:bg-neutral-200 text-[#0B080F] text-xs font-semibold rounded-xl"
             >
-              مشاهده نتایج ({toPersianDigits(filteredProducts.length)})
+              {t('catalog.filter.reset')}
             </button>
           </div>
         </div>

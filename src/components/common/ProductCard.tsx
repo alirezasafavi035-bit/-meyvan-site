@@ -4,7 +4,7 @@ import { Product } from '../../types';
 import { useGoldPrice } from '../../context/GoldPriceContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
-import { formatToman, formatWeight, toPersianDigits } from '../../utils/persian';
+import { useLanguage } from '../../context/LanguageContext';
 import { Heart, ShoppingBag, Eye, ChevronDown } from 'lucide-react';
 
 interface ProductCardProps {
@@ -15,6 +15,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { calculatePrice, isExpired } = useGoldPrice();
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const { t, formatPrice, formatGrams, formatNum, getProductName, getCategoryTitle, getTypeTitle, language } = useLanguage();
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
@@ -64,9 +65,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     return '/images/products/ring.jpg';
   };
 
-  const wagePercentageText = toPersianDigits(Math.round((product.wagePercent || breakdown.wageRate || 0.15) * 100));
-  const profitPercentageText = toPersianDigits(Math.round((breakdown.profitPercent || 0.07) * 100));
-  const vatPercentageText = toPersianDigits(Math.round((breakdown.vatPercent || 0.09) * 100));
+  const wagePercentageText = formatNum(Math.round((product.wagePercent || breakdown.wageRate || 0.15) * 100));
+  const productName = getProductName(product);
 
   return (
     <article
@@ -78,7 +78,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="relative aspect-square w-full bg-[#14101A] overflow-hidden flex items-center justify-center">
         <img
           src={getProductImage()}
-          alt={product.name}
+          alt={productName}
           loading="lazy"
           width={400}
           height={400}
@@ -94,12 +94,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             e.stopPropagation();
             toggleWishlist(product.id);
           }}
-          className={`absolute top-3 left-3 p-2 rounded-full backdrop-blur-md transition-all ${
+          className={`absolute top-3 ${language === 'fa' ? 'left-3' : 'right-3'} p-2 rounded-full backdrop-blur-md transition-all ${
             isWish
               ? 'bg-[#D4AF37] text-[#0B080F]'
               : 'bg-black/40 text-white hover:text-[#D4AF37] hover:bg-black/60'
           }`}
-          aria-label={isWish ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
+          aria-label={isWish ? 'Remove from Wishlist' : 'Add to Wishlist'}
         >
           <Heart className="w-4 h-4 fill-current" strokeWidth={isWish ? 0 : 2} />
         </button>
@@ -110,39 +110,39 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           className={`absolute inset-0 bg-black/20 flex items-center justify-center transition-opacity duration-200 ${
             isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
-          aria-label={`مشاهده جزئیات ${product.name}`}
+          aria-label={`View details for ${productName}`}
         >
           <span className="bg-[#0B080F]/90 text-white text-xs px-3.5 py-1.5 rounded-full border border-[#D4AF37]/40 flex items-center gap-1.5 shadow-lg">
             <Eye className="w-3.5 h-3.5 text-[#D4AF37]" />
-            مشاهده جزئیات
+            {t('card.quick_view')}
           </span>
         </Link>
       </div>
 
       {/* Product Content Details */}
-      <div className="p-4 flex flex-col flex-1 justify-between bg-white">
+      <div className="p-4 flex flex-col flex-1 justify-between bg-white text-start">
         <div>
           {/* Metadata */}
           <div className="flex items-center gap-1.5 text-xs text-[#A89B8A] mb-1.5">
-            <span>{product.categoryFa}</span>
+            <span>{getCategoryTitle(product.category)}</span>
             <span aria-hidden="true">·</span>
-            <span>{product.typeFa}</span>
+            <span>{getTypeTitle(product.type)}</span>
             <span aria-hidden="true">·</span>
-            <span className="font-numeral">{toPersianDigits(product.karat)} عیار</span>
+            <span className="font-numeral">{formatNum(product.karat)} {t('karat_suffix')}</span>
           </div>
 
           {/* Product Title */}
           <h3 className="text-sm font-semibold text-[#0B080F] group-hover:text-[#997D24] transition-colors line-clamp-1 mb-2">
             <Link to={`/product/${product.slug}`}>
-              {product.name}
+              {productName}
             </Link>
           </h3>
 
           {/* Weight */}
           <div className="text-xs text-[#0B080F]/70 mb-2 flex items-center justify-between">
-            <span>وزن تقریبی:</span>
+            <span>{language === 'fa' ? 'وزن تقریبی:' : 'Approx. Weight:'}</span>
             <span className="font-medium text-[#0B080F] font-numeral">
-              {formatWeight(product.weightGrams)}
+              {formatGrams(product.weightGrams)}
             </span>
           </div>
         </div>
@@ -151,19 +151,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="pt-2 border-t border-[#0B080F]/5">
           {/* Price Header */}
           <div className="flex items-baseline justify-between">
-            <span className="text-[11px] text-[#A89B8A]">قیمت روز:</span>
+            <span className="text-[11px] text-[#A89B8A]">{language === 'fa' ? 'قیمت روز:' : 'Live Price:'}</span>
             <span className="text-sm font-bold text-[#0B080F] font-numeral">
-              {formatToman(breakdown.totalPrice)}
+              {formatPrice(breakdown.totalPrice)}
             </span>
           </div>
 
-          {/* Requirement 6: Display wage directly on card without opening accordion */}
+          {/* Wage percentage display */}
           <div className="flex items-center justify-between text-[11px] text-[#997D24] font-medium mt-1 mb-2">
-            <span>اجرت ساخت:</span>
-            <span className="font-numeral">اجرت: {wagePercentageText}٪</span>
+            <span>{t('card.wage')}</span>
+            <span className="font-numeral">
+              {language === 'fa' ? `${wagePercentageText}٪` : `${wagePercentageText}%`}
+            </span>
           </div>
 
-          {/* Requirement: Accordion Toggle Button */}
+          {/* Accordion Toggle Button */}
           <button
             type="button"
             onClick={(e) => {
@@ -175,8 +177,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             aria-expanded={isAccordionOpen}
           >
             <span className="flex items-center gap-1.5 font-semibold text-[#0B080F]">
-              <span>مشاهده جزئیات قیمت</span>
-              <span className="text-[9px] text-[#997D24] bg-[#D4AF37]/15 px-1.5 py-0.5 rounded">فرمول شفاف</span>
+              <span>{isAccordionOpen ? t('card.close_breakdown') : t('card.view_breakdown')}</span>
+              <span className="text-[9px] text-[#997D24] bg-[#D4AF37]/15 px-1.5 py-0.5 rounded">
+                {language === 'fa' ? 'فرمول شفاف' : 'Union Formula'}
+              </span>
             </span>
             <ChevronDown
               className={`w-3.5 h-3.5 text-[#D4AF37] transition-transform duration-200 ${
@@ -185,53 +189,53 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             />
           </button>
 
-          {/* Requirement: Collapsible Accordion Table */}
+          {/* Collapsible Accordion Table */}
           {isAccordionOpen && (
             <div className="bg-[#FAF8F5] border border-[#D4AF37]/35 rounded-xl p-3 mb-3 text-[11px] space-y-1.5 animate-fadeIn shadow-sm">
               <div className="flex justify-between items-center text-neutral-600">
-                <span>وزن:</span>
+                <span>{language === 'fa' ? 'وزن طلا:' : 'Weight:'}</span>
                 <span className="font-numeral font-medium text-neutral-800">
-                  {formatWeight(product.weightGrams)}
+                  {formatGrams(product.weightGrams)}
                 </span>
               </div>
               <div className="flex justify-between items-center text-neutral-600">
-                <span>نرخ روز گرم طلا:</span>
+                <span>{language === 'fa' ? 'نرخ روز هر گرم:' : '18K Daily Rate:'}</span>
                 <span className="font-numeral font-medium text-neutral-800">
-                  {formatToman(breakdown.goldPricePerGram)}
+                  {formatPrice(breakdown.goldPricePerGram)}
                 </span>
               </div>
               <div className="flex justify-between items-center text-neutral-600">
-                <span>ارزش طلای خام:</span>
+                <span>{t('card.raw_gold')}</span>
                 <span className="font-numeral font-medium text-neutral-800">
-                  {formatToman(breakdown.rawGoldPrice)}
+                  {formatPrice(breakdown.rawGoldPrice)}
                 </span>
               </div>
               <div className="flex justify-between items-center text-neutral-600">
-                <span>اجرت ساخت ({wagePercentageText}٪):</span>
+                <span>{t('card.wage')} ({wagePercentageText}%)</span>
                 <span className="font-numeral font-medium text-neutral-800">
-                  {formatToman(breakdown.wageAmount)}
+                  {formatPrice(breakdown.wageAmount)}
                 </span>
               </div>
               <div className="flex justify-between items-center text-neutral-600">
-                <span>سود فروشنده (۷٪):</span>
+                <span>{t('card.profit')}</span>
                 <span className="font-numeral font-medium text-neutral-800">
-                  {formatToman(breakdown.profitAmount)}
+                  {formatPrice(breakdown.profitAmount)}
                 </span>
               </div>
               <div className="flex justify-between items-center text-neutral-600">
-                <span>مالیات (۱۰٪):</span>
+                <span>{t('card.vat')}</span>
                 <span className="font-numeral font-medium text-neutral-800">
-                  {formatToman(breakdown.vatAmount)}
+                  {formatPrice(breakdown.vatAmount)}
                 </span>
               </div>
               <div className="flex justify-between items-center pt-2 border-t border-[#D4AF37]/30 font-bold text-[#0B080F]">
-                <span>قیمت نهایی:</span>
+                <span>{t('card.total')}</span>
                 <span className="font-numeral text-[#997D24] text-xs">
-                  {formatToman(breakdown.totalPrice)}
+                  {formatPrice(breakdown.totalPrice)}
                 </span>
               </div>
               <p className="text-[9px] text-[#A89B8A] leading-tight pt-1 border-t border-neutral-200/60 mt-1">
-                اصل طلا معاف از مالیات است؛ مالیات (۱۰٪) فقط روی اجرت و سود محاسبه می‌شود.
+                {t('pdp.vat_exempt_note')}
               </p>
             </div>
           )}
@@ -249,10 +253,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <ShoppingBag className="w-3.5 h-3.5" />
             <span>
               {isExpired
-                ? 'قیمت ناموجود'
+                ? (language === 'fa' ? 'قیمت ناموجود' : 'Price Unavailable')
                 : product.stock <= 0
-                ? 'ناموجود'
-                : 'افزودن به سبد خرید'}
+                ? (language === 'fa' ? 'ناموجود' : 'Sold Out')
+                : t('card.add_to_cart')}
             </span>
           </button>
         </div>
@@ -260,4 +264,3 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     </article>
   );
 };
-

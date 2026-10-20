@@ -36,10 +36,13 @@ export interface Product {
   sku: string;
   slug: string;
   name: string;
+  nameEn?: string;
   category: CategoryKey;
   categoryFa: string;
+  categoryEn?: string;
   type: ProductTypeKey;
   typeFa: string;
+  typeEn?: string;
   karat: 18 | 21 | 24;
   weightGrams: number;
   wageMethod?: WageMethod;
@@ -53,6 +56,7 @@ export interface Product {
   images: string[];
   tags: string[];
   description: string;
+  descriptionEn?: string;
   createdAt: string;
   featured?: boolean;
   // Weight customization capabilities (Axis 2)
@@ -121,8 +125,10 @@ export interface CartItem {
   product: Product;
   quantity: number;
   selectedWeight?: number; // Custom chosen gram weight
+  customWeight?: number; // Backward compat
   isCustomWeight?: boolean; // Flag indicating customer chose custom gram
   lockedPrice?: number;
+  breakdown?: PriceBreakdown;
   addedAt: number;
 }
 

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useGoldPrice } from '../../context/GoldPriceContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { OrderCustomerInfo } from '../../types';
-import { formatToman, formatWeight, toPersianDigits } from '../../utils/persian';
 import { X, ShieldCheck, Truck, MessageCircle, CreditCard, AlertCircle, CheckCircle2, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { InvoiceModal } from './InvoiceModal';
@@ -15,14 +15,15 @@ interface CheckoutModalProps {
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess }) => {
   const { items, totalWeightGrams, totalPriceTomans, clearCart } = useCart();
   const { isExpired } = useGoldPrice();
+  const { t, formatPrice, formatGrams, formatNum, getProductName, language, dir } = useLanguage();
   const navigate = useNavigate();
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   const [customer, setCustomer] = useState<OrderCustomerInfo>({
     fullName: '',
     mobile: '',
-    province: 'یزد',
-    city: 'یزد',
+    province: language === 'fa' ? 'یزد' : 'Yazd',
+    city: language === 'fa' ? 'یزد' : 'Yazd',
     address: '',
     postalCode: '',
     shippingMethod: 'express_post',
@@ -36,20 +37,28 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
 
   const validateForm = () => {
     if (!customer.fullName.trim() || customer.fullName.trim().length < 3) {
-      return 'لطفاً نام و نام خانوادگی کامل خود (حداقل ۳ حرف) را وارد کنید.';
+      return language === 'fa'
+        ? 'لطفاً نام و نام خانوادگی کامل خود (حداقل ۳ حرف) را وارد کنید.'
+        : 'Please enter your full name (at least 3 characters).';
     }
     const cleanMobile = customer.mobile.trim().replace(/[۰-۹]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 1728));
     if (!cleanMobile || !/^09[0-9]{9}$/.test(cleanMobile)) {
-      return 'لطفاً شماره موبایل معتبر ۱۱ رقمی (مانند ۰۹۱۲۳۴۵۶۷۸۹) وارد کنید.';
+      return language === 'fa'
+        ? 'لطفاً شماره موبایل معتبر ۱۱ رقمی (مانند ۰۹۱۲۳۴۵۶۷۸۹) وارد کنید.'
+        : 'Please enter a valid 11-digit mobile number (e.g. 09123456789).';
     }
     if (customer.postalCode.trim()) {
       const cleanPostal = customer.postalCode.trim().replace(/[۰-۹]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 1728));
       if (!/^[0-9]{10}$/.test(cleanPostal)) {
-        return 'کد پستی ۱۰ رقمی باید صرفاً شامل ۱۰ رقم عددی بدون خط فاصله باشد.';
+        return language === 'fa'
+          ? 'کد پستی ۱۰ رقمی باید صرفاً شامل ۱۰ رقم عددی بدون خط فاصله باشد.'
+          : 'Postal code must contain exactly 10 digits without hyphens.';
       }
     }
     if (!customer.address.trim() || customer.address.trim().length < 10) {
-      return 'لطفاً نشانی کامل پستی دقیق خود (شامل خیابان، کوچه و پلاک) را وارد نمایید.';
+      return language === 'fa'
+        ? 'لطفاً نشانی کامل پستی دقیق خود (شامل خیابان، کوچه و پلاک) را وارد نمایید.'
+        : 'Please enter your complete physical delivery address (street, building, unit).';
     }
     return '';
   };
@@ -120,7 +129,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
         });
 
         if (!res.ok) {
-          throw new Error('خطا در برقراری ارتباط با درگاه پرداخت.');
+          throw new Error('Payment gateway connection error.');
         }
 
         const data = await res.json();
@@ -135,7 +144,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
         }
       } catch (err: unknown) {
         console.error('Payment error', err);
-        setErrorMsg('خطا در اتصال به درگاه پرداخت آنلاین. می‌توانید از گزینه سفارش واتساپ استفاده فرمایید.');
+        setErrorMsg(language === 'fa' ? 'خطا در اتصال به درگاه پرداخت آنلاین. می‌توانید از گزینه سفارش واتساپ استفاده فرمایید.' : 'Gateway connection error. You can also place your order via WhatsApp concierge.');
         setLoading(false);
         return;
       }
@@ -160,22 +169,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
     const itemsSummary = items
       .map(
         (i, idx) =>
-          `${idx + 1}. ${i.product.name} (کد: ${i.product.sku}) - تعداد: ${i.quantity} - وزن: ${i.product.weightGrams} گرم`
+          `${idx + 1}. ${getProductName(i.product)} (SKU: ${i.product.sku}) - Qty: ${i.quantity} - Weight: ${i.product.weightGrams}g`
       )
       .join('\n');
 
-    const message = `✨ سفارش جدید از وبسایت میوان (meyvan.ir) ✨\n\n` +
-      `👤 نام مشتری: ${customer.fullName}\n` +
-      `📱 شماره تماس: ${customer.mobile}\n` +
-      `📍 مقصد: استان ${customer.province}، شهر ${customer.city}\n` +
-      `🏠 آدرس: ${customer.address}\n` +
-      `📮 کد پستی: ${customer.postalCode || 'ثبت نشده'}\n` +
-      `🚚 روش ارسال: ${customer.shippingMethod === 'yazd_courier' ? 'پیک اختصاصی یزد' : 'پست پیشتاز بیمه‌شده'}\n\n` +
-      `📋 اقلام سبد خرید:\n${itemsSummary}\n\n` +
-      `⚖️ مجموع وزن طلا: ${totalWeightGrams.toFixed(2)} گرم\n` +
-      `💰 مبلغ تقریبی کل: ${totalPriceTomans.toLocaleString('fa-IR')} تومان\n` +
-      (customer.notes ? `📝 توضیحات: ${customer.notes}\n` : '') +
-      `\nلطفاً برای قفل قیمت و صدور فاکتور رسمی راهنمایی بفرمایید.`;
+    const message = `✨ New Fine Jewelry Order from MEYVAN (meyvan.ir) ✨\n\n` +
+      `👤 Client Name: ${customer.fullName}\n` +
+      `📱 Phone: ${customer.mobile}\n` +
+      `📍 Destination: ${customer.province}, ${customer.city}\n` +
+      `🏠 Address: ${customer.address}\n` +
+      `📮 Postal Code: ${customer.postalCode || 'Not provided'}\n` +
+      `🚚 Shipping: ${customer.shippingMethod === 'yazd_courier' ? 'Local Yazd Courier' : 'Insured Priority Express'}\n\n` +
+      `📋 Items Ordered:\n${itemsSummary}\n\n` +
+      `⚖️ Total Gold Weight: ${totalWeightGrams.toFixed(2)} g\n` +
+      `💰 Total Amount: ${formatPrice(totalPriceTomans)}\n` +
+      (customer.notes ? `📝 Notes: ${customer.notes}\n` : '');
 
     const whatsappUrl = `https://wa.me/+989132560616?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -185,17 +193,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl border border-[#D4AF37]/30 my-8">
+      <div className="bg-white rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl border border-[#D4AF37]/30 my-8 text-start">
         {/* Header */}
         <div className="bg-[#0B080F] text-white p-5 flex items-center justify-between border-b border-[#D4AF37]/20">
           <div>
-            <h3 className="font-serif-luxury text-base font-semibold">تکمیل و نهایی‌سازی سفارش</h3>
-            <p className="text-xs text-[#D4AF37]/80 mt-0.5">تسویه حساب مهمان — بدون نیاز به ثبت‌نام</p>
+            <h3 className="font-serif-luxury text-base font-semibold">{t('checkout.title')}</h3>
+            <p className="text-xs text-[#D4AF37]/80 mt-0.5">{t('checkout.subtitle')}</p>
           </div>
           <button
             onClick={onClose}
             className="p-1.5 text-white/70 hover:text-white rounded-lg hover:bg-white/10"
-            aria-label="بستن"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -204,7 +212,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
         {/* Price Lock Notice */}
         <div className="bg-[#FAF8F5] p-3 border-b border-[#0B080F]/5 text-xs text-[#0B080F]/80 flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-[#D4AF37] shrink-0" />
-          <span>نرخ طلا برای شما به مدت ۱۰ دقیقه قفل شده است. فاکتور رسمی اتحادیه با بارکد همراه مرسوله ارسال می‌شود.</span>
+          <span>{language === 'fa' ? 'نرخ طلا برای شما به مدت ۱۰ دقیقه قفل شده است. فاکتور رسمی اتحادیه با بارکد همراه مرسوله ارسال می‌شود.' : 'Gold price is locked for 10 minutes. Official stamped Union invoice is included with your delivery.'}</span>
         </div>
 
         {errorMsg && (
@@ -218,36 +226,36 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-[#0B080F] mb-1">
-                نام و نام خانوادگی <span className="text-rose-500">*</span>
+                {t('checkout.field.name')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={customer.fullName}
                 onChange={(e) => setCustomer({ ...customer, fullName: e.target.value })}
-                placeholder="مثال: سارا محمدی"
+                placeholder={language === 'fa' ? 'مثال: سارا محمدی' : 'e.g. Sara Mohammadi'}
                 className="w-full text-xs px-3 py-2.5 rounded-lg border border-neutral-300 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none"
               />
             </div>
 
             <div>
               <label className="block text-xs font-medium text-[#0B080F] mb-1">
-                شماره موبایل (جهت هماهنگی و پیامک کد رهگیری) <span className="text-rose-500">*</span>
+                {t('checkout.field.mobile')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="tel"
                 required
                 value={customer.mobile}
                 onChange={(e) => setCustomer({ ...customer, mobile: e.target.value })}
-                placeholder="۰۹۱۲۳۴۵۶۷۸۹"
-                className="w-full text-xs px-3 py-2.5 rounded-lg border border-neutral-300 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none font-numeral text-right"
+                placeholder="09123456789"
+                className="w-full text-xs px-3 py-2.5 rounded-lg border border-neutral-300 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none font-numeral"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-[#0B080F] mb-1">استان</label>
+              <label className="block text-xs font-medium text-[#0B080F] mb-1">{t('checkout.field.province')}</label>
               <input
                 type="text"
                 value={customer.province}
@@ -257,7 +265,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#0B080F] mb-1">شهر</label>
+              <label className="block text-xs font-medium text-[#0B080F] mb-1">{t('checkout.field.city')}</label>
               <input
                 type="text"
                 value={customer.city}
@@ -269,32 +277,32 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
 
           <div>
             <label className="block text-xs font-medium text-[#0B080F] mb-1">
-              نشانی دقیق پستی <span className="text-rose-500">*</span>
+              {t('checkout.field.address')} <span className="text-rose-500">*</span>
             </label>
             <textarea
               rows={2}
               required
               value={customer.address}
               onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
-              placeholder="خیابان، کوچه، پلاک، واحد..."
+              placeholder={language === 'fa' ? 'خیابان، کوچه، پلاک، واحد...' : 'Street, building, entrance, floor, unit...'}
               className="w-full text-xs px-3 py-2.5 rounded-lg border border-neutral-300 focus:border-[#D4AF37] outline-none"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-[#0B080F] mb-1">کد پستی (۱۰ رقمی)</label>
+              <label className="block text-xs font-medium text-[#0B080F] mb-1">{t('checkout.field.postal')}</label>
               <input
                 type="text"
                 value={customer.postalCode}
                 onChange={(e) => setCustomer({ ...customer, postalCode: e.target.value })}
-                placeholder="اختیاری جهت رهگیری سریع‌تر"
+                placeholder={language === 'fa' ? 'اختیاری جهت رهگیری سریع‌تر' : 'Optional for faster dispatch'}
                 className="w-full text-xs px-3 py-2.5 rounded-lg border border-neutral-300 focus:border-[#D4AF37] outline-none font-numeral"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#0B080F] mb-1">روش ارسال</label>
+              <label className="block text-xs font-medium text-[#0B080F] mb-1">{language === 'fa' ? 'روش ارسال' : 'Shipping Method'}</label>
               <select
                 value={customer.shippingMethod}
                 onChange={(e) =>
@@ -305,8 +313,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
                 }
                 className="w-full text-xs px-3 py-2.5 rounded-lg border border-neutral-300 focus:border-[#D4AF37] outline-none bg-white"
               >
-                <option value="express_post">پست پیشتاز بیمه‌شده سراسری (رایگان)</option>
-                <option value="yazd_courier">پیک اختصاصی و امن (ویژه شهر یزد)</option>
+                <option value="express_post">{language === 'fa' ? 'پست پیشتاز بیمه‌شده سراسری (رایگان)' : 'Insured Priority Express Mail (Complimentary)'}</option>
+                <option value="yazd_courier">{language === 'fa' ? 'پیک اختصاصی و امن (ویژه شهر یزد)' : 'Dedicated Secure Courier (Yazd City Only)'}</option>
               </select>
             </div>
           </div>
@@ -314,16 +322,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
           {/* Price Summary Breakdown Card */}
           <div className="bg-[#FAF8F5] p-3.5 rounded-xl border border-neutral-200/80 space-y-1.5 text-xs">
             <div className="flex justify-between text-neutral-600">
-              <span>وزن کل طلای مرسوله:</span>
-              <span className="font-semibold text-[#0B080F] font-numeral">{formatWeight(totalWeightGrams)}</span>
+              <span>{t('cart.summary.weight')}</span>
+              <span className="font-semibold text-[#0B080F] font-numeral">{formatGrams(totalWeightGrams)}</span>
             </div>
             <div className="flex justify-between text-neutral-600">
-              <span>هزینه بسته‌بندی فاخر و بیمه طلا:</span>
-              <span className="text-emerald-700 font-semibold">رایگان (هدیه میوان)</span>
+              <span>{t('cart.summary.shipping')}</span>
+              <span className="text-emerald-700 font-semibold">{t('cart.summary.shipping_free')}</span>
             </div>
             <div className="flex justify-between text-sm font-bold text-[#0B080F] pt-2 border-t border-neutral-200">
-              <span>مبلغ نهایی قابل پرداخت:</span>
-              <span className="text-[#997D24] font-numeral">{formatToman(totalPriceTomans)}</span>
+              <span>{t('cart.summary.total')}</span>
+              <span className="text-[#997D24] font-numeral">{formatPrice(totalPriceTomans)}</span>
             </div>
 
             <button
@@ -332,7 +340,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
               className="w-full mt-2 py-2 px-3 rounded-lg bg-white hover:bg-neutral-50 text-[#0B080F] text-xs font-semibold flex items-center justify-center gap-1.5 border border-[#E5DED2] transition-colors"
             >
               <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>مشاهده و چاپ پیش‌فاکتور تفکیک‌شده این سفارش</span>
+              <span>{t('pdp.invoice_cta')}</span>
             </button>
           </div>
 
@@ -346,10 +354,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
               <CreditCard className="w-4 h-4" />
               <span>
                 {loading
-                  ? 'در حال اتصال به درگاه امن...'
-                  : paymentApi
-                  ? 'انتقال به درگاه پرداخت شاپرک'
-                  : 'تایید و پرداخت آنلاین (آزمایشی)'}
+                  ? (language === 'fa' ? 'در حال اتصال به درگاه امن...' : 'Connecting to secure gateway...')
+                  : (language === 'fa' ? 'انتقال به درگاه پرداخت شاپرک' : 'Proceed to Secure Banking Gateway')}
               </span>
             </button>
 
@@ -359,7 +365,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose, onSuccess
               className="w-full py-2.5 px-4 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#128C7E] border border-[#25D366]/40 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
             >
               <MessageCircle className="w-4 h-4 text-[#25D366]" />
-              <span>ثبت سفارش و هماهنگی از طریق واتساپ رسمی میوان</span>
+              <span>{t('cart.whatsapp_order')}</span>
             </button>
           </div>
         </form>

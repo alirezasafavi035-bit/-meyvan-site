@@ -158,6 +158,31 @@ p, li, dd {
   font-variant-numeric: tabular-nums;
 }
 
+/* Luxury English Typography & LTR rules */
+body.ltr-mode {
+  direction: ltr;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+
+body.ltr-mode h1,
+body.ltr-mode h2,
+body.ltr-mode h3,
+body.ltr-mode h4,
+body.ltr-mode h5,
+body.ltr-mode h6,
+body.ltr-mode .font-serif-luxury {
+  font-family: 'Playfair Display', Georgia, serif;
+  letter-spacing: 0.02em;
+}
+
+body.ltr-mode .font-numeral {
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Luxury gold gradient utilities */
 .gold-gradient-text {
   background: linear-gradient(135deg, #F5E6B3 0%, #D4AF37 50%, #AA8220 100%);
