@@ -108,7 +108,37 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
 
     // Category or Specialized Collection Filter
     if (selectedCategory !== 'all') {
-      if (selectedCategory === 'earrings') {
+      if (selectedCategory === 'women') {
+        result = result.filter(
+          (p) =>
+            p.category === 'women' ||
+            (!['men', 'kids', 'coin'].includes(p.category) &&
+              !p.tags.includes('مردانه') &&
+              !p.tags.includes('کودک') &&
+              !p.tags.includes('بچگانه') &&
+              !p.tags.includes('نوزادی') &&
+              !p.name.includes('مردانه') &&
+              !p.name.includes('کودک') &&
+              !p.name.includes('نوزاد'))
+        );
+      } else if (selectedCategory === 'men') {
+        result = result.filter(
+          (p) =>
+            p.category === 'men' ||
+            p.tags.includes('مردانه') ||
+            p.name.includes('مردانه')
+        );
+      } else if (selectedCategory === 'kids') {
+        result = result.filter(
+          (p) =>
+            p.category === 'kids' ||
+            p.tags.includes('کودک') ||
+            p.tags.includes('بچگانه') ||
+            p.tags.includes('نوزادی') ||
+            p.name.includes('کودک') ||
+            p.name.includes('نوزاد')
+        );
+      } else if (selectedCategory === 'earrings') {
         result = result.filter((p) => p.type === 'earrings');
       } else if (selectedCategory === 'ring') {
         result = result.filter((p) => p.type === 'ring');
@@ -119,15 +149,11 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
       } else if (selectedCategory === 'set') {
         result = result.filter((p) => p.type === 'set' || p.type === 'half_set' || p.category === 'set');
       } else if (selectedCategory === 'coin') {
-        result = result.filter((p) => p.type === 'coin' || p.category === 'heavy' || p.name.includes('سکه') || p.name.includes('شمش'));
+        result = result.filter((p) => p.type === 'coin' || p.type === 'bullion' || p.category === 'coin');
       } else if (selectedCategory === 'pendant') {
-        result = result.filter((p) => p.type === 'pendant' || p.tags.includes('آویز') || p.name.includes('پلاک') || p.name.includes('آویز'));
-      } else if (selectedCategory === 'men') {
-        result = result.filter((p) => p.category === 'heavy' || p.tags.includes('مردانه') || p.name.includes('مردانه') || (p.type === 'ring' && p.weightGrams >= 4));
-      } else if (selectedCategory === 'kids') {
-        result = result.filter((p) => p.tags.includes('کودک') || p.tags.includes('بچگانه') || p.name.includes('کودک') || p.weightGrams <= 2.2);
+        result = result.filter((p) => p.type === 'pendant' || p.tags.includes('آویز') || p.name.includes('پلاک') || p.name.includes('آویز') || p.name.includes('مدال'));
       } else if (selectedCategory === 'economic') {
-        result = result.filter((p) => p.wagePercent <= 0.15 || p.category === 'economic');
+        result = result.filter((p) => p.wagePercent <= 0.12 || p.category === 'economic');
       } else {
         result = result.filter((p) => p.category === selectedCategory || p.type === selectedCategory);
       }
@@ -207,15 +233,16 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ products }) => {
 
   const categories = [
     { key: 'all', label: getCategoryTitle('all') },
-    { key: 'earrings', label: getCategoryTitle('earrings') },
-    { key: 'ring', label: getCategoryTitle('ring') },
-    { key: 'necklace', label: getCategoryTitle('necklace') },
-    { key: 'bracelet', label: getCategoryTitle('bracelet') },
-    { key: 'set', label: getCategoryTitle('set') },
-    { key: 'coin', label: getCategoryTitle('coin') },
-    { key: 'pendant', label: getCategoryTitle('pendant') },
+    { key: 'women', label: getCategoryTitle('women') },
     { key: 'men', label: getCategoryTitle('men') },
     { key: 'kids', label: getCategoryTitle('kids') },
+    { key: 'ring', label: getCategoryTitle('ring') },
+    { key: 'earrings', label: getCategoryTitle('earrings') },
+    { key: 'necklace', label: getCategoryTitle('necklace') },
+    { key: 'bracelet', label: getCategoryTitle('bracelet') },
+    { key: 'pendant', label: getCategoryTitle('pendant') },
+    { key: 'set', label: getCategoryTitle('set') },
+    { key: 'coin', label: getCategoryTitle('coin') },
     { key: 'economic', label: getCategoryTitle('economic') }
   ];
 

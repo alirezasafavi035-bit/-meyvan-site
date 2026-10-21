@@ -47,12 +47,33 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
   const setData = getCatData((p) => p.category === 'set' || p.type === 'set' || p.type === 'half_set');
   const coinData = getCatData((p) => p.category === 'coin' || p.type === 'coin' || p.type === 'bullion');
   const pendantData = getCatData((p) => p.category === 'pendant' || p.type === 'pendant');
+  const womenData = getCatData(
+    (p) =>
+      p.category === 'women' ||
+      (!['men', 'kids', 'coin'].includes(p.category) &&
+        !p.tags.includes('مردانه') &&
+        !p.tags.includes('کودک') &&
+        !p.tags.includes('بچگانه') &&
+        !p.tags.includes('نوزادی') &&
+        !p.name.includes('مردانه') &&
+        !p.name.includes('کودک') &&
+        !p.name.includes('نوزاد'))
+  );
   const menData = getCatData((p) => p.category === 'men' || p.tags.includes('مردانه') || p.name.includes('مردانه'));
-  const kidsData = getCatData((p) => p.category === 'kids' || p.tags.includes('کودک') || p.name.includes('کودک'));
+  const kidsData = getCatData((p) => p.category === 'kids' || p.tags.includes('کودک') || p.tags.includes('بچگانه') || p.tags.includes('نوزادی') || p.name.includes('کودک') || p.name.includes('نوزاد'));
   const economicData = getCatData((p) => p.category === 'economic' || p.wagePercent <= 0.12 || p.tags.includes('کم‌اجرت'));
 
-  // 10 Specialized categories with verified high-res images
+  // Specialized categories with verified distinct images
   const categories = [
+    {
+      key: 'women',
+      type: 'all',
+      name: t('cat.women'),
+      count: womenData.count,
+      desc: t('cat.desc.women'),
+      weight: womenData.weight,
+      image: '/images/products/women_solitaire_diamond_ring.jpg'
+    },
     {
       key: 'earrings',
       type: 'earrings',
@@ -123,7 +144,7 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
       count: menData.count,
       desc: t('cat.desc.men'),
       weight: menData.weight,
-      image: '/images/products/men_jewelry.jpg'
+      image: '/images/products/men_gold_signet_onyx.jpg'
     },
     {
       key: 'kids',
@@ -132,7 +153,7 @@ export const HomePage: React.FC<HomePageProps> = ({ products }) => {
       count: kidsData.count,
       desc: t('cat.desc.kids'),
       weight: kidsData.weight,
-      image: '/images/products/kids_jewelry.jpg'
+      image: '/images/products/kids_baby_pin_gold.jpg'
     },
     {
       key: 'economic',

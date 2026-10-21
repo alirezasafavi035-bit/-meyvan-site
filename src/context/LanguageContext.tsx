@@ -69,6 +69,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cat.coin': 'سکه و شمش',
     'cat.pendant': 'آویز و پلاک',
     'cat.men': 'محصولات مردانه',
+    'cat.women': 'محصولات زنانه',
     'cat.kids': 'محصولات بچگانه',
     'cat.economic': 'محصولات کم‌اجرت',
 
@@ -81,6 +82,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cat.desc.coin': 'شمش‌های سرمایه‌گذاری استاندارد و سکه‌های بانکی با فاکتور و شناسه یکتا',
     'cat.desc.pendant': 'پلاک‌های اسمی، حروف، طرح قلب و آویزهای مینیاتوری ظریف با طناب ابریشمی یا طلا',
     'cat.desc.men': 'دستبندهای چرم و طلا، انگشترهای عقیق و رینگ‌های مردانه سنگین با عیار ۷۵۰ استاندارد',
+    'cat.desc.women': 'مجموعه فاخر انگشتر، گردنبند، دستبند و سرویس‌های طلا ۱۸ عیار زنانه دست‌ساز',
     'cat.desc.kids': 'گوشواره‌های میخی ایمن، دستبند زنجیری نوزادی و پلاک‌های کارتونی ضدحساسیت',
     'cat.desc.economic': 'طلاهای مینیمال با کمترین درصد اجرت کارگاهی، مناسب سرمایه‌گذاری و پس‌انداز هوشمندانه',
 
@@ -425,6 +427,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cat.coin': 'Coins & Bullion',
     'cat.pendant': 'Pendants & Medallions',
     'cat.men': "Men's Collection",
+    'cat.women': "Women's Collection",
     'cat.kids': 'Kids & Baby',
     'cat.economic': 'Investment / Low-Wage Gold',
 
@@ -437,6 +440,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cat.desc.coin': 'Certified investment gold bullion bars and authentic mint coins with serial codes.',
     'cat.desc.pendant': 'Name medallions, celestial pendants, and dainty gold charms with silk cords or chains.',
     'cat.desc.men': "Heavy 18K signet rings, braided Italian leather bracelets, and classic gold accents.",
+    'cat.desc.women': "Fine handcrafted 18K gold rings, necklaces, bracelets, and bridal suites for women.",
     'cat.desc.kids': 'Hypoallergenic stud earrings, baby link bracelets, and adorable safety gold charms.',
     'cat.desc.economic': 'Minimalist gold pieces with the lowest workshop labor fee, ideal for smart savings.',
 
@@ -875,6 +879,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         set: 'Sets & Suites',
         coin: 'Coins & Bullion',
         pendant: 'Pendants & Medallions',
+        women: "Women's Collection",
         men: "Men's Collection",
         kids: 'Kids & Baby',
         economic: 'Investment Gold',
@@ -894,6 +899,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       set: 'نیم‌ست و سرویس',
       coin: 'سکه و شمش',
       pendant: 'آویز و پلاک',
+      women: 'محصولات زنانه',
       men: 'محصولات مردانه',
       kids: 'محصولات بچگانه',
       economic: 'محصولات کم‌اجرت',

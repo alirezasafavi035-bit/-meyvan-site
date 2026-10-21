@@ -7,6 +7,7 @@ export type CategoryKey =
   | 'coin'
   | 'pendant'
   | 'men'
+  | 'women'
   | 'kids'
   | 'economic'
   | 'minimal'
