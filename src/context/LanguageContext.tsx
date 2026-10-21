@@ -366,6 +366,11 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.enamad_status': 'در حال احراز و تکمیل پرونده',
     'footer.copyright': 'کلیه حقوق برای برند میوان (meyvan.ir) محفوظ است.',
 
+    // Floating WhatsApp Concierge
+    'whatsapp.badge': 'مشاوره آنلاین طلا',
+    'whatsapp.aria_label': 'مشاوره مستقیم در واتساپ گالری میوان',
+    'whatsapp.default_msg': 'درود، مایل به مشاوره و استعلام در خصوص محصولات طلا و جواهر میوان هستم.',
+
     // Common
     'currency': 'تومان',
     'grams': 'گرم',
@@ -716,6 +721,11 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.phone_label': 'Direct Phone:',
     'footer.enamad_status': 'Under official verification process',
     'footer.copyright': '© All rights reserved for MEYVAN Fine Jewelry (meyvan.ir).',
+
+    // Floating WhatsApp Concierge
+    'whatsapp.badge': 'Online Gold Concierge',
+    'whatsapp.aria_label': 'Direct WhatsApp Jewelry Consultation',
+    'whatsapp.default_msg': 'Hello, I would like jewelry consultation and product inquiries regarding Meyvan 18K fine jewelry collection.',
 
     // Common
     'currency': 'Tomans',
