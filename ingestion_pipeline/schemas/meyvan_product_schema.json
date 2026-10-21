@@ -1,0 +1,179 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MeyvanProductSchema",
+  "description": "Standard schema for gold and jewelry catalog imports into meyvan.ir",
+  "type": "object",
+  "required": [
+    "sku",
+    "name",
+    "category",
+    "categoryFa",
+    "type",
+    "typeFa",
+    "karat",
+    "weightGrams",
+    "wagePercent",
+    "profitPercent",
+    "vatPercent",
+    "stonePrice",
+    "hasStone",
+    "stock",
+    "images",
+    "description",
+    "provenance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "System unique identifier (e.g. p-supp-001)"
+    },
+    "sku": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_-]{4,32}$",
+      "description": "Unique Stock Keeping Unit"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly slug"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 200,
+      "description": "Persian product title"
+    },
+    "nameEn": {
+      "type": ["string", "null"],
+      "description": "Optional English product title"
+    },
+    "brand": {
+      "type": "string",
+      "default": "MEYVAN"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "earrings",
+        "ring",
+        "necklace",
+        "bracelet",
+        "set",
+        "coin",
+        "pendant",
+        "men",
+        "kids",
+        "economic"
+      ]
+    },
+    "categoryFa": {
+      "type": "string",
+      "description": "Persian category label"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "ring",
+        "necklace",
+        "pendant",
+        "earrings",
+        "bracelet",
+        "bangle",
+        "anklet",
+        "set",
+        "half_set",
+        "coin",
+        "bullion"
+      ]
+    },
+    "typeFa": {
+      "type": "string",
+      "description": "Persian jewelry type label"
+    },
+    "karat": {
+      "type": "integer",
+      "enum": [18, 21, 24],
+      "description": "Standard Iranian gold purity: 18 (750), 21 (875), or 24 (999.9)"
+    },
+    "weightGrams": {
+      "type": "number",
+      "minimum": 0.05,
+      "maximum": 500.0,
+      "description": "Calibrated net gold weight in grams"
+    },
+    "wagePercent": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 0.50,
+      "description": "Artisanal manufacturing wage percentage (e.g. 0.16 = 16%)"
+    },
+    "profitPercent": {
+      "type": "number",
+      "default": 0.07,
+      "description": "Iranian Gold Union statutory profit (0.07 = 7%)"
+    },
+    "vatPercent": {
+      "type": "number",
+      "default": 0.10,
+      "description": "Statutory VAT rate applied strictly to wage+profit (0.10 = 10%)"
+    },
+    "stonePrice": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Additional value of certified gemstones in Tomans"
+    },
+    "hasStone": {
+      "type": "boolean"
+    },
+    "stoneDetails": {
+      "type": ["string", "null"],
+      "description": "Detailed gemstone specs (cut, clarity, origin)"
+    },
+    "dimensions": {
+      "type": ["object", "null"],
+      "properties": {
+        "lengthMm": { "type": ["number", "null"] },
+        "widthMm": { "type": ["number", "null"] },
+        "diameterMm": { "type": ["number", "null"] },
+        "chainLengthCm": { "type": ["number", "null"] },
+        "ringSize": { "type": ["string", "number", "null"] }
+      }
+    },
+    "stock": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "images": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "description": "List of validated natural photos with #FFFFFF background"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "description": {
+      "type": "string",
+      "minLength": 5
+    },
+    "craftsmanshipNotes": {
+      "type": ["string", "null"],
+      "description": "Notes on Yazd filigree, engraving, or hand-finishing"
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["sourceWebsite", "sourceUrl", "extractedAt", "verifiedByPermission"],
+      "properties": {
+        "sourceWebsite": { "type": "string" },
+        "sourceUrl": { "type": "string", "format": "uri" },
+        "extractedAt": { "type": "string", "format": "date-time" },
+        "verifiedByPermission": { "type": "boolean" },
+        "sourcePrice": { "type": ["number", "null"] },
+        "sourceCurrency": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

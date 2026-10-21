@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ValidationReportSchema",
+  "description": "Schema for catalog ingestion audit and validation reports",
+  "type": "object",
+  "required": [
+    "runId",
+    "timestamp",
+    "sourceWebsite",
+    "complianceChecklist",
+    "summary",
+    "acceptedCount",
+    "rejectedCount",
+    "manualReviewCount"
+  ],
+  "properties": {
+    "runId": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "sourceWebsite": { "type": "string" },
+    "complianceChecklist": {
+      "type": "object",
+      "required": [
+        "robotsTxtRespected",
+        "rateLimitObserved",
+        "explicitPermissionConfirmed",
+        "noGenerativeAiUsed",
+        "noAntiBotBypassed"
+      ],
+      "properties": {
+        "robotsTxtRespected": { "type": "boolean" },
+        "rateLimitObserved": { "type": "boolean" },
+        "explicitPermissionConfirmed": { "type": "boolean" },
+        "noGenerativeAiUsed": { "type": "boolean" },
+        "noAntiBotBypassed": { "type": "boolean" },
+        "crawlDelaySeconds": { "type": "number" }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "totalDiscovered": { "type": "integer" },
+        "totalProcessed": { "type": "integer" },
+        "accepted": { "type": "integer" },
+        "rejected": { "type": "integer" },
+        "queuedForManualReview": { "type": "integer" },
+        "duplicatesSkipped": { "type": "integer" }
+      }
+    },
+    "acceptedCount": { "type": "integer" },
+    "rejectedCount": { "type": "integer" },
+    "manualReviewCount": { "type": "integer" },
+    "rejectedItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sourceUrl", "reasons", "timestamp"],
+        "properties": {
+          "sku": { "type": ["string", "null"] },
+          "sourceUrl": { "type": "string" },
+          "rawTitle": { "type": "string" },
+          "reasons": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "manualReviewItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sourceUrl", "reviewReasons", "partialProduct", "queuedAt"],
+        "properties": {
+          "sku": { "type": ["string", "null"] },
+          "sourceUrl": { "type": "string" },
+          "reviewReasons": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "missingFields": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "imageVettingVerdict": { "type": ["object", "null"] },
+          "partialProduct": { "type": "object" },
+          "queuedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}
