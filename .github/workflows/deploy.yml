@@ -31,7 +31,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
@@ -42,7 +42,7 @@ jobs:
           PRICE_API_KEY: ${{ secrets.PRICE_API_KEY }}
         run: node scripts/update-prices.mjs
 
-      - name: Validate Jewelry Catalog (500 Products)
+      - name: Validate Jewelry Catalog
         run: node scripts/validate-catalog.mjs
 
       - name: Build Static App
